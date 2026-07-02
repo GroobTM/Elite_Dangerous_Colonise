@@ -518,15 +518,7 @@ function FormatResults(results) {
                     <h2 class="col-start-1 row-start-7 border-b border-gray-300 pt-5 pb-3 text-center text-lg drop-shadow-xs lg:col-end-3 lg:row-start-5 lg:text-left xl:col-end-4 xl:row-start-3">Colony Influences</h2>
                     <div class="col-start-1 row-start-8 mt-3 grid grid-cols-2 gap-x-2 overflow-auto lg:col-end-3 lg:row-start-6 lg:grid-cols-4 xl:col-end-4 xl:row-start-4 2xl:grid-cols-8">
                         <div class="mt-3 flex gap-3">
-                            <svg data-tooltip-target="${system.systemID}_black_holes_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                                <g id="g1">
-                                    <path class="fill-[#00FFFF]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                    <path class="fill-[#6600E5]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                    <path class="fill-[#00FFFF]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                    <path class="fill-[#6600E5]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                                </g>
-                                <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
-                            </svg>
+                            ${FormatInfluenceIcons("#00FFFF", "#6600E5", "#00FFFF", "#6600E5")}
                             <h3 class="font-bold">Black Holes:</h3>
                             <div id="${system.systemID}_black_holes_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
                                 High Tech and Tourism
@@ -534,15 +526,7 @@ function FormatResults(results) {
                         </div>
                         <p class="mt-3">${system.systemCounts.blackHoleCount}</p>
                         <div class="mt-3 flex gap-3">
-                            <svg data-tooltip-target="${system.systemID}_neutron_stars_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                                <g id="g1">
-                                    <path class="fill-[#00FFFF]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                    <path class="fill-[#6600E5]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                    <path class="fill-[#00FFFF]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                    <path class="fill-[#6600E5]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                                </g>
-                                <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
-                            </svg>
+                            ${FormatInfluenceIcons("#00FFFF", "#6600E5", "#00FFFF", "#6600E5")}
                             <h3 class="font-bold">Neutron Stars:</h3>
                             <div id="${system.systemID}_neutron_stars_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
                                 High Tech and Tourism
@@ -550,15 +534,7 @@ function FormatResults(results) {
                         </div>
                         <p class="mt-3">${system.systemCounts.neutronStarCount}</p>
                         <div class="mt-3 flex gap-3">
-                            <svg data-tooltip-target="${system.systemID}_white_dwarves_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                                <g id="g1">
-                                    <path class="fill-[#00FFFF]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                    <path class="fill-[#6600E5]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                    <path class="fill-[#00FFFF]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                    <path class="fill-[#6600E5]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                                </g>
-                                <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
-                            </svg>
+                            ${FormatInfluenceIcons("#00FFFF", "#6600E5", "#00FFFF", "#6600E5")}
                             <h3 class="font-bold">White Dwarves:</h3>
                             <div id="${system.systemID}_white_dwarves_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
                                 High Tech and Tourism
@@ -566,15 +542,7 @@ function FormatResults(results) {
                         </div>
                         <p class="mt-3">${system.systemCounts.whiteDwarves}</p>
                         <div class="mt-3 flex gap-3">
-                            <svg data-tooltip-target="${system.systemID}_other_stars_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                                <g id="g1">
-                                    <path class="fill-[#E500E5]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                    <path class="fill-[#E500E5]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                    <path class="fill-[#E500E5]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                    <path class="fill-[#E500E5]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                                </g>
-                                <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
-                            </svg>
+                            ${FormatInfluenceIcons("#E500E5", "#E500E5", "#E500E5", "#E500E5")}
                             <h3 class="font-bold">Other Stars:</h3>
                             <div id="${system.systemID}_other_stars_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
                                 Military
@@ -582,15 +550,7 @@ function FormatResults(results) {
                         </div>
                         <p class="mt-3">${system.systemCounts.otherStarCount}</p>
                         <div class="mt-3 flex gap-3">
-                            <svg data-tooltip-target="${system.systemID}_earth_likes_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                                <g id="g1">
-                                    <path class="fill-[#E500E5]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                    <path class="fill-[#6600E5]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                    <path class="fill-[#80FF00]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                    <path class="fill-[#00FFFF]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                                </g>
-                                <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
-                            </svg>
+                            ${FormatInfluenceIcons("#E500E5", "#6600E5", "#80FF00", "#00FFFF")}
                             <h3 class="font-bold">Earth-like Worlds:</h3>
                             <div id="${system.systemID}_earth_likes_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
                                 Argriculture, High Tech, Tourism, and Military
@@ -598,15 +558,7 @@ function FormatResults(results) {
                         </div>
                         <p class="mt-3">${system.systemCounts.earthLikeCount}</p>
                         <div class="mt-3 flex gap-3">
-                            <svg data-tooltip-target="${system.systemID}_water_worlds_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                                <g id="g1">
-                                    <path class="fill-[#80FF00]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                    <path class="fill-[#6600E5]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                    <path class="fill-[#80FF00]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                    <path class="fill-[#6600E5]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                                </g>
-                                <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
-                            </svg>
+                            ${FormatInfluenceIcons("#80FF00", "#6600E5", "#80FF00", "#6600E5")}
                             <h3 class="font-bold">Water Worlds:</h3>
                             <div id="${system.systemID}_water_worlds_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
                                 Argriculture and Tourism
@@ -614,15 +566,7 @@ function FormatResults(results) {
                         </div>
                         <p class="mt-3">${system.systemCounts.waterWorldCount}</p>
                         <div class="mt-3 flex gap-3">
-                            <svg data-tooltip-target="${system.systemID}_ammonia_worlds_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                                <g id="g1">
-                                    <path class="fill-[#00FFFF]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                    <path class="fill-[#6600E5]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                    <path class="fill-[#00FFFF]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                    <path class="fill-[#6600E5]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                                </g>
-                                <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
-                            </svg>
+                            ${FormatInfluenceIcons("#00FFFF", "#6600E5", "#00FFFF", "#6600E5")}
                             <h3 class="font-bold">Ammonia Worlds:</h3>
                             <div id="${system.systemID}_ammonia_worlds_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
                                 High Tech and Tourism
@@ -630,15 +574,7 @@ function FormatResults(results) {
                         </div>
                         <p class="mt-3">${system.systemCounts.ammoniaWorldCount}</p>
                         <div class="mt-3 flex gap-3">
-                            <svg data-tooltip-target="${system.systemID}_gas_giants_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                                <g id="g1">
-                                    <path class="fill-[#00FFFF]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                    <path class="fill-[#FFFF00]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                    <path class="fill-[#00FFFF]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                    <path class="fill-[#FFFF00]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                                </g>
-                                <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
-                            </svg>
+                            ${FormatInfluenceIcons("#00FFFF", "#FFFF00", "#00FFFF", "#FFFF00")}
                             <h3 class="font-bold">Gas Giants:</h3>
                             <div id="${system.systemID}_gas_giants_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
                                 High Tech and Industrial
@@ -646,15 +582,7 @@ function FormatResults(results) {
                         </div>
                         <p class="mt-3">${system.systemCounts.gasGiantCount}</p>
                         <div class="mt-3 flex gap-3">
-                            <svg data-tooltip-target="${system.systemID}_high_metal_content_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                                <g id="g1">
-                                    <path class="fill-[#FF0000]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                    <path class="fill-[#FF0000]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                    <path class="fill-[#FF0000]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                    <path class="fill-[#FF0000]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                                </g>
-                                <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
-                            </svg>
+                            ${FormatInfluenceIcons("#FF0000", "#FF0000", "#FF0000", "#FF0000")}
                             <h3 class="font-bold">HMC Worlds:</h3>
                             <div id="${system.systemID}_high_metal_content_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
                                 Extraction
@@ -662,15 +590,7 @@ function FormatResults(results) {
                         </div>
                         <p class="mt-3">${system.systemCounts.highMetalContentCount}</p>
                         <div class="mt-3 flex gap-3">
-                            <svg data-tooltip-target="${system.systemID}_metal_rich_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                                <g id="g1">
-                                    <path class="fill-[#FF0000]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                    <path class="fill-[#FF0000]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                    <path class="fill-[#FF0000]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                    <path class="fill-[#FF0000]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                                </g>
-                                <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
-                            </svg>
+                            ${FormatInfluenceIcons("#FF0000", "#FF0000", "#FF0000", "#FF0000")}
                             <h3 class="font-bold">Metal Rich Bodies:</h3>
                             <div id="${system.systemID}_metal_rich_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
                                 Extraction
@@ -678,15 +598,7 @@ function FormatResults(results) {
                         </div>
                         <p class="mt-3">${system.systemCounts.metalRichCount}</p>
                         <div class="mt-3 flex gap-3">
-                            <svg data-tooltip-target="${system.systemID}_rocky_ice_world_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                                <g id="g1">
-                                    <path class="fill-[#FF8000]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                    <path class="fill-[#FFFF00]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                    <path class="fill-[#FF8000]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                    <path class="fill-[#FFFF00]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                                </g>
-                                <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
-                            </svg>
+                            ${FormatInfluenceIcons("#FF8000", "#FFFF00", "#FF8000", "#FFFF00")}
                             <h3 class="font-bold">Rocky Ice Worlds:</h3>
                             <div id="${system.systemID}_rocky_ice_world_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
                                 Refinery and Industrial
@@ -694,15 +606,7 @@ function FormatResults(results) {
                         </div>
                         <p class="mt-3">${system.systemCounts.rockyIceBodyCount}</p>
                         <div class="mt-3 flex gap-3">
-                            <svg data-tooltip-target="${system.systemID}_rocky_bodies_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                                <g id="g1">
-                                    <path class="fill-[#FF8000]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                    <path class="fill-[#FF8000]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                    <path class="fill-[#FF8000]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                    <path class="fill-[#FF8000]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                                </g>
-                                <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
-                            </svg>
+                            ${FormatInfluenceIcons("#FF8000", "#FF8000", "#FF8000", "#FF8000")}
                             <h3 class="font-bold">Rocky Bodies:</h3>
                             <div id="${system.systemID}_rocky_bodies_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
                                 Refinery
@@ -710,15 +614,7 @@ function FormatResults(results) {
                         </div>
                         <p class="mt-3">${system.systemCounts.rockBodyCount}</p>
                         <div class="mt-3 flex gap-3">
-                            <svg data-tooltip-target="${system.systemID}_icy_bodies_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                                <g id="g1">
-                                    <path class="fill-[#FFFF00]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                    <path class="fill-[#FFFF00]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                    <path class="fill-[#FFFF00]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                    <path class="fill-[#FFFF00]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                                </g>
-                                <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
-                            </svg>
+                            ${FormatInfluenceIcons("#FFFF00", "#FFFF00", "#FFFF00", "#FFFF00")}
                             <h3 class="font-bold">Icy Bodies:</h3>
                             <div id="${system.systemID}_icy_bodies_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
                                 Industrial
@@ -726,15 +622,7 @@ function FormatResults(results) {
                         </div>
                         <p class="mt-3">${system.systemCounts.icyBodyCount}</p>
                         <div class="mt-3 flex gap-3">
-                            <svg data-tooltip-target="${system.systemID}_rings_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                                <g id="g1">
-                                    <path class="fill-[#FF0000]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                    <path class="fill-[#FF0000]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                    <path class="fill-[#FF0000]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                    <path class="fill-[#FF0000]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                                </g>
-                                <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
-                            </svg>
+                            ${FormatInfluenceIcons("#FF0000", "#FF0000", "#FF0000", "#FF0000")}
                             <h3 class="font-bold">Rings:</h3>
                             <div id="${system.systemID}_rings_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
                                 Extraction
@@ -742,15 +630,7 @@ function FormatResults(results) {
                         </div>
                         <p class="mt-3">${system.systemCounts.ringCount}</p>
                         <div class="mt-3 flex gap-3">
-                            <svg data-tooltip-target="${system.systemID}_geologicals_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                                <g id="g1">
-                                    <path class="fill-[#FF0000]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                    <path class="fill-[#FFFF00]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                    <path class="fill-[#FF0000]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                    <path class="fill-[#FFFF00]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                                </g>
-                                <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
-                            </svg>
+                            ${FormatInfluenceIcons("#FF0000", "#FFFF00", "#FF0000", "#FFFF00")}
                             <h3 class="font-bold">Geologicals:</h3>
                             <div id="${system.systemID}_geologicals_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
                                 Extraction and Industrial
@@ -758,15 +638,7 @@ function FormatResults(results) {
                         </div>
                         <p class="mt-3">${system.systemCounts.geologicalsCount}</p>
                         <div class="mt-3 flex gap-3">
-                            <svg data-tooltip-target="${system.systemID}_organics_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                                <g id="g1">
-                                    <path class="fill-[#80FF00]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                    <path class="fill-[#009900]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                    <path class="fill-[#80FF00]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                    <path class="fill-[#009900]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                                </g>
-                                <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
-                            </svg>
+                            ${FormatInfluenceIcons("#80FF00", "#009900", "#80FF00", "#009900")}
                             <h3 class="font-bold">Organics:</h3>
                             <div id="${system.systemID}_organics_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
                                 Agriculture and Terraforming
@@ -878,6 +750,20 @@ function FormatColonisedSystems(systemID, inputColonisedSystems) {
     });
 
     return systemsList;
+}
+
+function FormatInfluenceIcons(bottomLeft, bottomRight, topLeft, topRight) {
+    return `
+        <svg data-tooltip-target="${system.systemID}_geologicals_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
+            <g id="g1">
+                <path class="fill-[${bottomLeft}]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
+                <path class="fill-[${bottomRight}]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
+                <path class="fill-[${topLeft}]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
+                <path class="fill-[${topRight}]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
+            </g>
+            <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+        </svg>
+    `;
 }
 
 function FormatStations(colonisedSystemID, inputStations) {
