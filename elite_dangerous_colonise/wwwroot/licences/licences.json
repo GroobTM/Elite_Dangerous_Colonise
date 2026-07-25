@@ -10,17 +10,17 @@
   },
   {
     "PackageId": "Ixnas.AltchaNet",
-    "PackageVersion": "1.2.0",
+    "PackageVersion": "1.1.0",
     "PackageProjectUrl": "https://github.com/ixnas/altcha-dotnet",
     "Copyright": "Copyright (c) 2024 Sjoerd Scheffer",
     "Authors": "Sjoerd Scheffer",
     "License": "BSD-2-Clause",
-    "LicenseUrl": "https://aka.ms/deprecateLicenseUrl",
-    "LicenseInformationOrigin": 5
+    "LicenseUrl": "https://github.com/ixnas/altcha-dotnet/blob/main/LICENSE.txt",
+    "LicenseInformationOrigin": 0
   },
   {
     "PackageId": "Microsoft.AspNetCore.Connections.Abstractions",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "8.0.20",
     "PackageProjectUrl": "https://asp.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -30,7 +30,7 @@
   },
   {
     "PackageId": "Microsoft.AspNetCore.Http.Connections.Client",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "8.0.20",
     "PackageProjectUrl": "https://asp.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -40,7 +40,7 @@
   },
   {
     "PackageId": "Microsoft.AspNetCore.Http.Connections.Common",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "8.0.20",
     "PackageProjectUrl": "https://asp.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -50,7 +50,7 @@
   },
   {
     "PackageId": "Microsoft.AspNetCore.SignalR.Client",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "8.0.20",
     "PackageProjectUrl": "https://asp.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -60,7 +60,7 @@
   },
   {
     "PackageId": "Microsoft.AspNetCore.SignalR.Client.Core",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "8.0.20",
     "PackageProjectUrl": "https://asp.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -70,7 +70,7 @@
   },
   {
     "PackageId": "Microsoft.AspNetCore.SignalR.Common",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "8.0.20",
     "PackageProjectUrl": "https://asp.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -80,7 +80,7 @@
   },
   {
     "PackageId": "Microsoft.AspNetCore.SignalR.Protocols.Json",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "8.0.20",
     "PackageProjectUrl": "https://asp.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -89,38 +89,8 @@
     "LicenseInformationOrigin": 0
   },
   {
-    "PackageId": "Microsoft.Bcl.AsyncInterfaces",
-    "PackageVersion": "10.0.10",
-    "PackageProjectUrl": "https://dot.net/",
-    "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
-    "Authors": "Microsoft",
-    "License": "MIT",
-    "LicenseUrl": "https://licenses.nuget.org/MIT",
-    "LicenseInformationOrigin": 0
-  },
-  {
     "PackageId": "Microsoft.Bcl.Cryptography",
-    "PackageVersion": "10.0.10",
-    "PackageProjectUrl": "https://dot.net/",
-    "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
-    "Authors": "Microsoft",
-    "License": "MIT",
-    "LicenseUrl": "https://licenses.nuget.org/MIT",
-    "LicenseInformationOrigin": 0
-  },
-  {
-    "PackageId": "Microsoft.Bcl.TimeProvider",
-    "PackageVersion": "10.0.10",
-    "PackageProjectUrl": "https://dot.net/",
-    "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
-    "Authors": "Microsoft",
-    "License": "MIT",
-    "LicenseUrl": "https://licenses.nuget.org/MIT",
-    "LicenseInformationOrigin": 0
-  },
-  {
-    "PackageId": "Microsoft.Extensions.Configuration",
-    "PackageVersion": "10.0.0",
+    "PackageVersion": "9.0.9",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -130,7 +100,7 @@
   },
   {
     "PackageId": "Microsoft.Extensions.Configuration.Abstractions",
-    "PackageVersion": "10.0.0",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -140,7 +110,7 @@
   },
   {
     "PackageId": "Microsoft.Extensions.Configuration.Binder",
-    "PackageVersion": "10.0.0",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -150,7 +120,7 @@
   },
   {
     "PackageId": "Microsoft.Extensions.DependencyInjection",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -160,7 +130,7 @@
   },
   {
     "PackageId": "Microsoft.Extensions.DependencyInjection.Abstractions",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -170,7 +140,7 @@
   },
   {
     "PackageId": "Microsoft.Extensions.DependencyModel",
-    "PackageVersion": "10.0.0",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -180,7 +150,7 @@
   },
   {
     "PackageId": "Microsoft.Extensions.Diagnostics.Abstractions",
-    "PackageVersion": "10.0.0",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -190,7 +160,7 @@
   },
   {
     "PackageId": "Microsoft.Extensions.Features",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "8.0.20",
     "PackageProjectUrl": "https://asp.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -200,7 +170,7 @@
   },
   {
     "PackageId": "Microsoft.Extensions.FileProviders.Abstractions",
-    "PackageVersion": "10.0.0",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -210,7 +180,7 @@
   },
   {
     "PackageId": "Microsoft.Extensions.Hosting.Abstractions",
-    "PackageVersion": "10.0.0",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -220,7 +190,7 @@
   },
   {
     "PackageId": "Microsoft.Extensions.Logging",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -230,7 +200,7 @@
   },
   {
     "PackageId": "Microsoft.Extensions.Logging.Abstractions",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -239,8 +209,18 @@
     "LicenseInformationOrigin": 0
   },
   {
+    "PackageId": "Microsoft.Extensions.ObjectPool",
+    "PackageVersion": "8.0.10",
+    "PackageProjectUrl": "https://asp.net/",
+    "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "https://licenses.nuget.org/MIT",
+    "LicenseInformationOrigin": 0
+  },
+  {
     "PackageId": "Microsoft.Extensions.Options",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -250,7 +230,7 @@
   },
   {
     "PackageId": "Microsoft.Extensions.Primitives",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -288,7 +268,7 @@
   },
   {
     "PackageId": "Npgsql",
-    "PackageVersion": "10.0.3",
+    "PackageVersion": "9.0.4",
     "PackageProjectUrl": "https://github.com/npgsql/npgsql",
     "Copyright": "Copyright 2025 \u00A9 The Npgsql Development Team",
     "Authors": "Shay Rojansky,Nikita Kazmin,Brar Piening,Nino Floris,Yoh Deadfall,Austin Drenski,Emil Lenngren,Francisco Figueiredo Jr.,Kenji Uno",
@@ -298,7 +278,7 @@
   },
   {
     "PackageId": "Serilog",
-    "PackageVersion": "4.4.0",
+    "PackageVersion": "4.3.0",
     "PackageProjectUrl": "https://serilog.net/",
     "Copyright": "Copyright \u00A9 Serilog Contributors",
     "Authors": "Serilog Contributors",
@@ -308,7 +288,7 @@
   },
   {
     "PackageId": "Serilog.AspNetCore",
-    "PackageVersion": "10.0.0",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://github.com/serilog/serilog-aspnetcore",
     "Authors": "Microsoft,Serilog Contributors",
     "License": "Apache-2.0",
@@ -317,7 +297,7 @@
   },
   {
     "PackageId": "Serilog.Extensions.Hosting",
-    "PackageVersion": "10.0.0",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://github.com/serilog/serilog-extensions-hosting",
     "Authors": "Microsoft,Serilog Contributors",
     "License": "Apache-2.0",
@@ -326,7 +306,7 @@
   },
   {
     "PackageId": "Serilog.Extensions.Logging",
-    "PackageVersion": "10.0.0",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://github.com/serilog/serilog-extensions-logging",
     "Authors": "Microsoft,Serilog Contributors",
     "License": "Apache-2.0",
@@ -344,7 +324,7 @@
   },
   {
     "PackageId": "Serilog.Settings.Configuration",
-    "PackageVersion": "10.0.1",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://github.com/serilog/serilog-settings-configuration",
     "Authors": "Serilog Contributors",
     "License": "Apache-2.0",
@@ -353,7 +333,7 @@
   },
   {
     "PackageId": "Serilog.Sinks.Console",
-    "PackageVersion": "6.1.1",
+    "PackageVersion": "6.0.0",
     "PackageProjectUrl": "https://github.com/serilog/serilog-sinks-console",
     "Authors": "Serilog Contributors",
     "License": "Apache-2.0",
@@ -379,18 +359,8 @@
     "LicenseInformationOrigin": 0
   },
   {
-    "PackageId": "System.Collections.Immutable",
-    "PackageVersion": "10.0.7",
-    "PackageProjectUrl": "https://dot.net/",
-    "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
-    "Authors": "Microsoft",
-    "License": "MIT",
-    "LicenseUrl": "https://licenses.nuget.org/MIT",
-    "LicenseInformationOrigin": 0
-  },
-  {
     "PackageId": "System.Diagnostics.DiagnosticSource",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -400,7 +370,7 @@
   },
   {
     "PackageId": "System.Formats.Asn1",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "9.0.9",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -410,17 +380,7 @@
   },
   {
     "PackageId": "System.IO.Pipelines",
-    "PackageVersion": "10.0.10",
-    "PackageProjectUrl": "https://dot.net/",
-    "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
-    "Authors": "Microsoft",
-    "License": "MIT",
-    "LicenseUrl": "https://licenses.nuget.org/MIT",
-    "LicenseInformationOrigin": 0
-  },
-  {
-    "PackageId": "System.Net.ServerSentEvents",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -430,7 +390,7 @@
   },
   {
     "PackageId": "System.Security.Cryptography.Pkcs",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "9.0.9",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -440,7 +400,7 @@
   },
   {
     "PackageId": "System.Security.Cryptography.Xml",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "9.0.9",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -449,18 +409,8 @@
     "LicenseInformationOrigin": 0
   },
   {
-    "PackageId": "System.Security.Principal.Windows",
-    "PackageVersion": "5.0.0",
-    "PackageProjectUrl": "https://github.com/dotnet/runtime",
-    "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
-    "Authors": "Microsoft",
-    "License": "MIT",
-    "LicenseUrl": "https://licenses.nuget.org/MIT",
-    "LicenseInformationOrigin": 0
-  },
-  {
     "PackageId": "System.ServiceModel.Primitives",
-    "PackageVersion": "10.0.652802",
+    "PackageVersion": "8.1.2",
     "PackageProjectUrl": "https://github.com/dotnet/wcf",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -470,7 +420,7 @@
   },
   {
     "PackageId": "System.Text.Encodings.Web",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -480,7 +430,7 @@
   },
   {
     "PackageId": "System.Text.Json",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "9.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
@@ -490,7 +440,7 @@
   },
   {
     "PackageId": "System.Threading.Channels",
-    "PackageVersion": "10.0.10",
+    "PackageVersion": "8.0.0",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
