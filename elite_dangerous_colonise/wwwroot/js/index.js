@@ -1,3 +1,22 @@
+const SYSTEM_COUNT_CONFIGS = [
+    { prop: "blackHoleCount", id: "black_holes", label: "Black Holes", tooltip: "High Tech and Tourism", colours: ["#00FFFF", "#6600E5", "#00FFFF", "#6600E5"] },
+    { prop: "neutronStarCount", id: "neutron_stars", label: "Neutron Stars", tooltip: "High Tech and Tourism", colours: ["#00FFFF", "#6600E5", "#00FFFF", "#6600E5"] },
+    { prop: "whiteDwarves", id: "white_dwarves", label: "White Dwarves", tooltip: "High Tech and Tourism", colours: ["#00FFFF", "#6600E5", "#00FFFF", "#6600E5"] },
+    { prop: "otherStarCount", id: "other_stars", label: "Other Stars", tooltip: "Military", colours: ["#E500E5", "#E500E5", "#E500E5", "#E500E5"] },
+    { prop: "earthLikeCount", id: "earth_likes", label: "Earth-like Worlds", tooltip: "Argriculture, High Tech, Tourism, and Military", colours: ["#E500E5", "#6600E5", "#80FF00", "#00FFFF"] },
+    { prop: "waterWorldCount", id: "water_worlds", label: "Water Worlds", tooltip: "Argriculture and Tourism", colours: ["#80FF00", "#6600E5", "#80FF00", "#6600E5"] },
+    { prop: "ammoniaWorldCount", id: "ammonia_worlds", label: "Ammonia Worlds", tooltip: "High Tech and Tourism", colours: ["#00FFFF", "#6600E5", "#00FFFF", "#6600E5"] },
+    { prop: "gasGiantCount", id: "gas_giants", label: "Gas Giants", tooltip: "High Tech and Industrial", colours: ["#00FFFF", "#FFFF00", "#00FFFF", "#FFFF00"] },
+    { prop: "highMetalContentCount", id: "high_metal_content", label: "HMC Worlds", tooltip: "Extraction", colours: ["#FF0000", "#FF0000", "#FF0000", "#FF0000"] },
+    { prop: "metalRichCount", id: "metal_rich", label: "Metal Rich Bodies", tooltip: "Extraction", colours: ["#FF0000", "#FF0000", "#FF0000", "#FF0000"] },
+    { prop: "rockyIceBodyCount", id: "rocky_ice_world", label: "Rocky Ice Worlds", tooltip: "Refinery and Industrial", colours: ["#FF8000", "#FFFF00", "#FF8000", "#FFFF00"] },
+    { prop: "rockBodyCount", id: "rocky_bodies", label: "Rocky Bodies", tooltip: "Refinery", colours: ["#FF8000", "#FF8000", "#FF8000", "#FF8000"] },
+    { prop: "icyBodyCount", id: "icy_bodies", label: "Icy Bodies", tooltip: "Industrial", colours: ["#FFFF00", "#FFFF00", "#FFFF00", "#FFFF00"] },
+    { prop: "ringCount", id: "rings", label: "Rings", tooltip: "Extraction", colours: ["#FF0000", "#FF0000", "#FF0000", "#FF0000"] },
+    { prop: "geologicalsCount", id: "geologicals", label: "Geologicals", tooltip: "Extraction and Industrial", colours: ["#FF0000", "#FFFF00", "#FF0000", "#FFFF00"] },
+    { prop: "organicCount", id: "organics", label: "Organics", tooltip: "Agriculture and Terraforming", colours: ["#80FF00", "#009900", "#80FF00", "#009900"] }
+]
+
 var formData;
 var resultsPerPage = 10;
 var currentPage = 1;
@@ -94,7 +113,6 @@ async function StarSession() {
 
 
 // Search Bar Functions
-
 function SetupSearchInput(id, api) {
     $("#" + id).each(function () {
         new HSComboBox(this, {
@@ -468,206 +486,82 @@ async function LoadResults(updateUrl = true) {
 
 function FormatResults(results) {
     const resultsDiv = document.getElementById("results");
-    var count = 0;
-    resultsDiv.innerHTML = ``;
 
-    results.forEach(system => {
-        resultsDiv.innerHTML += `
-            <div id="results-heading-${system.systemID}" class="grid">
-                <button type="button" class="${FormatTopBoarder(count)} flex w-full cursor-pointer items-center justify-between gap-3 border border-[#0F0F0F] bg-white p-5 text-[#0F0F0F] shadow-sm hover:bg-[#ff9305] rtl:text-right" data-accordion-target="#results-body-${system.systemID}" aria-expanded="false" aria-controls="results-body-${system.systemID}">
-                    <span class="flex items-center text-[#0F0F0F]">${system.systemName}</span>
-                    <svg data-accordion-icon class="h-3 w-3 shrink-0 rotate-180 transition-transform duration-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
-                    </svg>
-                </button>
-            </div>
+    const htmlContent = results.map((system, count) => `
+        <div id="results-heading-${system.systemID}" class="grid">
+            <button type="button" class="${FormatTopBoarder(count)} flex w-full cursor-pointer items-center justify-between gap-3 border border-[#0F0F0F] bg-white p-5 text-[#0F0F0F] shadow-sm hover:bg-[#ff9305] rtl:text-right" data-accordion-target="#results-body-${system.systemID}" aria-expanded="false" aria-controls="results-body-${system.systemID}">
+                <span class="flex items-center text-[#0F0F0F]">${system.systemName}</span>
+                <svg data-accordion-icon class="h-3 w-3 shrink-0 rotate-180 transition-transform duration-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                </svg>
+            </button>
+        </div>
             
-            <div id="results-body-${system.systemID}" class="hidden" aria-labelledby="results-heading-${system.systemID}">
-                <div class="grid-rows-auto grid grid-cols-1 gap-y-5 border border-t-0 border-[#0F0F0F] bg-white p-5 shadow-sm lg:grid-cols-2 lg:gap-x-5 xl:grid-cols-3 xl:gap-y-0">
-                    <h2 class="row-start-1 border-b border-gray-300 pb-3 text-center text-lg drop-shadow-xs lg:col-start-1 lg:text-left">Details</h2>
-                    <div class="row-start-2 mt-3 lg:col-start-1">
-                        <div class="grid grid-cols-2 items-end gap-x-2">
-                            <h3 class="mt-3 font-bold">Name:</h3>
-                            <p class="mt-3"><span data-tooltip-target="${system.systemID}_tooltip" class="cursor-copy" onclick="CopyToClipboard(this);">${system.systemName}</span></p>
-                            <h3 class="mt-3 font-bold">Coordinates:</h3>
-                            <p class="mt-3">${FormatCoordinates(system.coordinates)}</p>
-                            <h3 class="mt-3 font-bold">Last Updated:</h3>
-                            <p class="mt-3">${FormatDate(system.lastUpdate)}</p>
-                            <h3 class="mt-3 font-bold">Distance to Sol:</h3>
-                            <p class="mt-3">${system.distanceToSol} ly</p>
-                            <h3 class="mt-3 font-bold">System Reserve:</h3>
-                            <p class="mt-3">${system.reserveLevel}</p>
-                            <h3 class="mt-3 font-bold">Landable Bodies:</h3>
-                            <p class="mt-3">${system.landableCount}</p>
-                            <h3 class="mt-3 font-bold">Walkable Bodies:</h3>
-                            <p class="mt-3">${system.walkableCount}</p>
-                        </div>
-                    </div>
-                    <h2 class="row-start-3 border-b border-gray-300 pt-5 pb-3 text-center text-lg drop-shadow-xs lg:col-start-2 lg:row-start-1 lg:pt-0 lg:text-left">Rings</h2>
-                    <div class="row-start-4 mt-3 max-h-100 overflow-auto lg:col-start-2 lg:row-start-2">
-                        <ul class="list-inside list-disc font-bold">
-                            ${FormatRings(system.rings)}
-                        </ul>
-                    </div>
-                    <h2 class="row-start-5 border-b border-gray-300 pt-5 pb-3 text-center text-lg drop-shadow-xs lg:col-start-1 lg:col-end-3 lg:row-start-3 lg:text-left xl:col-start-3 xl:col-end-5 xl:row-start-1 xl:pt-0">Nearby Stations</h2>
-                    <div class="row-start-6 mt-3 max-h-100 overflow-auto lg:col-start-1 lg:col-end-3 lg:row-start-4 xl:col-start-3 xl:col-end-5 xl:row-start-2">
-                        <ul class="list-inside list-disc">
-                            ${FormatColonisedSystems(system.systemID, system.colonisedSystems)}
-                        </ul>
-                    </div>
-                    <h2 class="col-start-1 row-start-7 border-b border-gray-300 pt-5 pb-3 text-center text-lg drop-shadow-xs lg:col-end-3 lg:row-start-5 lg:text-left xl:col-end-4 xl:row-start-3">Colony Influences</h2>
-                    <div class="col-start-1 row-start-8 mt-3 grid grid-cols-2 gap-x-2 overflow-auto lg:col-end-3 lg:row-start-6 lg:grid-cols-4 xl:col-end-4 xl:row-start-4 2xl:grid-cols-8">
-                        <div class="mt-3 flex gap-3">
-                            ${FormatInfluenceIcons(system.systemID, "#00FFFF", "#6600E5", "#00FFFF", "#6600E5")}
-                            <h3 class="font-bold">Black Holes:</h3>
-                            <div id="${system.systemID}_black_holes_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                                High Tech and Tourism
-                            </div>
-                        </div>
-                        <p class="mt-3">${system.systemCounts.blackHoleCount}</p>
-                        <div class="mt-3 flex gap-3">
-                            ${FormatInfluenceIcons(system.systemID, "#00FFFF", "#6600E5", "#00FFFF", "#6600E5")}
-                            <h3 class="font-bold">Neutron Stars:</h3>
-                            <div id="${system.systemID}_neutron_stars_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                                High Tech and Tourism
-                            </div>
-                        </div>
-                        <p class="mt-3">${system.systemCounts.neutronStarCount}</p>
-                        <div class="mt-3 flex gap-3">
-                            ${FormatInfluenceIcons(system.systemID, "#00FFFF", "#6600E5", "#00FFFF", "#6600E5")}
-                            <h3 class="font-bold">White Dwarves:</h3>
-                            <div id="${system.systemID}_white_dwarves_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                                High Tech and Tourism
-                            </div>
-                        </div>
-                        <p class="mt-3">${system.systemCounts.whiteDwarves}</p>
-                        <div class="mt-3 flex gap-3">
-                            ${FormatInfluenceIcons(system.systemID, "#E500E5", "#E500E5", "#E500E5", "#E500E5")}
-                            <h3 class="font-bold">Other Stars:</h3>
-                            <div id="${system.systemID}_other_stars_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                                Military
-                            </div>
-                        </div>
-                        <p class="mt-3">${system.systemCounts.otherStarCount}</p>
-                        <div class="mt-3 flex gap-3">
-                            ${FormatInfluenceIcons(system.systemID, "#E500E5", "#6600E5", "#80FF00", "#00FFFF")}
-                            <h3 class="font-bold">Earth-like Worlds:</h3>
-                            <div id="${system.systemID}_earth_likes_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                                Argriculture, High Tech, Tourism, and Military
-                            </div>
-                        </div>
-                        <p class="mt-3">${system.systemCounts.earthLikeCount}</p>
-                        <div class="mt-3 flex gap-3">
-                            ${FormatInfluenceIcons(system.systemID, "#80FF00", "#6600E5", "#80FF00", "#6600E5")}
-                            <h3 class="font-bold">Water Worlds:</h3>
-                            <div id="${system.systemID}_water_worlds_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                                Argriculture and Tourism
-                            </div>
-                        </div>
-                        <p class="mt-3">${system.systemCounts.waterWorldCount}</p>
-                        <div class="mt-3 flex gap-3">
-                            ${FormatInfluenceIcons(system.systemID, "#00FFFF", "#6600E5", "#00FFFF", "#6600E5")}
-                            <h3 class="font-bold">Ammonia Worlds:</h3>
-                            <div id="${system.systemID}_ammonia_worlds_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                                High Tech and Tourism
-                            </div>
-                        </div>
-                        <p class="mt-3">${system.systemCounts.ammoniaWorldCount}</p>
-                        <div class="mt-3 flex gap-3">
-                            ${FormatInfluenceIcons(system.systemID, "#00FFFF", "#FFFF00", "#00FFFF", "#FFFF00")}
-                            <h3 class="font-bold">Gas Giants:</h3>
-                            <div id="${system.systemID}_gas_giants_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                                High Tech and Industrial
-                            </div>
-                        </div>
-                        <p class="mt-3">${system.systemCounts.gasGiantCount}</p>
-                        <div class="mt-3 flex gap-3">
-                            ${FormatInfluenceIcons(system.systemID, "#FF0000", "#FF0000", "#FF0000", "#FF0000")}
-                            <h3 class="font-bold">HMC Worlds:</h3>
-                            <div id="${system.systemID}_high_metal_content_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                                Extraction
-                            </div>
-                        </div>
-                        <p class="mt-3">${system.systemCounts.highMetalContentCount}</p>
-                        <div class="mt-3 flex gap-3">
-                            ${FormatInfluenceIcons(system.systemID, "#FF0000", "#FF0000", "#FF0000", "#FF0000")}
-                            <h3 class="font-bold">Metal Rich Bodies:</h3>
-                            <div id="${system.systemID}_metal_rich_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                                Extraction
-                            </div>
-                        </div>
-                        <p class="mt-3">${system.systemCounts.metalRichCount}</p>
-                        <div class="mt-3 flex gap-3">
-                            ${FormatInfluenceIcons(system.systemID, "#FF8000", "#FFFF00", "#FF8000", "#FFFF00")}
-                            <h3 class="font-bold">Rocky Ice Worlds:</h3>
-                            <div id="${system.systemID}_rocky_ice_world_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                                Refinery and Industrial
-                            </div>
-                        </div>
-                        <p class="mt-3">${system.systemCounts.rockyIceBodyCount}</p>
-                        <div class="mt-3 flex gap-3">
-                            ${FormatInfluenceIcons(system.systemID, "#FF8000", "#FF8000", "#FF8000", "#FF8000")}
-                            <h3 class="font-bold">Rocky Bodies:</h3>
-                            <div id="${system.systemID}_rocky_bodies_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                                Refinery
-                            </div>
-                        </div>
-                        <p class="mt-3">${system.systemCounts.rockBodyCount}</p>
-                        <div class="mt-3 flex gap-3">
-                            ${FormatInfluenceIcons(system.systemID, "#FFFF00", "#FFFF00", "#FFFF00", "#FFFF00")}
-                            <h3 class="font-bold">Icy Bodies:</h3>
-                            <div id="${system.systemID}_icy_bodies_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                                Industrial
-                            </div>
-                        </div>
-                        <p class="mt-3">${system.systemCounts.icyBodyCount}</p>
-                        <div class="mt-3 flex gap-3">
-                            ${FormatInfluenceIcons(system.systemID, "#FF0000", "#FF0000", "#FF0000", "#FF0000")}
-                            <h3 class="font-bold">Rings:</h3>
-                            <div id="${system.systemID}_rings_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                                Extraction
-                            </div>
-                        </div>
-                        <p class="mt-3">${system.systemCounts.ringCount}</p>
-                        <div class="mt-3 flex gap-3">
-                            ${FormatInfluenceIcons(system.systemID, "#FF0000", "#FFFF00", "#FF0000", "#FFFF00")}
-                            <h3 class="font-bold">Geologicals:</h3>
-                            <div id="${system.systemID}_geologicals_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                                Extraction and Industrial
-                            </div>
-                        </div>
-                        <p class="mt-3">${system.systemCounts.geologicalsCount}</p>
-                        <div class="mt-3 flex gap-3">
-                            ${FormatInfluenceIcons(system.systemID, "#80FF00", "#009900", "#80FF00", "#009900")}
-                            <h3 class="font-bold">Organics:</h3>
-                            <div id="${system.systemID}_organics_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                                Agriculture and Terraforming
-                            </div>
-                        </div>
-                        <p class="mt-3">${system.systemCounts.organicCount}</p>
-                    </div>
-                    <h2 class="col-start-1 row-start-9 border-b border-gray-300 pt-5 text-center text-lg drop-shadow-xs lg:col-end-3 lg:row-start-7 lg:text-left xl:col-end-5 xl:row-start-5"></h2>
-                    <div class="mt-5 flex flex-col justify-between gap-y-5 sm:flex-row lg:col-span-2 xl:col-span-4">
-                        <a href="https://spansh.co.uk/system/${system.systemID}" target="_blank" class="text-center text-blue-800 underline sm:text-left">View on Spansh</a>
-                        <div class="flex justify-center gap-x-3 text-center sm:text-left">
-                            <a id="${system.systemID}_reportLocked" class="text-blue-800 underline cursor-pointer">Report as Locked</a>
-                            <a id="${system.systemID}_reportClaimed" class="text-blue-800 underline cursor-pointer">Report as Claimed</a>
-                        </div>
+        <div id="results-body-${system.systemID}" class="hidden" aria-labelledby="results-heading-${system.systemID}">
+            <div class="grid-rows-auto grid grid-cols-1 gap-y-5 border border-t-0 border-[#0F0F0F] bg-white p-5 shadow-sm lg:grid-cols-2 lg:gap-x-5 xl:grid-cols-3 xl:gap-y-0">
+                <h2 class="row-start-1 border-b border-gray-300 pb-3 text-center text-lg drop-shadow-xs lg:col-start-1 lg:text-left">Details</h2>
+                <div class="row-start-2 mt-3 lg:col-start-1">
+                    <div class="grid grid-cols-2 items-end gap-x-2">
+                        <h3 class="mt-3 font-bold">Name:</h3>
+                        <p class="mt-3"><span data-tooltip-target="${system.systemID}_tooltip" class="cursor-copy" onclick="CopyToClipboard(this);">${system.systemName}</span></p>
+                        <h3 class="mt-3 font-bold">Coordinates:</h3>
+                        <p class="mt-3">${FormatCoordinates(system.coordinates)}</p>
+                        <h3 class="mt-3 font-bold">Last Updated:</h3>
+                        <p class="mt-3">${FormatDate(system.lastUpdate)}</p>
+                        <h3 class="mt-3 font-bold">Distance to Sol:</h3>
+                        <p class="mt-3">${system.distanceToSol} ly</p>
+                        <h3 class="mt-3 font-bold">System Reserve:</h3>
+                        <p class="mt-3">${system.reserveLevel}</p>
+                        <h3 class="mt-3 font-bold">Landable Bodies:</h3>
+                        <p class="mt-3">${system.landableCount}</p>
+                        <h3 class="mt-3 font-bold">Walkable Bodies:</h3>
+                        <p class="mt-3">${system.walkableCount}</p>
                     </div>
                 </div>
-                <div id="${system.systemID}_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
-                    Click to copy.
+                <h2 class="row-start-3 border-b border-gray-300 pt-5 pb-3 text-center text-lg drop-shadow-xs lg:col-start-2 lg:row-start-1 lg:pt-0 lg:text-left">Rings</h2>
+                <div class="row-start-4 mt-3 max-h-100 overflow-auto lg:col-start-2 lg:row-start-2">
+                    <ul class="list-inside list-disc font-bold">
+                        ${FormatRings(system.rings)}
+                    </ul>
                 </div>
-                ${FormatColonisedSystemTooltips(system.systemID, system.colonisedSystems)}
+                <h2 class="row-start-5 border-b border-gray-300 pt-5 pb-3 text-center text-lg drop-shadow-xs lg:col-start-1 lg:col-end-3 lg:row-start-3 lg:text-left xl:col-start-3 xl:col-end-5 xl:row-start-1 xl:pt-0">Nearby Stations</h2>
+                <div class="row-start-6 mt-3 max-h-100 overflow-auto lg:col-start-1 lg:col-end-3 lg:row-start-4 xl:col-start-3 xl:col-end-5 xl:row-start-2">
+                    <ul class="list-inside list-disc">
+                        ${FormatColonisedSystems(system.systemID, system.colonisedSystems)}
+                    </ul>
+                </div>
+                <h2 class="col-start-1 row-start-7 border-b border-gray-300 pt-5 pb-3 text-center text-lg drop-shadow-xs lg:col-end-3 lg:row-start-5 lg:text-left xl:col-end-4 xl:row-start-3">Colony Influences</h2>
+                <div class="col-start-1 row-start-8 mt-3 grid grid-cols-2 gap-x-2 overflow-auto lg:col-end-3 lg:row-start-6 lg:grid-cols-4 xl:col-end-4 xl:row-start-4 2xl:grid-cols-8">
+                    ${SYSTEM_COUNT_CONFIGS.map(config => `
+                        <div class="mt-3 flex gap-3">
+                            ${FormatInfluenceIcons(`${system.systemID}_${config.id}_tooltip`, ...config.colours)}
+                            <h3 class="font-bold">${config.label}:</h3>
+                            <div id="${system.systemID}_${config.id}_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                                ${config.tooltip}
+                            </div>
+                        </div>
+                        <p class="mt-3">${system.systemCounts[config.prop]}</p>
+                    `).join("")}
+                </div>
+                <h2 class="col-start-1 row-start-9 border-b border-gray-300 pt-5 text-center text-lg drop-shadow-xs lg:col-end-3 lg:row-start-7 lg:text-left xl:col-end-5 xl:row-start-5"></h2>
+                <div class="mt-5 flex flex-col justify-between gap-y-5 sm:flex-row lg:col-span-2 xl:col-span-4">
+                    <a href="https://spansh.co.uk/system/${system.systemID}" target="_blank" class="text-center text-blue-800 underline sm:text-left">View on Spansh</a>
+                    <div class="flex justify-center gap-x-3 text-center sm:text-left">
+                        <a data-system-id="${system.systemID}" class="report-locked-btn text-blue-800 underline cursor-pointer">Report as Locked</a>
+                        <a data-system-id="${system.systemID}" class="report-claimed-btn text-blue-800 underline cursor-pointer">Report as Claimed</a>
+                    </div>
+                </div>
             </div>
-        `;
-        count++;
-    });
+            <div id="${system.systemID}_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                Click to copy.
+            </div>
+            ${FormatColonisedSystemTooltips(system.systemID, system.colonisedSystems)}
+        </div>
+    `).join("");
 
-    results.forEach(system => {
-        ReinitializeReportLinks(system.systemID);
-    });
+    resultsDiv.innerHTML = htmlContent;
 
+    ReinitializeReportLinks();
     ReinitializeAccordion();
     ReinitializeTooltips();
 }
@@ -752,16 +646,10 @@ function FormatColonisedSystems(systemID, inputColonisedSystems) {
     return systemsList;
 }
 
-function FormatInfluenceIcons(systemID, bottomLeft, bottomRight, topLeft, topRight) {
+function FormatInfluenceIcons(toolipID, bottomLeft, bottomRight, topLeft, topRight) {
     return `
-        <svg data-tooltip-target="${systemID}_geologicals_tooltip" class="h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-            <g id="g1">
-                <path class="fill-[${bottomLeft}]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                <path class="fill-[${bottomRight}]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                <path class="fill-[${topLeft}]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                <path class="fill-[${topRight}]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-            </g>
-            <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+        <svg data-tooltip-target="${toolipID}" class="h-6 w-6" style="--icon-bl: ${bottomLeft}; --icon-br: ${bottomRight}; --icon-tl: ${topLeft}; --icon-tr: ${topRight};">
+            <use href="#influence_icon"></use>
         </svg>
     `;
 }
@@ -866,16 +754,22 @@ async function ReportSystem(systemID, isLocked) {
     }
 }
 
-function ReinitializeReportLinks(systemID) {
-    $(`#${systemID}_reportLocked`).on("click", async function () {
-        await ReportSystem(systemID, true);
-        await LoadResults(false);
-    });
+function ReinitializeReportLinks() {
+    $("#results")
+        .off("click", ".report-locked-btn")
+        .on("click", ".report-locked-btn", async function () {
+            const systemID = $(this).data("system-id");
+            await ReportSystem(systemID, true);
+            await LoadResults(false);
+        });
 
-    $(`#${systemID}_reportClaimed`).on("click", async function () {
-        await ReportSystem(systemID, false);
-        await LoadResults(false);
-    });
+    $("#results")
+        .off("click", ".report-claimed-btn")
+        .on("click", ".report-claimed-btn", async function () {
+            const systemID = $(this).data("system-id");
+            await ReportSystem(systemID, false);
+            await LoadResults(false);
+        });
 }
 
 function ReinitializeAccordion() {
