@@ -400,7 +400,7 @@
   },
   {
     "PackageId": "System.Security.Cryptography.Xml",
-    "PackageVersion": "9.0.9",
+    "PackageVersion": "9.0.18",
     "PackageProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
     "Authors": "Microsoft",
