@@ -1,7 +1,6 @@
-﻿
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Services
 {
     public class MemoryReportingService : BackgroundService
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Services
 {
     public class UpdateHub : Hub
     {

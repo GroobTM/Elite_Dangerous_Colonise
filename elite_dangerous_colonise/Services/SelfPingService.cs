@@ -1,4 +1,4 @@
-﻿namespace elite_dangerous_colonise.Classes
+﻿namespace elite_dangerous_colonise.Services
 {
     /// <summary>
     /// Defines the SelfPingService background service.

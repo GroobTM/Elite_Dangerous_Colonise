@@ -1,4 +1,4 @@
-﻿namespace elite_dangerous_colonise.Classes
+﻿namespace elite_dangerous_colonise.Services
 {
     /// <summary> Wrapper service to facilitate easy logging in the correct format. </summary>
     public class AppLogger

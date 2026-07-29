@@ -1,7 +1,7 @@
 ﻿using Ixnas.AltchaNet;
 using System.Collections.Concurrent;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Services
 {
     public class AltchaMemoryStore : IAltchaChallengeStore
     {

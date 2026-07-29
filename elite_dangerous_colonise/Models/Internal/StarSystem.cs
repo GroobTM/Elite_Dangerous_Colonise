@@ -1,7 +1,8 @@
 ﻿using elite_dangerous_colonise.Models.Database_Types;
+using elite_dangerous_colonise.Services;
 using System.Numerics;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Models.Internal
 {
     /// <summary> Defines the StarSystem abstract class. </summary>
     public abstract class StarSystem
@@ -41,7 +42,7 @@ namespace elite_dangerous_colonise.Classes
         public List<Station> Stations { get; private set; }
 
         /// <summary> Instantiates a ColonisedStarSystem object. </summary>
-        /// <inheritdoc cref="StarSystem.StarSystem(long, string, bool, Vector3"/>
+        /// <inheritdoc cref="StarSystem(long, string, bool, Vector3"/>
         /// <param name="stations"> The list of the system's stations. </param>
         public ColonisedStarSystem(long systemID, string name, Vector3 coordinates, List<Station> stations) :
             base(systemID, name, true, coordinates)
@@ -82,7 +83,7 @@ namespace elite_dangerous_colonise.Classes
         public BodyCount BodyCounts { get; private set; }
 
         /// <summary> Instantiates a UncolonisedStarSystem object. </summary>
-        /// <inheritdoc cref="StarSystem.StarSystem(long, string, bool, Vector3"/>
+        /// <inheritdoc cref="StarSystem(long, string, bool, Vector3"/>
         /// <param name="lastUpdate"></param>
         /// <param name="reserveLevel"></param>
         /// <param name="landableCount"></param>

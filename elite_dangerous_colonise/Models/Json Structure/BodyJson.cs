@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using elite_dangerous_colonise.Classes;
 
 namespace elite_dangerous_colonise.Models.Json_Structure
 {

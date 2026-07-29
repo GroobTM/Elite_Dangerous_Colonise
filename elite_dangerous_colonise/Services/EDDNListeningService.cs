@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 using Npgsql;
 using NpgsqlTypes;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Services
 {
     /// <summary> Defines a EDDNListeningService. </summary>
     public class EDDNListeningService : BackgroundService
@@ -110,12 +110,12 @@ namespace elite_dangerous_colonise.Classes
                 {
                     if (attempt == maxAttempts)
                     {
-                        logger.LogError("EDDN Listening Service", 2, $"Failed to update {systemID} after {maxAttempts} attempts.", ex);
+                        logger.LogError("EDDN Listening Service", 8, $"Failed to update {systemID} after {maxAttempts} attempts.", ex);
 
                         return;
                     }
 
-                    logger.LogWarning("EDDN Listening Service", 2, $"Database connection interrupted (Attempt {attempt}/{maxAttempts}). Retrying...");
+                    logger.LogWarning("EDDN Listening Service", 9, $"Database connection interrupted (Attempt {attempt}/{maxAttempts}). Retrying...");
                     await Task.Delay(TimeSpan.FromSeconds(1));
                 }
             }

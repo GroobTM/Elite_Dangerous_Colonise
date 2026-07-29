@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Services
 {
     /// <summary> Defines a SpanshDataDumpDownloadService. </summary>
     public class SpanshDataDumpDownloadService : BackgroundService

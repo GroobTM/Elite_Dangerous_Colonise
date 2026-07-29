@@ -1,6 +1,7 @@
 ﻿using elite_dangerous_colonise.Models.Database_Types;
+using elite_dangerous_colonise.Services;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Models.Internal
 {
     /// <summary> Defines a station. </summary>
     public class Station

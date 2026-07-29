@@ -1,5 +1,5 @@
-﻿using elite_dangerous_colonise.Classes;
-using elite_dangerous_colonise.Models.Database_Types;
+﻿using elite_dangerous_colonise.Models.Database_Types;
+using elite_dangerous_colonise.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

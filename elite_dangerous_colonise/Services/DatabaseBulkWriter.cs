@@ -1,8 +1,9 @@
 ﻿using Npgsql;
 using Newtonsoft.Json;
 using elite_dangerous_colonise.Models.Json_Structure;
+using elite_dangerous_colonise.Models.Internal;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Services
 {
     /// <summary>
     /// Defines a DatabaseBulkWriter.

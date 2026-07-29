@@ -1,6 +1,7 @@
 ﻿using elite_dangerous_colonise.Models.Database_Types;
+using elite_dangerous_colonise.Services;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Models.Internal
 {
     /// <summary> Defines a ring. </summary>
     public class Ring
@@ -17,7 +18,7 @@ namespace elite_dangerous_colonise.Classes
             Name = name;
             RingType = ringType;
         }
-        /// <inheritdoc cref="Ring.Ring(string, RingType)"/>
+        /// <inheritdoc cref="Ring(string, RingType)"/>
         /// <param name="hotspots"> The hotspots present on the ring. </param>
         public Ring(string name, RingType ringType, Dictionary<HotspotType, short> hotspots) :
             this(name, ringType)

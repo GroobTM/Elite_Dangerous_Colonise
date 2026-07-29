@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using elite_dangerous_colonise.Models.Json_Structure;
 using System.Numerics;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Services
 {
     /// <summary> Defines a JsonReader. </summary>
     public class SolDistanceChecker

@@ -2,10 +2,10 @@ using Serilog;
 using Serilog.Events;
 using Microsoft.AspNetCore.DataProtection;
 using Npgsql;
-using elite_dangerous_colonise.Classes;
 using elite_dangerous_colonise.Models.Database_Types;
 using System.Text;
 using Ixnas.AltchaNet;
+using elite_dangerous_colonise.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

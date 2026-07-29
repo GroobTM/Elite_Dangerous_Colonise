@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Npgsql;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Services
 {
     /// <summary> Defines a SystemSummaryStagingClearingService service. </summary>
     public class SystemSummaryStagingClearingService : BackgroundService

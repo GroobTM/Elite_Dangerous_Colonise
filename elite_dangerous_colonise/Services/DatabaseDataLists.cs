@@ -1,6 +1,6 @@
 ﻿using elite_dangerous_colonise.Models.Database_Types;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Services
 {
     public class DatabaseDataLists
     {
