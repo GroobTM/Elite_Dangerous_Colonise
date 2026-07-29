@@ -16,14 +16,16 @@ namespace elite_dangerous_colonise.Classes
         private const string EDDN_ADDRESS = "tcp://eddn.edcd.io:9500";
         private const string JOURNAL_SCHEMA = "https://eddn.edcd.io/schemas/journal/1";
 
-        private NpgsqlDataSource dataSource;
+        private readonly NpgsqlDataSource dataSource;
+        private readonly AppLogger logger;
         private List<Task> colonyShipUpdates = new List<Task>();
         private List<Task> trailblazerUpdates = new List<Task>();
 
         /// <summary> Instantiates a EDDNListeningService object. </summary>
-        public EDDNListeningService(NpgsqlDataSource dataSource)
+        public EDDNListeningService(NpgsqlDataSource dataSource, AppLogger logger)
         {
             this.dataSource = dataSource;
+            this.logger = logger;
         }
 
         private bool IsJournalSchema(string schema)
@@ -79,14 +81,14 @@ namespace elite_dangerous_colonise.Classes
                         timestamp = DateTime.SpecifyKind(timestamp, DateTimeKind.Utc);
                         await UpdateColonisationDatabase(systemID, timestamp);
 
-                        Logger.LogInformation("EDDN Listening Service", 1, $"Updating system {systemID}.");
+                        logger.LogInformation("EDDN Listening Service", 1, $"Updating system {systemID}.");
                     }
                         
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError("EDDN Listening Service", 2, "Error occured while trying to update a system.", ex);
+                logger.LogError("EDDN Listening Service", 2, "Error occured while trying to update a system.", ex);
             }
         }
 
@@ -127,13 +129,13 @@ namespace elite_dangerous_colonise.Classes
                         timestamp = DateTime.SpecifyKind(timestamp, DateTimeKind.Utc);
                         await UpdateTrailblazerDatabase(stationID, name, coords, timestamp);
 
-                        Logger.LogInformation("EDDN Listening Service", 8, $"Updating {name}.");
+                        logger.LogInformation("EDDN Listening Service", 8, $"Updating {name}.");
                     }                    
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError("EDDN Listening Service", 9, "Error occured while trying to update a Trailblazer megaship.", ex);
+                logger.LogError("EDDN Listening Service", 9, "Error occured while trying to update a Trailblazer megaship.", ex);
             }
         }
 
@@ -169,14 +171,14 @@ namespace elite_dangerous_colonise.Classes
                     {
                         await RemoveClaimFromDatabase(systemID, timestamp);
 
-                        Logger.LogInformation("EDDN Listening Service", 10, $"Removed claim from system {systemID}.");
+                        logger.LogInformation("EDDN Listening Service", 10, $"Removed claim from system {systemID}.");
                     }
 
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError("EDDN Listening Service", 11, "Error occured while trying to remove a claim from a system.", ex);
+                logger.LogError("EDDN Listening Service", 11, "Error occured while trying to remove a claim from a system.", ex);
             }
         }
 
@@ -200,7 +202,7 @@ namespace elite_dangerous_colonise.Classes
                 subscriber.Connect(EDDN_ADDRESS);
                 subscriber.Subscribe(string.Empty);
 
-                Logger.LogInformation("EDDN Listening Service", 0, $"Connected to {EDDN_ADDRESS}, listening for messages.");
+                logger.LogInformation("EDDN Listening Service", 0, $"Connected to {EDDN_ADDRESS}, listening for messages.");
 
                 while (!cancellationToken.IsCancellationRequested)
                 {
@@ -234,7 +236,7 @@ namespace elite_dangerous_colonise.Classes
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError("EDDN Listening Service", 3, "Error occured while receiving or processing message.", ex);
+                        logger.LogError("EDDN Listening Service", 3, "Error occured while receiving or processing message.", ex);
                     }
                 }
             }
@@ -250,23 +252,23 @@ namespace elite_dangerous_colonise.Classes
         /// </summary>
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
-            Logger.LogInformation("EDDN Listening Service", 4, "Waiting for background tasks to complete.");
+            logger.LogInformation("EDDN Listening Service", 4, "Waiting for background tasks to complete.");
 
             try
             {
                 using (CancellationTokenSource timeoutToken = new CancellationTokenSource(TimeSpan.FromMinutes(2)))
                 {
                     await Task.WhenAll(colonyShipUpdates).WaitAsync(timeoutToken.Token);
-                    Logger.LogInformation("EDDN Listening Service", 5, "All background tasks completed. Service shutting down.");
+                    logger.LogInformation("EDDN Listening Service", 5, "All background tasks completed. Service shutting down.");
                 }
             }
             catch (OperationCanceledException)
             {
-                Logger.LogWarning("EDDN Listening Service", 6, "Background tasks took too long to complete. Forcing shutdown.");
+                logger.LogWarning("EDDN Listening Service", 6, "Background tasks took too long to complete. Forcing shutdown.");
             }
             catch (Exception ex)
             {
-                Logger.LogError("EDDN Listening Service", 7, "An error occured while waiting for background tasks to complete.", ex);
+                logger.LogError("EDDN Listening Service", 7, "An error occured while waiting for background tasks to complete.", ex);
             }
         }
     }

@@ -1,6 +1,5 @@
 ﻿using Npgsql;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using elite_dangerous_colonise.Models.Json_Structure;
 
 namespace elite_dangerous_colonise.Classes
@@ -14,6 +13,7 @@ namespace elite_dangerous_colonise.Classes
 
         private readonly bool verboseReporting;
         private readonly NpgsqlDataSource dataSource;
+        private readonly AppLogger logger;
         private int recordsRead = 0;
         private int recordsAddedOrUpdated = 0;
         private int recordsFailedToAdd = 0;
@@ -23,16 +23,18 @@ namespace elite_dangerous_colonise.Classes
         /// Instantiates a DatabaseBulkWriter.
         /// </summary>
         /// <param name="dataSource"> The database datasource. </param>
-        public DatabaseBulkWriter(NpgsqlDataSource dataSource)
+        public DatabaseBulkWriter(NpgsqlDataSource dataSource, AppLogger logger)
         {
-            this.verboseReporting = true;
             this.dataSource = dataSource;
+            this.logger = logger;
+            verboseReporting = true;
         }
         /// <inheritdoc cref="DatabaseBulkWriter.DatabaseBulkWriter(NpgsqlDataSource)"/>
         /// <param name="verboseReporting"> If the database writer should report its reading progress. </param>
-        public DatabaseBulkWriter(NpgsqlDataSource dataSource, bool verboseReporting)
+        public DatabaseBulkWriter(NpgsqlDataSource dataSource, AppLogger logger, bool verboseReporting)
         {
             this.dataSource = dataSource;
+            this.logger = logger;
             this.verboseReporting = verboseReporting;
         }
 
@@ -97,7 +99,7 @@ namespace elite_dangerous_colonise.Classes
             {
                 foreach (string name in insertedNames)
                 {
-                    Logger.LogInformation("Database Writer", 4, $"System {name} was added to the database.");
+                    logger.LogInformation("Database Writer", 4, $"System {name} was added to the database.");
                 }
             }
         }
@@ -128,7 +130,7 @@ namespace elite_dangerous_colonise.Classes
                     catch (NpgsqlException ex)
                     {
                         recordsFailedToAdd += dataLists.Count();
-                        Logger.LogError("Database Writer", 5, ex);
+                        logger.LogError("Database Writer", 5, ex);
 
                         try
                         {
@@ -136,7 +138,7 @@ namespace elite_dangerous_colonise.Classes
                         }
                         catch (InvalidOperationException rollbackEx)
                         {
-                            Logger.LogError("Database Writer", 6, rollbackEx);
+                            logger.LogError("Database Writer", 6, rollbackEx);
                         }
                         
                     }
@@ -152,7 +154,7 @@ namespace elite_dangerous_colonise.Classes
             {
                 while (!token.IsCancellationRequested)
                 {
-                    Logger.LogInformation("Database Writer", 100, $"Reading In Progress " +
+                    logger.LogInformation("Database Writer", 100, $"Reading In Progress " +
                         $"| Records Read: {recordsRead} " +
                         $"({recordsRead / Math.Max(1, DateTime.Now.Subtract(startTime).TotalMinutes)}/min) " +
                         $"| Records Added: {recordsAddedOrUpdated} " +
@@ -164,7 +166,7 @@ namespace elite_dangerous_colonise.Classes
             }
             catch (TaskCanceledException)
             {
-                Logger.LogInformation("Database Writer", 101, $"Reading Complete " +
+                logger.LogInformation("Database Writer", 101, $"Reading Complete " +
                     $"| Records Read: {recordsRead} " +
                     $"({recordsRead / Math.Max(1, DateTime.Now.Subtract(startTime).TotalMinutes)}/min) " +
                     $"| Records Added: {recordsAddedOrUpdated} " +
@@ -187,15 +189,15 @@ namespace elite_dangerous_colonise.Classes
             }
             catch (JsonReaderException ex)
             {
-                Logger.LogError("Database Writer", 0, ex);
+                logger.LogError("Database Writer", 0, ex);
             }
             catch (UnauthorizedAccessException ex)
             {
-                Logger.LogError("Database Writer", 1, ex);
+                logger.LogError("Database Writer", 1, ex);
             }
             catch (Exception ex)
             {
-                Logger.LogError("Database Writer", 2, ex);
+                logger.LogError("Database Writer", 2, ex);
             }
         }
 
@@ -212,15 +214,15 @@ namespace elite_dangerous_colonise.Classes
             }
             catch (JsonReaderException ex)
             {
-                Logger.LogError("Database Writer", 0, ex);
+                logger.LogError("Database Writer", 0, ex);
             }
             catch (IOException ex)
             {
-                Logger.LogError("Database Writer", 1, ex);
+                logger.LogError("Database Writer", 1, ex);
             }
             catch (Exception ex)
             {
-                Logger.LogError("Database Writer", 2, ex);
+                logger.LogError("Database Writer", 2, ex);
             }
         }
 

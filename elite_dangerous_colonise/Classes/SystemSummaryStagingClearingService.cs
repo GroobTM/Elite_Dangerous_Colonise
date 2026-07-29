@@ -9,14 +9,16 @@ namespace elite_dangerous_colonise.Classes
         private readonly NpgsqlDataSource dataSource;
         private readonly SpanshDataDumpDownloadService spanshService;
         private readonly IHubContext<UpdateHub> hubContext;
+        private readonly AppLogger logger;
 
         /// <summary> Instantiates a SystemSummaryStagingClearingService object. </summary>
         public SystemSummaryStagingClearingService(NpgsqlDataSource dataSource, SpanshDataDumpDownloadService spanshService,
-            IHubContext<UpdateHub> hubContext)
+            IHubContext<UpdateHub> hubContext, AppLogger logger)
         {
             this.dataSource = dataSource;
             this.spanshService = spanshService;
             this.hubContext = hubContext;
+            this.logger = logger;
         }
 
         private async Task InsertColonisableStarSystemsFromStaged(NpgsqlConnection conn, bool insertColonised)
@@ -44,25 +46,25 @@ namespace elite_dangerous_colonise.Classes
                 try
                 {
                     await InsertColonisableStarSystemsFromStaged(conn, true);
-                    Logger.LogInformation("System Summary Staging Clearing Service", 2, "Colonised staged systems added.");
+                    logger.LogInformation("System Summary Staging Clearing Service", 2, "Colonised staged systems added.");
                     await InsertColonisableStarSystemsFromStaged(conn, false);
-                    Logger.LogInformation("System Summary Staging Clearing Service", 3, "Uncolonised staged systems added.");
+                    logger.LogInformation("System Summary Staging Clearing Service", 3, "Uncolonised staged systems added.");
                     await TruncateStagedStarSystems(conn);
 
                     await transaction.CommitAsync();
 
-                    Logger.LogInformation("System Summary Staging Clearing Service", 4, "Processing Complete.");
+                    logger.LogInformation("System Summary Staging Clearing Service", 4, "Processing Complete.");
                 }
                 catch (NpgsqlException ex)
                 {
                     await transaction.RollbackAsync();
-                    Logger.LogError("System Summary Staging Clearing Service", 6, ex);
+                    logger.LogError("System Summary Staging Clearing Service", 6, ex);
                 }
             }
         }
         private async Task CalculateTrailblazerDistances(NpgsqlConnection conn)
         {
-            Logger.LogInformation("System Summary Staging Clearing Service", 10, "Updating Trailblazers distance table.");
+            logger.LogInformation("System Summary Staging Clearing Service", 10, "Updating Trailblazers distance table.");
 
             await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"InsertTrailblazerDistances\"()", conn))
             {
@@ -73,7 +75,7 @@ namespace elite_dangerous_colonise.Classes
 
         private async Task RefreshDistinctColonisedStarSystems(NpgsqlConnection conn)
         {
-            Logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing DistinctColonisedStarSystems view.");
+            logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing DistinctColonisedStarSystems view.");
 
             await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"RefreshDistinctColonisedStarSystems\"()", conn))
             {
@@ -83,7 +85,7 @@ namespace elite_dangerous_colonise.Classes
 
         private async Task RefreshDistinctUncolonisedStarSystems(NpgsqlConnection conn)
         {
-            Logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing DistinctUncolonisedStarSystems view.");
+            logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing DistinctUncolonisedStarSystems view.");
 
             await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"RefreshDistinctUncolonisedStarSystems\"()", conn))
             {
@@ -93,7 +95,7 @@ namespace elite_dangerous_colonise.Classes
 
         private async Task RefreshClosestTrailblazerByStarSystem(NpgsqlConnection conn)
         {
-            Logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing ClosestTrailblazerByStarSystem view.");
+            logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing ClosestTrailblazerByStarSystem view.");
 
             await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"RefreshClosestTrailblazerByStarSystem\"()", conn))
             {
@@ -103,7 +105,7 @@ namespace elite_dangerous_colonise.Classes
 
         private async Task RefreshMaxSearchValues(NpgsqlConnection conn)
         {
-            Logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing MaxSearchValues view.");
+            logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing MaxSearchValues view.");
 
             await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"RefreshMaxSearchValues\"()", conn))
             {
@@ -125,13 +127,13 @@ namespace elite_dangerous_colonise.Classes
 
                 await transaction.CommitAsync();
 
-                Logger.LogInformation("System Summary Staging Clearing Service", 11, "Update complete.");
+                logger.LogInformation("System Summary Staging Clearing Service", 11, "Update complete.");
             }
         }
 
         private async Task OnDataDumpProcessingComplete(object? sender, EventArgs e)
         {
-            Logger.LogInformation("System Summary Staging Clearing Service", 1, "Running staged system processing.");
+            logger.LogInformation("System Summary Staging Clearing Service", 1, "Running staged system processing.");
             try
             {
                 await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
@@ -146,7 +148,7 @@ namespace elite_dangerous_colonise.Classes
             }
             catch (Exception ex)
             {
-                Logger.LogError("System Summary Staging Clearing Service", 7, ex);
+                logger.LogError("System Summary Staging Clearing Service", 7, ex);
             }
             finally
             {
@@ -157,7 +159,7 @@ namespace elite_dangerous_colonise.Classes
 
         protected override Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            Logger.LogInformation("System Summary Staging Clearing Service", 0, "Staging Clearing Service starting.");
+            logger.LogInformation("System Summary Staging Clearing Service", 0, "Staging Clearing Service starting.");
 
             spanshService.DataDumpProcessingComplete += (sender, e) => Task.Run(async () => await OnDataDumpProcessingComplete(sender, e));
 
@@ -170,7 +172,7 @@ namespace elite_dangerous_colonise.Classes
         { 
             spanshService.DataDumpProcessingComplete -= (sender, e) => Task.Run(async () => await OnDataDumpProcessingComplete(sender, e));
 
-            Logger.LogInformation("System Summary Staging Clearing Service", 8, "Staging Clearing Service stopped.");
+            logger.LogInformation("System Summary Staging Clearing Service", 8, "Staging Clearing Service stopped.");
 
             return Task.CompletedTask;
         }

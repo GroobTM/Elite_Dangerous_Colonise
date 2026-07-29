@@ -16,10 +16,12 @@ namespace elite_dangerous_colonise.Controllers
         private const int QUERY_ATTEMPT_DELAY = 1;
 
         private readonly NpgsqlDataSource dataSource;
+        private readonly AppLogger logger;
 
-        public StarSystemSearchController(NpgsqlDataSource dataSource)
+        public StarSystemSearchController(NpgsqlDataSource dataSource, AppLogger logger)
         {
             this.dataSource = dataSource;
+            this.logger = logger;
         }
 
 
@@ -211,7 +213,7 @@ namespace elite_dangerous_colonise.Controllers
                 }
                 catch (NpgsqlException ex)
                 {
-                    Logger.LogError("Star System Search Controller", 0, ex);
+                    logger.LogError("Star System Search Controller", 0, ex);
 
                     return StatusCode(500, new
                     {
@@ -222,7 +224,7 @@ namespace elite_dangerous_colonise.Controllers
 
                 catch (Exception ex)
                 {
-                    Logger.LogError("Star System Search Controller", 1, ex);
+                    logger.LogError("Star System Search Controller", 1, ex);
 
                     return StatusCode(500, new
                     {

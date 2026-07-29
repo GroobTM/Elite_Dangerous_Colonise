@@ -11,13 +11,15 @@ namespace elite_dangerous_colonise.Controllers
     {
         private const int REPORT_DELAY = 10;
         private readonly NpgsqlDataSource dataSource;
+        private readonly AppLogger logger;
 
         private List<long>? reportedStarSystems = null;
         private DateTime? lastReport = null;
 
-        public StarSystemReportController(NpgsqlDataSource dataSource)
+        public StarSystemReportController(NpgsqlDataSource dataSource, AppLogger logger)
         {
             this.dataSource = dataSource;
+            this.logger = logger;
         }
 
         [HttpPost]
@@ -55,7 +57,7 @@ namespace elite_dangerous_colonise.Controllers
                 }
                 catch (NpgsqlException ex)
                 {
-                    Logger.LogError("Star System Report Controller", 0, ex);
+                    logger.LogError("Star System Report Controller", 0, ex);
 
                     return StatusCode(500, new
                     {
@@ -66,7 +68,7 @@ namespace elite_dangerous_colonise.Controllers
 
                 catch (Exception ex)
                 {
-                    Logger.LogError("Star System Report Controller", 1, ex);
+                    logger.LogError("Star System Report Controller", 1, ex);
 
                     return StatusCode(500, new
                     {

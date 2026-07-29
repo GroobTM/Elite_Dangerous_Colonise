@@ -16,15 +16,16 @@ namespace elite_dangerous_colonise.Classes
         private readonly string decompressPath = rootDir + @"\private\SpanshDataDump\galaxy_1day.json";
         private readonly IServiceScopeFactory scopeFactory;
         private readonly IHubContext<UpdateHub> hubContext;
+        private readonly AppLogger logger;
 
         public event EventHandler? DataDumpProcessingComplete;
 
         /// <summary> Instantiates a SpanshDataDumpDownloadService object. </summary>
-        public SpanshDataDumpDownloadService(IServiceScopeFactory scopeFactory, IHubContext<UpdateHub> hubContext)
+        public SpanshDataDumpDownloadService(IServiceScopeFactory scopeFactory, IHubContext<UpdateHub> hubContext, AppLogger logger)
         {
             this.scopeFactory = scopeFactory;
-
             this.hubContext = hubContext;
+            this.logger = logger;
         }
 
         private TimeSpan TimeUntilStart()
@@ -56,7 +57,7 @@ namespace elite_dangerous_colonise.Classes
                 {
                     try
                     {
-                        Logger.LogInformation("Spansh Download Service", 1, $"Spansh data dump download and processing attempt {attempt} starting.");
+                        logger.LogInformation("Spansh Download Service", 1, $"Spansh data dump download and processing attempt {attempt} starting.");
                         await using (AsyncServiceScope scope = scopeFactory.CreateAsyncScope())
                         {
                             DatabaseBulkWriter dbWriter = scope.ServiceProvider.GetRequiredService<DatabaseBulkWriter>();
@@ -76,7 +77,7 @@ namespace elite_dangerous_colonise.Classes
                     {
                         if (attempt < maxAttempts)
                         {
-                            Logger.LogError("Spansh Download Service", 2, $"Spansh data dump download attempt {attempt} failed.", ex);
+                            logger.LogError("Spansh Download Service", 2, $"Spansh data dump download attempt {attempt} failed.", ex);
 
                             await Task.Delay(TimeSpan.FromSeconds(attemptDelay));
                         }
@@ -86,20 +87,20 @@ namespace elite_dangerous_colonise.Classes
                         }
                     }
 
-                    Logger.LogInformation("Spansh Download Service", 3, "Spansh data dump download and processing complete.");
+                    logger.LogInformation("Spansh Download Service", 3, "Spansh data dump download and processing complete.");
                     DataDumpProcessingComplete?.Invoke(this, EventArgs.Empty);
                     return;
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError("Spansh Download Service", 10, "Spansh data dump download and processing failed.", ex);
+                logger.LogError("Spansh Download Service", 10, "Spansh data dump download and processing failed.", ex);
             }
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            Logger.LogInformation("Spansh Download Service", 0, "Spansh data dump download service started.");
+            logger.LogInformation("Spansh Download Service", 0, "Spansh data dump download service started.");
 
             var startDelay = TimeUntilStart();
 
@@ -117,7 +118,7 @@ namespace elite_dangerous_colonise.Classes
         /// <returns> A completed task. </returns>
         public override Task StopAsync(CancellationToken cancellationToken)
         {
-            Logger.LogInformation("Spansh Download Service", 11, "Spansh data dump download service stopped.");
+            logger.LogInformation("Spansh Download Service", 11, "Spansh data dump download service stopped.");
 
             return Task.CompletedTask;
         }

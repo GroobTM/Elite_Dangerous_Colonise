@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using elite_dangerous_colonise.Classes;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 
@@ -8,8 +9,8 @@ namespace elite_dangerous_colonise.Controllers
     [Route("api/[controller]")]
     public class FactionNamesController : SimpleQueryController
     {
-        public FactionNamesController(NpgsqlDataSource dataSource)
-            : base(dataSource, "Faction Names Controller") { }
+        public FactionNamesController(NpgsqlDataSource dataSource, AppLogger logger)
+            : base(dataSource, logger, "Faction Names Controller") { }
 
         protected override async Task<IActionResult> ExecuteDatabaseQuery(string query)
         {

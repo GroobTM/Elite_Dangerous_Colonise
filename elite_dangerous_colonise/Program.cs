@@ -7,8 +7,6 @@ using elite_dangerous_colonise.Models.Database_Types;
 using System.Text;
 using Ixnas.AltchaNet;
 
-const bool DEBUG = false;
-
 var builder = WebApplication.CreateBuilder(args);
 
 string rootDir = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\"));
@@ -18,6 +16,8 @@ builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
     .AddJsonFile(rootDir + "\\private\\Secrets.json", optional: false, reloadOnChange: true);
+
+bool debugEnabled = builder.Configuration.GetValue<bool>("EnableDebugLauncher", false);
 
 // Adds the RazorPages service.
 builder.Services.AddRazorPages();
@@ -55,6 +55,8 @@ Log.Logger = new LoggerConfiguration()
         restrictedToMinimumLevel: LogEventLevel.Information, rollingInterval: RollingInterval.Day)
     .CreateLogger();
 builder.Host.UseSerilog();
+builder.Services.AddSingleton(Log.Logger);
+builder.Services.AddSingleton<AppLogger>();
 
 // Configures database connection.
 string connectionString = builder.Configuration.GetConnectionString("SystemsDatabase")
@@ -77,7 +79,10 @@ builder.Services.AddSingleton(dataSource);
 
 builder.Services.AddScoped<DatabaseBulkWriter>(provider =>
 {
-    return new DatabaseBulkWriter(dataSource, DEBUG);
+    AppLogger logger = provider.GetService<AppLogger>();
+    NpgsqlDataSource dataSourceService = provider.GetService<NpgsqlDataSource>();
+
+    return new DatabaseBulkWriter(dataSourceService, logger, debugEnabled);
 });
 
 // Configures Altcha service
@@ -94,7 +99,7 @@ builder.Services.AddSingleton<AltchaService>(service =>
         .Build()
 );
 
-if (!DEBUG)
+if (!debugEnabled)
 {
     // Configures the Spansh download background service.
     builder.Services.AddSingleton<SpanshDataDumpDownloadService>();
@@ -142,15 +147,10 @@ app.MapControllers();
 
 app.MapHub<UpdateHub>("/updateHub");
 
-if (DEBUG)
+if (debugEnabled)
 {
-    // Configures and runs Launcher.
-    await Launcher.Main(app.Services);
-
-    if (Launcher.Start)
-    {
-        app.Run();
-    }
+    DebugLauncher launcher = new DebugLauncher(app.Services);
+    await launcher.Run();
 }
 else
 {

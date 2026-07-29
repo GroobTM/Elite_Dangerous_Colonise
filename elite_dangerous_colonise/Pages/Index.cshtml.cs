@@ -13,7 +13,8 @@ public class IndexModel : PageModel
     private const int MAX_QUERY_ATTEMPTS = 3;
     private const int QUERY_ATTEMPT_DELAY = 1;
 
-    private readonly NpgsqlDataSource dataSource;    
+    private readonly NpgsqlDataSource dataSource;
+    private readonly AppLogger logger;
 
     public SelectMaxSearchValuesResult MaxValues { get; private set; }
     public List<string> HotspotTypes { get; private set; }
@@ -28,9 +29,10 @@ public class IndexModel : PageModel
     public string SortOrder { get; set; }
 
 
-    public IndexModel(NpgsqlDataSource dataSource)
+    public IndexModel(NpgsqlDataSource dataSource, AppLogger logger)
     {
         this.dataSource = dataSource;
+        this.logger = logger;
     }
 
     public async Task<IActionResult> OnGet()
@@ -52,14 +54,14 @@ public class IndexModel : PageModel
         }
         catch (NpgsqlException ex)
         {
-            Logger.LogError("Index Page", 0, "A database error occurred.", ex);
+            logger.LogError("Index Page", 0, "A database error occurred.", ex);
 
             return RedirectToPage("/Error", new { statusCode = 500 });
         }
 
         catch (Exception ex)
         {
-            Logger.LogError("Index Page", 1, ex);
+            logger.LogError("Index Page", 1, ex);
 
             return RedirectToPage("/Error", new { statusCode = 500 });
         }

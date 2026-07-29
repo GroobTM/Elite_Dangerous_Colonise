@@ -1,11 +1,17 @@
 ﻿
 using System.Diagnostics;
-using elite_dangerous_colonise.Classes;
 
 namespace elite_dangerous_colonise.Classes
 {
     public class MemoryReportingService : BackgroundService
     {
+        private readonly AppLogger logger;
+
+        public MemoryReportingService(AppLogger logger)
+        {
+            this.logger = logger;
+        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             ReportUsage("Service Started");
@@ -38,11 +44,11 @@ namespace elite_dangerous_colonise.Classes
                 long privateMemory = proc.PrivateMemorySize64 / 1024 / 1024;
                 long heap = GC.GetTotalMemory(false) / 1024 / 1024;
 
-                Logger.LogInformation("Memory Reporting Service", 1,$"{context} | Physical Memory: {physicalMemory}MB | Private Memory: {privateMemory}MB | Managed Heap: {heap}MB");
+                logger.LogInformation("Memory Reporting Service", 1,$"{context} | Physical Memory: {physicalMemory}MB | Private Memory: {privateMemory}MB | Managed Heap: {heap}MB");
             }
             catch (Exception ex)
             {
-                Logger.LogError("Memory Reporting Service", 2, ex);
+                logger.LogError("Memory Reporting Service", 2, ex);
             }
         }
     }

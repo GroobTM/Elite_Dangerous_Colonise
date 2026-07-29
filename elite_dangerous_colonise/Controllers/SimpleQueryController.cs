@@ -12,11 +12,13 @@ namespace elite_dangerous_colonise.Controllers
         private const int QUERY_ATTEMPT_DELAY = 1;
 
         protected readonly NpgsqlDataSource dataSource;
+        protected readonly AppLogger logger;
         protected readonly string controllerName;
 
-        protected SimpleQueryController(NpgsqlDataSource dataSource, string controllerName)
+        protected SimpleQueryController(NpgsqlDataSource dataSource, AppLogger logger, string controllerName)
         {
             this.dataSource = dataSource;
+            this.logger = logger;
             this.controllerName = controllerName;
         }
 
@@ -51,7 +53,7 @@ namespace elite_dangerous_colonise.Controllers
             }
             catch (NpgsqlException ex)
             {
-                Logger.LogError(controllerName, 0, ex);
+                logger.LogError(controllerName, 0, ex);
 
                 return StatusCode(500, new
                 {
@@ -62,7 +64,7 @@ namespace elite_dangerous_colonise.Controllers
 
             catch (Exception ex)
             {
-                Logger.LogError(controllerName, 1, ex);
+                logger.LogError(controllerName, 1, ex);
 
                 return StatusCode(500, new
                 {
