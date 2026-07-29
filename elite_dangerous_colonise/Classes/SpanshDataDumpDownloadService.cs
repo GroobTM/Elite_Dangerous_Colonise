@@ -13,16 +13,18 @@ namespace elite_dangerous_colonise.Classes
         private static readonly HttpClient client = new HttpClient();
         private readonly IServiceScopeFactory scopeFactory;
         private readonly IHubContext<UpdateHub> hubContext;
+        private readonly UpdateStatusService updateStatusService;
         private readonly AppLogger logger;
         private readonly UpdateTimeOptions updateTimeOptions;
 
         public event EventHandler? DataDumpProcessingComplete;
 
         /// <summary> Instantiates a SpanshDataDumpDownloadService object. </summary>
-        public SpanshDataDumpDownloadService(IServiceScopeFactory scopeFactory, IHubContext<UpdateHub> hubContext, AppLogger logger, IOptions<UpdateTimeOptions> updateTimeOptions)
+        public SpanshDataDumpDownloadService(IServiceScopeFactory scopeFactory, IHubContext<UpdateHub> hubContext, UpdateStatusService updateStatusService, AppLogger logger, IOptions<UpdateTimeOptions> updateTimeOptions)
         {
             this.scopeFactory = scopeFactory;
             this.hubContext = hubContext;
+            this.updateStatusService = updateStatusService;
             this.logger = logger;
             this.updateTimeOptions = updateTimeOptions.Value;
         }
@@ -49,7 +51,7 @@ namespace elite_dangerous_colonise.Classes
 
             try
             {
-                UpdateHub.StartUpdate();
+                updateStatusService.StartUpdate();
                 await hubContext.Clients.All.SendAsync("SystemUpdateStarted");
 
                 for (int attempt = 1; attempt <= maxAttempts; attempt++)

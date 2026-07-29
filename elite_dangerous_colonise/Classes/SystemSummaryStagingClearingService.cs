@@ -9,15 +9,17 @@ namespace elite_dangerous_colonise.Classes
         private readonly NpgsqlDataSource dataSource;
         private readonly SpanshDataDumpDownloadService spanshService;
         private readonly IHubContext<UpdateHub> hubContext;
+        private readonly UpdateStatusService updateStatusService;
         private readonly AppLogger logger;
 
         /// <summary> Instantiates a SystemSummaryStagingClearingService object. </summary>
         public SystemSummaryStagingClearingService(NpgsqlDataSource dataSource, SpanshDataDumpDownloadService spanshService,
-            IHubContext<UpdateHub> hubContext, AppLogger logger)
+            IHubContext<UpdateHub> hubContext, UpdateStatusService updateStatusService, AppLogger logger)
         {
             this.dataSource = dataSource;
             this.spanshService = spanshService;
             this.hubContext = hubContext;
+            this.updateStatusService = updateStatusService;
             this.logger = logger;
         }
 
@@ -140,7 +142,7 @@ namespace elite_dangerous_colonise.Classes
                 {
                     await ProcessStagedSystemSummaries(conn);
 
-                    UpdateHub.BlockSearch();
+                    updateStatusService.BlockSearch();
                     await hubContext.Clients.All.SendAsync("SearchBlockEnabled");
 
                     await RefreshValuesTables(conn);
@@ -152,7 +154,7 @@ namespace elite_dangerous_colonise.Classes
             }
             finally
             {
-                UpdateHub.EndUpdate();
+                updateStatusService.EndUpdate();
                 await hubContext.Clients.All.SendAsync("SystemUpdateComplete");
             }
         }

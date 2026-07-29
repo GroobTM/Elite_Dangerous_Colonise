@@ -5,20 +5,19 @@ namespace elite_dangerous_colonise.Classes
 {
     public class UpdateHub : Hub
     {
-        public static bool isUpdateInProgress { get; private set; } = false;
-        public static bool isSearchBlocked { get; private set; } = false;
-
+        private UpdateStatusService updateStatusService;
         private readonly UpdateTimeOptions updateTimeOptions;
 
-        public UpdateHub(IOptions<UpdateTimeOptions> updateTimeOptions)
+        public UpdateHub(UpdateStatusService updateStatusService, IOptions<UpdateTimeOptions> updateTimeOptions)
         {
+            this.updateStatusService = updateStatusService;
             this.updateTimeOptions = updateTimeOptions.Value;
         }
 
         public override async Task OnConnectedAsync()
         {
-            string updateStatus = isUpdateInProgress ? "inProgress" : "completed";
-            string searchStatus = isSearchBlocked ? "blocked" : "clear";
+            (string updateStatus, string searchStatus) = updateStatusService.GetUpdateStatus();
+
             await Clients.Caller.SendAsync(
                 "SystemUpdateStatus",
                 updateStatus,
@@ -28,22 +27,6 @@ namespace elite_dangerous_colonise.Classes
             );
 
             await base.OnConnectedAsync();
-        }
-
-        static public void StartUpdate()
-        {
-            isUpdateInProgress = true;
-        }
-
-        static public void BlockSearch()
-        {
-            isSearchBlocked = true;
-        }
-
-        static public void EndUpdate()
-        {
-            isSearchBlocked = false;
-            isUpdateInProgress = false;
         }
     }
 }

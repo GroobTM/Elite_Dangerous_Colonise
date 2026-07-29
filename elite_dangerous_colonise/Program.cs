@@ -101,6 +101,9 @@ builder.Services.AddSingleton<AltchaService>(service =>
         .Build()
 );
 
+// Configures the update status service used by the UpdateHub.
+builder.Services.AddSingleton<UpdateStatusService>();
+
 if (!debugEnabled)
 {
     // Configures the Spansh download background service.

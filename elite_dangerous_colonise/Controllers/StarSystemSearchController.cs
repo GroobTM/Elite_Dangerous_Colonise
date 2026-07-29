@@ -16,11 +16,13 @@ namespace elite_dangerous_colonise.Controllers
         private const int QUERY_ATTEMPT_DELAY = 1;
 
         private readonly NpgsqlDataSource dataSource;
+        private readonly UpdateStatusService updateStatusService;
         private readonly AppLogger logger;
 
-        public StarSystemSearchController(NpgsqlDataSource dataSource, AppLogger logger)
+        public StarSystemSearchController(NpgsqlDataSource dataSource, UpdateStatusService updateStatusService, AppLogger logger)
         {
             this.dataSource = dataSource;
+            this.updateStatusService = updateStatusService;
             this.logger = logger;
         }
 
@@ -78,7 +80,7 @@ namespace elite_dangerous_colonise.Controllers
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] SearchQueryModel searchQuery)
         {
-            if (!UpdateHub.isSearchBlocked)
+            if (!updateStatusService.IsSearchBlocked)
             {
                 try
                 {
