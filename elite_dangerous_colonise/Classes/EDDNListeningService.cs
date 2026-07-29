@@ -89,14 +89,35 @@ namespace elite_dangerous_colonise.Classes
 
         private async Task UpdateColonisationDatabase(long systemID, DateTime timestamp)
         {
-            await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
-            {
-                await using NpgsqlCommand command = new NpgsqlCommand("SELECT \"ClaimStarSystem\"(@inputSystemID, @inputClaimDate)", conn);
-                
-                command.Parameters.AddWithValue("inputSystemID", NpgsqlDbType.Bigint, systemID);
-                command.Parameters.AddWithValue("inputClaimDate", NpgsqlDbType.TimestampTz, timestamp);
+            int maxAttempts = 3;
 
-                await command.ExecuteNonQueryAsync();
+            for (int attempt = 1; attempt <= maxAttempts; attempt++)
+            {
+                try
+                {
+                    await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
+                    {
+                        await using NpgsqlCommand command = new NpgsqlCommand("SELECT \"ClaimStarSystem\"(@inputSystemID, @inputClaimDate)", conn);
+
+                        command.Parameters.AddWithValue("inputSystemID", NpgsqlDbType.Bigint, systemID);
+                        command.Parameters.AddWithValue("inputClaimDate", NpgsqlDbType.TimestampTz, timestamp);
+
+                        await command.ExecuteNonQueryAsync();
+                        return;
+                    }
+                }
+                catch (NpgsqlException ex) when (ex.IsTransient || ex.InnerException is EndOfStreamException)
+                {
+                    if (attempt == maxAttempts)
+                    {
+                        logger.LogError("EDDN Listening Service", 2, $"Failed to update {systemID} after {maxAttempts} attempts.", ex);
+
+                        return;
+                    }
+
+                    logger.LogWarning("EDDN Listening Service", 2, $"Database connection interrupted (Attempt {attempt}/{maxAttempts}). Retrying...");
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                }
             }
         }
 
