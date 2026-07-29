@@ -19,6 +19,8 @@ builder.Configuration
 
 bool debugEnabled = builder.Configuration.GetValue<bool>("EnableDebugLauncher", false);
 
+builder.Services.Configure<UpdateTimeOptions>(builder.Configuration.GetSection("UpdateTime"));
+
 // Adds the RazorPages service.
 builder.Services.AddRazorPages();
 

@@ -1,6 +1,6 @@
 ﻿using System.IO.Compression;
 using Microsoft.AspNetCore.SignalR;
-using Npgsql;
+using Microsoft.Extensions.Options;
 
 
 namespace elite_dangerous_colonise.Classes
@@ -11,21 +11,20 @@ namespace elite_dangerous_colonise.Classes
         private const string DOWNLOAD_URL = "https://downloads.spansh.co.uk/galaxy_1day.json.gz";
         
         private static readonly HttpClient client = new HttpClient();
-        private static readonly string rootDir = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\"));
-        private readonly string downloadPath = rootDir + @"\private\SpanshDataDump\galaxy_1day.json.gz";
-        private readonly string decompressPath = rootDir + @"\private\SpanshDataDump\galaxy_1day.json";
         private readonly IServiceScopeFactory scopeFactory;
         private readonly IHubContext<UpdateHub> hubContext;
         private readonly AppLogger logger;
+        private readonly UpdateTimeOptions updateTimeOptions;
 
         public event EventHandler? DataDumpProcessingComplete;
 
         /// <summary> Instantiates a SpanshDataDumpDownloadService object. </summary>
-        public SpanshDataDumpDownloadService(IServiceScopeFactory scopeFactory, IHubContext<UpdateHub> hubContext, AppLogger logger)
+        public SpanshDataDumpDownloadService(IServiceScopeFactory scopeFactory, IHubContext<UpdateHub> hubContext, AppLogger logger, IOptions<UpdateTimeOptions> updateTimeOptions)
         {
             this.scopeFactory = scopeFactory;
             this.hubContext = hubContext;
             this.logger = logger;
+            this.updateTimeOptions = updateTimeOptions.Value;
         }
 
         private TimeSpan TimeUntilStart()
@@ -33,7 +32,7 @@ namespace elite_dangerous_colonise.Classes
             DateTime currentTime = DateTime.UtcNow;
 
             DateTime startTime = new DateTime(currentTime.Year, currentTime.Month, currentTime.Day,
-                5, 0, 0, DateTimeKind.Utc);
+                updateTimeOptions.Hour, updateTimeOptions.Minute, 0, DateTimeKind.Utc);
 
             if (currentTime > startTime)
             {

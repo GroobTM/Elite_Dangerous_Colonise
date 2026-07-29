@@ -22,6 +22,9 @@ var resultsPerPage = 10;
 var currentPage = 1;
 var maxPages = 1;
 
+var updateHour = 5;
+var updateMinute = 0;
+
 // Countdown Events
 var conn = new signalR.HubConnectionBuilder()
     .withUrl("/updateHub")
@@ -43,7 +46,10 @@ conn.on("SystemUpdateComplete", function () {
     StartCountdown();
 });
 
-conn.on("SystemUpdateStatus", function (updateStatus, searchStatus) {
+conn.on("SystemUpdateStatus", function (updateStatus, searchStatus, hour, minute) {
+    updateHour = hour;
+    updateMinute = minute;
+
     if (updateStatus === "inProgress") {
         document.getElementById("update_countdown").innerText = "Update in Progress";
 
@@ -65,7 +71,7 @@ function StartCountdown() {
     var now = new Date();
     var target = new Date();
 
-    target.setUTCHours(5, 0, 0, 0);
+    target.setUTCHours(updateHour, updateMinute, 0, 0);
 
     if (now >= target) {
         target.setUTCDate(target.getUTCDate() + 1);

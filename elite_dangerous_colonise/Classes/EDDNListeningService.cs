@@ -43,11 +43,6 @@ namespace elite_dangerous_colonise.Classes
             return messageStationName == "System Colonisation Ship" || messageStationName.ToLower().Contains("colonisationship");
         }
 
-        private bool IsTrailblazerMegaship(string messageStationName)
-        {
-            return messageStationName.Contains("Trailblazer");
-        }
-
         private async Task<string> DecompressMessage(byte[] compressedMessage)
         {
             return await Task.Run(() =>
@@ -105,96 +100,6 @@ namespace elite_dangerous_colonise.Classes
             }
         }
 
-        private async Task UpdateTrailblazer(JToken message)
-        {
-            ulong[] validStations =
-            {
-                129033207,
-                129032951,
-                129032695,
-                129032183,
-                129033463,
-                129032439,
-            };
-
-            try
-            {
-                if (ulong.TryParse(message?["MarketID"].ToString(), out ulong stationID) && validStations.Contains(stationID))
-                {
-                    Vector3 coords = ConvertJsonToVector(message);
-                    string name = message["StationName"].ToString();
-
-                    if (DateTime.TryParse(message["timestamp"].ToString(), null, DateTimeStyles.AdjustToUniversal, out DateTime timestamp))
-                    {
-                        timestamp = DateTime.SpecifyKind(timestamp, DateTimeKind.Utc);
-                        await UpdateTrailblazerDatabase(stationID, name, coords, timestamp);
-
-                        logger.LogInformation("EDDN Listening Service", 8, $"Updating {name}.");
-                    }                    
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.LogError("EDDN Listening Service", 9, "Error occured while trying to update a Trailblazer megaship.", ex);
-            }
-        }
-
-        private async Task UpdateTrailblazerDatabase(ulong trailblazerID, string trailblazerName, Vector3 coordinates, DateTime timestamp)
-        {
-            await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
-            {
-                await using NpgsqlCommand command = new NpgsqlCommand(
-                    "SELECT \"InsertTrailblazerMegaship\"(@inputID, @inputName, @inputCoordinateX, @inputCoordinateY, @inputCoordinateZ, @inputUpdateDate)", conn);
-
-                command.Parameters.AddWithValue("inputID", NpgsqlDbType.Numeric, trailblazerID);
-                command.Parameters.AddWithValue("inputName", NpgsqlDbType.Varchar, trailblazerName);
-                command.Parameters.AddWithValue("inputCoordinateX", NpgsqlDbType.Numeric, coordinates.X);
-                command.Parameters.AddWithValue("inputCoordinateY", NpgsqlDbType.Numeric, coordinates.Y);
-                command.Parameters.AddWithValue("inputCoordinateZ", NpgsqlDbType.Numeric, coordinates.Z);
-                command.Parameters.AddWithValue("inputUpdateDate", NpgsqlDbType.TimestampTz, timestamp);
-
-                command.CommandTimeout = 120;
-                await command.ExecuteNonQueryAsync();
-            }
-        }
-
-        private async Task RemoveClaim(JToken message)
-        {
-            try
-            {
-                Vector3 coords = ConvertJsonToVector(message);
-
-                if (SolDistanceChecker.InRangeOfSol(coords))
-                {
-                    if (long.TryParse(message["SystemAddress"].ToString(), out long systemID)
-                        && DateTime.TryParse(message["timestamp"].ToString(), null, DateTimeStyles.AdjustToUniversal, out DateTime timestamp))
-                    {
-                        await RemoveClaimFromDatabase(systemID, timestamp);
-
-                        logger.LogInformation("EDDN Listening Service", 10, $"Removed claim from system {systemID}.");
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.LogError("EDDN Listening Service", 11, "Error occured while trying to remove a claim from a system.", ex);
-            }
-        }
-
-        private async Task RemoveClaimFromDatabase(long systemID, DateTime timestamp)
-        {
-            await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
-            {
-                await using NpgsqlCommand command = new NpgsqlCommand("SELECT \"UnclaimStarSystem\"(@inputSystemID, @inputUnclaimDate)", conn);
-
-                command.Parameters.AddWithValue("inputSystemID", NpgsqlDbType.Bigint, systemID);
-                command.Parameters.AddWithValue("inputUnclaimDate", NpgsqlDbType.TimestampTz, timestamp);
-
-                await command.ExecuteNonQueryAsync();
-            }
-        }
-
         private async Task ListenToEDDN(CancellationToken cancellationToken)
         {
             using (SubscriberSocket subscriber = new SubscriberSocket())
@@ -226,12 +131,6 @@ namespace elite_dangerous_colonise.Classes
 
                                 colonyShipUpdates.Add(task);
                             }
-                            //else if (IsTrailblazerMegaship(messageStationName))
-                            //{
-                            //    Task task = Task.Run(async () => await UpdateTrailblazer(message), cancellationToken);
-
-                            //    trailblazerUpdates.Add(task);
-                            //}
                         }
                     }
                     catch (Exception ex)
