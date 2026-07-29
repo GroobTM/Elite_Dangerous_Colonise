@@ -2,15 +2,19 @@
 
 namespace elite_dangerous_colonise.Services
 {
+    /// <summary> A service that periodically reports the apps memory usage.</summary>
     public class MemoryReportingService : BackgroundService
     {
         private readonly AppLogger logger;
 
+        /// <summary> Instantiates a MemoryReportingService. </summary>
+        /// <param name="logger"> The logger service. </param>
         public MemoryReportingService(AppLogger logger)
         {
             this.logger = logger;
         }
 
+        /// <summary> Reports the starting memory usage followed by an hourly report. </summary>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             ReportUsage("Service Started");
@@ -26,6 +30,7 @@ namespace elite_dangerous_colonise.Services
             }
         }
 
+        /// <summary> Reports the final memory usage and stops the service.</summary>
         public override Task StopAsync(CancellationToken cancellationToken)
         {
             ReportUsage("Service Stopped");

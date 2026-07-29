@@ -1,25 +1,19 @@
 ﻿namespace elite_dangerous_colonise.Services
 {
-    /// <summary>
-    /// Defines the SelfPingService background service.
-    /// </summary>
+    /// <summary> A service that pings the app to keep it awake. </summary>
     public class SelfPingService : BackgroundService
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly AppLogger logger;
 
-        /// <summary>
-        /// Constructs a SelfPingService object.
-        /// </summary>
+        /// <summary> Instantiates a SelfPingService. </summary>
         public SelfPingService(IHttpClientFactory httpClientFactory, AppLogger logger)
         {
             this.httpClientFactory = httpClientFactory;
             this.logger = logger;
         }
 
-        /// <summary>
-        /// Pings https://edcolonise.net/ every 10 minutes to keep it awake.
-        /// </summary>
+        /// <summary> Pings https://edcolonise.net/ every 10 minutes to keep it awake. </summary>
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             logger.LogInformation("Self Ping Service", 0, "Self Ping Service starting.");

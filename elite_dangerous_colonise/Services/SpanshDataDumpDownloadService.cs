@@ -1,11 +1,12 @@
 ﻿using System.IO.Compression;
+using elite_dangerous_colonise.Models.Internal;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 
 
 namespace elite_dangerous_colonise.Services
 {
-    /// <summary> Defines a SpanshDataDumpDownloadService. </summary>
+    /// <summary> A service that streams the daily Spansh data dump. </summary>
     public class SpanshDataDumpDownloadService : BackgroundService
     {
         private const string DOWNLOAD_URL = "https://downloads.spansh.co.uk/galaxy_1day.json.gz";
@@ -17,9 +18,16 @@ namespace elite_dangerous_colonise.Services
         private readonly AppLogger logger;
         private readonly UpdateTimeOptions updateTimeOptions;
 
+        /// <summary> Event that signals the daily data dump has been fully streamed and processed. </summary>
         public event EventHandler? DataDumpProcessingComplete;
 
-        /// <summary> Instantiates a SpanshDataDumpDownloadService object. </summary>
+
+        /// <summary> Instantiates a SpanshDataDumpDownloadService. </summary>
+        /// <param name="scopeFactory"> The configured scope factory service. </param>
+        /// <param name="hubContext"> The UpdateHub's context. </param>
+        /// <param name="updateStatusService"> The update status service. </param>
+        /// <param name="logger"> The logger service. </param>
+        /// <param name="updateTimeOptions"> The update time options.</param>
         public SpanshDataDumpDownloadService(IServiceScopeFactory scopeFactory, IHubContext<UpdateHub> hubContext, UpdateStatusService updateStatusService, AppLogger logger, IOptions<UpdateTimeOptions> updateTimeOptions)
         {
             this.scopeFactory = scopeFactory;
@@ -99,6 +107,7 @@ namespace elite_dangerous_colonise.Services
             }
         }
 
+        /// <summary> Waits for the next update date and then begins streaming the daily Spansh data dump. Repeats daily. </summary>
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             logger.LogInformation("Spansh Download Service", 0, "Spansh data dump download service started.");
@@ -116,7 +125,6 @@ namespace elite_dangerous_colonise.Services
         }
 
         /// <summary> Stops the background service. </summary>
-        /// <returns> A completed task. </returns>
         public override Task StopAsync(CancellationToken cancellationToken)
         {
             logger.LogInformation("Spansh Download Service", 11, "Spansh data dump download service stopped.");

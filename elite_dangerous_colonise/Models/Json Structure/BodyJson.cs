@@ -2,7 +2,7 @@
 
 namespace elite_dangerous_colonise.Models.Json_Structure
 {
-    /// <summary> Defines the Json structure of the system's bodies. </summary>
+    /// <summary> Represents the Json structure of the system's bodies. </summary>
     public class BodyJson
     {
 

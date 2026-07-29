@@ -10,7 +10,7 @@ using NpgsqlTypes;
 
 namespace elite_dangerous_colonise.Services
 {
-    /// <summary> Defines a EDDNListeningService. </summary>
+    /// <summary> A services that listens to the EDDN stream for colonisation related events and updates the database. </summary>
     public class EDDNListeningService : BackgroundService
     {
         private const string EDDN_ADDRESS = "tcp://eddn.edcd.io:9500";
@@ -18,14 +18,19 @@ namespace elite_dangerous_colonise.Services
 
         private readonly NpgsqlDataSource dataSource;
         private readonly AppLogger logger;
+        private readonly bool verboseReporting;
         private List<Task> colonyShipUpdates = new List<Task>();
         private List<Task> trailblazerUpdates = new List<Task>();
 
-        /// <summary> Instantiates a EDDNListeningService object. </summary>
-        public EDDNListeningService(NpgsqlDataSource dataSource, AppLogger logger)
+        /// <summary> Instantiates a EDDNListeningService. </summary>
+        /// <param name="dataSource"> The database datasource service. </param>
+        /// <param name="logger"> The logger service. </param>
+        /// <param name="verboseReporting"> If the service should report every update. </param>
+        public EDDNListeningService(NpgsqlDataSource dataSource, AppLogger logger, bool verboseReporting = true)
         {
             this.dataSource = dataSource;
             this.logger = logger;
+            this.verboseReporting = verboseReporting;
         }
 
         private bool IsJournalSchema(string schema)
@@ -76,7 +81,10 @@ namespace elite_dangerous_colonise.Services
                         timestamp = DateTime.SpecifyKind(timestamp, DateTimeKind.Utc);
                         await UpdateColonisationDatabase(systemID, timestamp);
 
-                        logger.LogInformation("EDDN Listening Service", 1, $"Updating system {systemID}.");
+                        if (verboseReporting)
+                        {
+                            logger.LogInformation("EDDN Listening Service", 1, $"Updating system {systemID}.");
+                        }
                     }
                         
                 }
@@ -162,14 +170,13 @@ namespace elite_dangerous_colonise.Services
             }
         }
 
+        /// <summary> Starts listening to the EDDN stream. </summary>
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             await Task.Run(() => ListenToEDDN(cancellationToken), cancellationToken);
         }
 
-        /// <summary>
-        /// Waits for the background tasks to complete and then stops the background service.
-        /// </summary>
+        /// <summary> Waits for the background tasks to complete and then stops the background service. </summary>
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
             logger.LogInformation("EDDN Listening Service", 4, "Waiting for background tasks to complete.");

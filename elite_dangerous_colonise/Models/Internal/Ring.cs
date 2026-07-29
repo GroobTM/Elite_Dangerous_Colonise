@@ -1,16 +1,18 @@
 ﻿using elite_dangerous_colonise.Models.Database_Types;
-using elite_dangerous_colonise.Services;
 
 namespace elite_dangerous_colonise.Models.Internal
 {
-    /// <summary> Defines a ring. </summary>
+    /// <summary> Contains information about a Ring. </summary>
     public class Ring
     {
+        /// <summary> The ring's name. </summary>
         public string Name { get; private set; }
+        /// <summary> The ring's material type. </summary>
         public RingType RingType { get; private set; }
+        /// <summary> The Hotspots in the ring. </summary>
         public Dictionary<HotspotType, short>? Hotspots { get; private set; }
 
-        /// <summary> Instantiates a ring object. </summary>
+        /// <summary> Instantiates a Ring. </summary>
         /// <param name="name"> The name of the ring. </param>
         /// <param name="ringType"> The material type of the ring. </param>
         public Ring(string name, RingType ringType)

@@ -4,7 +4,7 @@ using elite_dangerous_colonise.Models.Internal;
 
 namespace elite_dangerous_colonise.Models.Json_Structure
 {
-    /// <summary> Defines the Json structure of the body's rings. </summary>
+    /// <summary> Represents the Json structure of the body's rings. </summary>
     public class RingJson
     {
         [JsonProperty("name")]

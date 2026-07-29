@@ -3,7 +3,7 @@ using elite_dangerous_colonise.Models.Internal;
 
 namespace elite_dangerous_colonise.Models.Json_Structure
 {
-    /// <summary> Defines the Json structure of the system's or body's stations. </summary>
+    /// <summary> Represents the Json structure of the system's or body's stations. </summary>
     public class StationJson
     {
         [JsonProperty("id")]

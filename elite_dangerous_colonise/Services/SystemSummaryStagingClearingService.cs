@@ -3,7 +3,7 @@ using Npgsql;
 
 namespace elite_dangerous_colonise.Services
 {
-    /// <summary> Defines a SystemSummaryStagingClearingService service. </summary>
+    /// <summary> Converts the staged changes to Star Systems in the database into live records and rebuilds saved queries. </summary>
     public class SystemSummaryStagingClearingService : BackgroundService
     {
         private readonly NpgsqlDataSource dataSource;
@@ -12,7 +12,12 @@ namespace elite_dangerous_colonise.Services
         private readonly UpdateStatusService updateStatusService;
         private readonly AppLogger logger;
 
-        /// <summary> Instantiates a SystemSummaryStagingClearingService object. </summary>
+        /// <summary> Instantiates a SystemSummaryStagingClearingService. </summary>
+        /// <param name="dataSource"> The database data source. </param>
+        /// <param name="spanshService"> The Spansh datadump download service. </param>
+        /// <param name="hubContext"> The UpdateHub's context. </param>
+        /// <param name="updateStatusService"> The update status service. </param>
+        /// <param name="logger"> The logger service. </param>
         public SystemSummaryStagingClearingService(NpgsqlDataSource dataSource, SpanshDataDumpDownloadService spanshService,
             IHubContext<UpdateHub> hubContext, UpdateStatusService updateStatusService, AppLogger logger)
         {
@@ -159,6 +164,7 @@ namespace elite_dangerous_colonise.Services
             }
         }
 
+        /// <summary> Awaits the DataDumpProcessingComplete event and then stages new database changes and rebuilds saved queries. </summary>
         protected override Task ExecuteAsync(CancellationToken cancellationToken)
         {
             logger.LogInformation("System Summary Staging Clearing Service", 0, "Staging Clearing Service starting.");
@@ -169,7 +175,6 @@ namespace elite_dangerous_colonise.Services
         }
 
         /// <summary> Stops the background service. </summary>
-        /// <returns> A completed task. </returns>
         public override Task StopAsync(CancellationToken cancellationToken)
         { 
             spanshService.DataDumpProcessingComplete -= (sender, e) => Task.Run(async () => await OnDataDumpProcessingComplete(sender, e));

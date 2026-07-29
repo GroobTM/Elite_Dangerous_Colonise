@@ -1,14 +1,18 @@
 ﻿namespace elite_dangerous_colonise.Services
 {
+    /// <summary> Creates a launcher for manually inserting a Json file into the database </summary>
     public class DebugLauncher
     {
         private readonly IServiceProvider serviceProvider;
 
+        /// <summary> Instantiates a DebugLauncher. </summary>
+        /// <param name="serviceProvider"> A configured service provider with a DatabaseBulkWriter service. </param>
         public DebugLauncher(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
         }
 
+        /// <summary> Runs the launcher. </summary>
         public async Task Run()
         {
             LauncherHeader();

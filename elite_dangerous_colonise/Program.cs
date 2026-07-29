@@ -6,6 +6,7 @@ using elite_dangerous_colonise.Models.Database_Types;
 using System.Text;
 using Ixnas.AltchaNet;
 using elite_dangerous_colonise.Services;
+using elite_dangerous_colonise.Models.Internal;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ builder.Configuration
     .AddJsonFile(rootDir + "\\private\\Secrets.json", optional: false, reloadOnChange: true);
 
 bool debugEnabled = builder.Configuration.GetValue<bool>("EnableDebugLauncher", false);
+bool verboseReporting = builder.Configuration.GetValue<bool>("VerboseReporting", false);
 
 builder.Services.Configure<UpdateTimeOptions>(builder.Configuration.GetSection("UpdateTime"));
 
@@ -79,13 +81,7 @@ dataSourceBuilder.MapComposite<ColonisableInsertType>("ColonisableInsertType");
 NpgsqlDataSource dataSource = dataSourceBuilder.Build();
 builder.Services.AddSingleton(dataSource);
 
-builder.Services.AddScoped<DatabaseBulkWriter>(provider =>
-{
-    AppLogger logger = provider.GetService<AppLogger>();
-    NpgsqlDataSource dataSourceService = provider.GetService<NpgsqlDataSource>();
-
-    return new DatabaseBulkWriter(dataSourceService, logger, debugEnabled);
-});
+builder.Services.AddScoped<DatabaseBulkWriter>(provider => ActivatorUtilities.CreateInstance<DatabaseBulkWriter>(provider, debugEnabled || verboseReporting));
 
 // Configures Altcha service
 string altchaKey = builder.Configuration["AltchaKey"];
@@ -114,11 +110,11 @@ if (!debugEnabled)
     builder.Services.AddHostedService<SystemSummaryStagingClearingService>();
 
     // Configures the EDDN listening background service.
-    builder.Services.AddHostedService<EDDNListeningService>();
+    builder.Services.AddHostedService<EDDNListeningService>(provider => ActivatorUtilities.CreateInstance<EDDNListeningService>(provider, verboseReporting));
 
     // Configures the self ping background service.
-    builder.Services.AddHttpClient();
-    builder.Services.AddHostedService<SelfPingService>();
+    //builder.Services.AddHttpClient();
+    //builder.Services.AddHostedService<SelfPingService>();
 
     // Configures the memory reporting background service.
     builder.Services.AddHostedService<MemoryReportingService>();

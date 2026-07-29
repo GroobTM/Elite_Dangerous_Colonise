@@ -5,9 +5,7 @@ using elite_dangerous_colonise.Models.Internal;
 
 namespace elite_dangerous_colonise.Services
 {
-    /// <summary>
-    /// Defines a DatabaseBulkWriter.
-    /// </summary>
+    /// <summary> Reads Json Star System entries in bulk and adds them to the database. </summary>
     public class DatabaseBulkWriter
     {
         private const int BULK_SIZE = 2000;
@@ -15,24 +13,18 @@ namespace elite_dangerous_colonise.Services
         private readonly bool verboseReporting;
         private readonly NpgsqlDataSource dataSource;
         private readonly AppLogger logger;
+
         private int recordsRead = 0;
         private int recordsAddedOrUpdated = 0;
         private int recordsFailedToAdd = 0;
 
 
-        /// <summary>
-        /// Instantiates a DatabaseBulkWriter.
-        /// </summary>
-        /// <param name="dataSource"> The database datasource. </param>
-        public DatabaseBulkWriter(NpgsqlDataSource dataSource, AppLogger logger)
-        {
-            this.dataSource = dataSource;
-            this.logger = logger;
-            verboseReporting = true;
-        }
-        /// <inheritdoc cref="DatabaseBulkWriter.DatabaseBulkWriter(NpgsqlDataSource)"/>
+        /// <summary> Instantiates a DatabaseBulkWriter. </summary>
+        /// <param name="dataSource"> The database datasource service. </param>
+        /// <param name="logger"> The logger service. </param>
         /// <param name="verboseReporting"> If the database writer should report its reading progress. </param>
-        public DatabaseBulkWriter(NpgsqlDataSource dataSource, AppLogger logger, bool verboseReporting)
+        /// <remarks> Verbose Reporting is enabled by default. </remarks>
+        public DatabaseBulkWriter(NpgsqlDataSource dataSource, AppLogger logger, bool verboseReporting = true)
         {
             this.dataSource = dataSource;
             this.logger = logger;
@@ -179,7 +171,6 @@ namespace elite_dangerous_colonise.Services
 
         /// <summary> Reads a Json file and inserts its data into the database. </summary>
         /// <param name="filePath"> The file path of a Json file. </param>
-        /// <remarks> This method reports it's progress periodically. </remarks>
         public async Task InsertJsonIntoDatabase(string filePath)
         {
             try
@@ -204,7 +195,6 @@ namespace elite_dangerous_colonise.Services
 
         /// <summary> Reads a streamed Json file and inserts its data into the database. </summary>
         /// <param name="inputStream"> The stream of a Json file. </param>
-        /// <remarks> This method reports it's progress periodically. </remarks>
         public async Task InsertJsonIntoDatabase(Stream inputStream)
         {
             try

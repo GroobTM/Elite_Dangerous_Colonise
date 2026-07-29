@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace elite_dangerous_colonise.Models.Json_Structure
 {
-    /// <summary> Defines the Json structure of the ring's signal categories. </summary>
+    /// <summary> Represents the Json structure of the ring's signal categories. </summary>
     public class SignalsCategoryJson
     {
         [JsonProperty("signals")]

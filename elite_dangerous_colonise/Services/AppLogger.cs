@@ -5,13 +5,15 @@
     {
         private readonly Serilog.ILogger logger;
 
+        /// <summary> Instantiates an AppLogger. </summary>
+        /// <param name="logger">A configured Serilog ILogger service.</param>
         public AppLogger(Serilog.ILogger logger)
         {
             this.logger = logger;
         }
 
         /// <summary> Creates a information log event. </summary>
-        /// <param name="eventCategory"> The category of the event. </param>
+        /// <param name="eventCategory"> The category of the event (usually the class where the message was logged). </param>
         /// <param name="eventID"> The ID of the event. </param>
         /// <param name="eventMessage"> The message shown by the event. </param>
         public void LogInformation(string eventCategory, int eventID, string eventMessage)
@@ -21,7 +23,7 @@
         }
 
         /// <summary> Creates an error log event. </summary>
-        /// <param name="eventCategory"> The category of the event. </param>
+        /// <param name="eventCategory"> The category of the event (usually the class where the message was logged). </param>
         /// <param name="eventID"> The ID of the event. </param>
         /// <param name="exception"> The exception that triggered the event. </param>
         public void LogError(string eventCategory, int eventID, Exception exception)
@@ -39,7 +41,7 @@
         }
 
         /// <summary> Creates a warning log event. </summary>
-        /// <param name="eventCategory"> The category of the event. </param>
+        /// <param name="eventCategory"> The category of the event (usually the class where the message was logged). </param>
         /// <param name="eventID"> The ID of the event. </param>
         /// <param name="eventMessage"> The message shown by the event. </param>
         public void LogWarning(string eventCategory, int eventID, string eventMessage)
