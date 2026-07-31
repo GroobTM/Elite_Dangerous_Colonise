@@ -24,7 +24,7 @@ namespace elite_dangerous_colonise.Models.Internal
         }
 
         /// <summary> Adds the Station to the Stations data list. </summary>
-        public void AddToDataList(DatabaseDataLists dataLists, long systemID)
+        public void AddToDataList(DatabaseDataLists dataLists, ulong systemID)
         {
             dataLists.Stations.Add(new StationInsertType(StationID, systemID, Name, Faction != null ? Faction : "None"));
         }

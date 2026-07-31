@@ -6,7 +6,7 @@ namespace elite_dangerous_colonise.Models.Database_Types
     public class StarSystemInsertType
     {
         [PgName("systemID")]
-        public long SystemID { get; set; }
+        public decimal SystemID { get; set; }
         [PgName("systemName")]
         public string SystemName { get; set; }
         [PgName("isColonised")]
@@ -19,7 +19,7 @@ namespace elite_dangerous_colonise.Models.Database_Types
         public decimal CoordinateZ { get; set; }
 
         public StarSystemInsertType() { }
-        public StarSystemInsertType(long systemID, string systemName, bool isColonised, decimal coordinateX, decimal coordinateY, decimal coordinateZ)
+        public StarSystemInsertType(ulong systemID, string systemName, bool isColonised, decimal coordinateX, decimal coordinateY, decimal coordinateZ)
         {
             SystemID = systemID;
             SystemName = systemName;

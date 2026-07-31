@@ -28,13 +28,13 @@ namespace elite_dangerous_colonise.Models.Internal
             Hotspots = hotspots;
         }
 
-        private void AddRingToDataList(DatabaseDataLists dataLists, long systemID)
+        private void AddRingToDataList(DatabaseDataLists dataLists, ulong systemID)
         {
 
             dataLists.Rings.Add( new RingInsertType(systemID, Name, RingType));
         }
 
-        private void AddHotspotToDataList(DatabaseDataLists dataLists, long systemID)
+        private void AddHotspotToDataList(DatabaseDataLists dataLists, ulong systemID)
         {
             if (Hotspots != null)
             {
@@ -46,7 +46,7 @@ namespace elite_dangerous_colonise.Models.Internal
         }
 
         /// <summary> Adds the Ring and its Hotspots values to the data lists. </summary>
-        public void AddToDataLists(DatabaseDataLists dataLists, long systemID)
+        public void AddToDataLists(DatabaseDataLists dataLists, ulong systemID)
         {
             AddRingToDataList(dataLists, systemID);
             AddHotspotToDataList(dataLists, systemID);

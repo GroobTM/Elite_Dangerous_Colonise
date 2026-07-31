@@ -34,7 +34,7 @@ namespace elite_dangerous_colonise.Models.Json_Structure
         };
 
         [JsonProperty("id64")]
-        public required long SystemID { get; set; }
+        public required ulong SystemID { get; set; }
         [JsonProperty("name")]
         public required string Name { get; set; }
         [JsonProperty("coords")]

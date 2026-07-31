@@ -77,7 +77,7 @@ CREATE TABLE "Factions" (
 );
 
 CREATE TABLE "StarSystems" (
-	"systemID" BIGINT PRIMARY KEY,
+	"systemID" NUMERIC(20, 0) PRIMARY KEY,
 	"systemName" VARCHAR(75) NOT NULL,
 	"systemCoords" GEOMETRY(PointZ, 0) NOT NULL,
 	"isColonised" BOOLEAN NOT NULL
@@ -85,7 +85,7 @@ CREATE TABLE "StarSystems" (
 
 CREATE TABLE "Stations" (
 	"stationID" NUMERIC(20, 0) PRIMARY KEY,
-	"systemID" BIGINT NOT NULL,
+	"systemID" NUMERIC(20, 0) NOT NULL,
 	"stationName" VARCHAR(75) NOT NULL,
 	"controllingFaction" INT NOT NULL,
 	FOREIGN KEY ("systemID") REFERENCES "StarSystems"("systemID") ON DELETE CASCADE,
@@ -93,7 +93,7 @@ CREATE TABLE "Stations" (
 );
 
 CREATE TABLE "UncolonisedStarSystems" (
-	"systemID" BIGINT PRIMARY KEY,
+	"systemID" NUMERIC(20, 0) PRIMARY KEY,
 	"lastUpdated" TIMESTAMPTZ NOT NULL,
 	"reserveLevel" "ReserveType" NOT NULL,
 	"landableCount" SMALLINT NOT NULL,
@@ -104,7 +104,7 @@ CREATE TABLE "UncolonisedStarSystems" (
 );
 
 CREATE TABLE "UncolonisedStarSystemsAvailability" (
-	"systemID" BIGINT PRIMARY KEY,
+	"systemID" NUMERIC(20, 0) PRIMARY KEY,
 	"isLocked" BOOLEAN NOT NULL DEFAULT FALSE,
 	"isClaimed" BOOLEAN NOT NULL DEFAULT FALSE,
 	"lockReportCount" SMALLINT NOT NULL DEFAULT 0,
@@ -115,7 +115,7 @@ CREATE TABLE "UncolonisedStarSystemsAvailability" (
 );
 
 CREATE TABLE "ColonyOverrideCounts" (
-	"systemID" BIGINT PRIMARY KEY,
+	"systemID" NUMERIC(20, 0) PRIMARY KEY,
 	"blackHoleCount" SMALLINT NOT NULL,
 	"neutronStarCount" SMALLINT NOT NULL,
 	"whiteDwarves" SMALLINT NOT NULL,
@@ -137,7 +137,7 @@ CREATE TABLE "ColonyOverrideCounts" (
 
 CREATE TABLE "Rings" (
 	"ringID" SERIAL PRIMARY KEY,
-	"systemID" BIGINT NOT NULL,
+	"systemID" NUMERIC(20, 0) NOT NULL,
 	"ringName" VARCHAR(75) NOT NULL,
 	"ringType" "RingType" NOT NULL,
 	UNIQUE ("systemID", "ringName"),
@@ -153,15 +153,15 @@ CREATE TABLE "Hotspots" (
 );
 
 CREATE TABLE "ColonisableStarSystems" (
-	"colonisedSystemID" BIGINT,
-	"uncolonisedSystemID" BIGINT,
+	"colonisedSystemID" NUMERIC(20, 0),
+	"uncolonisedSystemID" NUMERIC(20, 0),
 	PRIMARY KEY ("colonisedSystemID", "uncolonisedSystemID"),
 	FOREIGN KEY ("colonisedSystemID") REFERENCES "StarSystems"("systemID") ON DELETE CASCADE,
 	FOREIGN KEY ("uncolonisedSystemID") REFERENCES "UncolonisedStarSystems"("systemID") ON DELETE CASCADE
 );
 
 CREATE TABLE "StagedStarSystems" (
-	"systemID" BIGINT PRIMARY KEY,
+	"systemID" NUMERIC(20, 0) PRIMARY KEY,
 	FOREIGN KEY ("systemID") REFERENCES "StarSystems"("systemID") ON DELETE CASCADE
 );
 
@@ -248,7 +248,7 @@ CREATE UNIQUE INDEX "idx_DCSS_colonisedSystemID" ON "DistinctColonisedStarSystem
 CREATE UNIQUE INDEX "idx_DUSS_uncolonisedSystemID" ON "DistinctUncolonisedStarSystems"("uncolonisedSystemID");
 
 CREATE TYPE "StarSystemInsertType" AS (
-    "systemID" BIGINT,
+    "systemID" NUMERIC(20, 0),
     "systemName" VARCHAR(75),
     "isColonised" BOOLEAN,
     "coordinateX" NUMERIC(11, 5),
@@ -258,13 +258,13 @@ CREATE TYPE "StarSystemInsertType" AS (
 
 CREATE TYPE "StationInsertType" AS (
     "stationID" NUMERIC(20, 0),
-    "systemID" BIGINT,
+    "systemID" NUMERIC(20, 0),
     "stationName" VARCHAR(75),
     "controllingFaction" VARCHAR(75)
 );
 
 CREATE TYPE "UncolonisedDetailsInsertType" AS (
-	"systemID" BIGINT,
+	"systemID" NUMERIC(20, 0),
 	"lastUpdated" TIMESTAMPTZ,
 	"reserveLevel" "ReserveType",
 	"landableCount" SMALLINT,
@@ -290,21 +290,21 @@ CREATE TYPE "UncolonisedDetailsInsertType" AS (
 );
 
 CREATE TYPE "RingInsertType" AS (
-	"systemID" BIGINT,
+	"systemID" NUMERIC(20, 0),
 	"ringName" VARCHAR(75),
 	"ringType" "RingType"
 );
 
 CREATE TYPE "HotspotInsertType" AS (
-	"systemID" BIGINT,
+	"systemID" NUMERIC(20, 0),
 	"ringName" VARCHAR(75),
 	"hotspotType" "HotspotType",
 	"hotspotCount" SMALLINT
 );
 
 CREATE TYPE "ColonisableInsertType" AS (
-	"colonisedSystemID" BIGINT,
-	"uncolonisedSystemID" BIGINT
+	"colonisedSystemID" NUMERIC(20, 0),
+	"uncolonisedSystemID" NUMERIC(20, 0)
 );
 
 COMMIT TRANSACTION;

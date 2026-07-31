@@ -329,7 +329,7 @@ RETURNS VOID AS $$
 	ON CONFLICT("colonisedSystemID", "uncolonisedSystemID") DO NOTHING;
 $$ LANGUAGE sql;
 
-CREATE OR REPLACE FUNCTION "ClaimStarSystem"("inputSystemID" BIGINT, "inputClaimDate" TIMESTAMPTZ)
+CREATE OR REPLACE FUNCTION "ClaimStarSystem"("inputSystemID" NUMERIC(20, 0), "inputClaimDate" TIMESTAMPTZ)
 RETURNS VOID AS $$
 	UPDATE "UncolonisedStarSystemsAvailability"
 	SET
@@ -385,7 +385,7 @@ CREATE OR REPLACE FUNCTION "SelectSearchResults" (
 	"inputMaxWalkables" SMALLINT,
 	"inputMaxDistanceToRegionCentre" INT,
 	"inputHotspotTypes" "HotspotType"[],
-	"inputRemovedSystemIDs" BIGINT[]
+	"inputRemovedSystemIDs" NUMERIC(20, 0)[]
 )
 RETURNS jsonb AS $$
 	WITH "TopResults" AS (
@@ -619,7 +619,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-CREATE OR REPLACE FUNCTION "ReportStarSystem"("inputSystemID" BIGINT, "isLockReport" BOOLEAN)
+CREATE OR REPLACE FUNCTION "ReportStarSystem"("inputSystemID" NUMERIC(20, 0), "isLockReport" BOOLEAN)
 RETURNS VOID AS $$
 BEGIN
 	IF "isLockReport" THEN

@@ -7,7 +7,7 @@ namespace elite_dangerous_colonise.Models.Json_Structure
     {
 
         [JsonProperty("id64")]
-        public required long BodyID { get; set; }
+        public required ulong BodyID { get; set; }
         [JsonProperty("subType")]
         public required string BodyType { get; set; }
         [JsonProperty("isLandable")]

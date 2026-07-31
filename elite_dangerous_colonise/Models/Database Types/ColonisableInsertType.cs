@@ -6,12 +6,12 @@ namespace elite_dangerous_colonise.Models.Database_Types
     public class ColonisableInsertType
     {
         [PgName("colonisedSystemID")]
-        public long ColonisedSystemID { get; set; }
+        public decimal ColonisedSystemID { get; set; }
         [PgName("uncolonisedSystemID")]
-        public long UncolonisedSystemID { get; set; }
+        public decimal UncolonisedSystemID { get; set; }
 
         public ColonisableInsertType() { }
-        public ColonisableInsertType(long colonisedSystemID, long uncolonisedSystemID)
+        public ColonisableInsertType(ulong colonisedSystemID, ulong uncolonisedSystemID)
         {
             ColonisedSystemID = colonisedSystemID;
             UncolonisedSystemID = uncolonisedSystemID;
