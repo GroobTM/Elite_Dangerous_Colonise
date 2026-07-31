@@ -39,6 +39,22 @@ RETURNS VOID AS $$
 	ON CONFLICT ("regionName") DO NOTHING;
 $$ LANGUAGE sql;
 
+CREATE OR REPLACE FUNCTION "SelectRegions"()
+RETURNS TABLE (
+	"regionName" VARCHAR(75),
+	"regionRange" SMALLINT,
+	"centreCoordinateX" NUMERIC(11, 5),
+    "centreCoordinateY" NUMERIC(11, 5),
+    "centreCoordinateZ" NUMERIC(11, 5)
+) AS $$
+	SELECT 
+		"regionName",
+		"regionRange",
+		ST_X("regionCentreCoords"),
+		ST_Y("regionCentreCoords"),
+		ST_Z("regionCentreCoords")
+	FROM "Regions";
+$$ LANGUAGE sql;
 
 CREATE OR REPLACE FUNCTION "InsertStarSystemsBulk"("inputStarSystems" "StarSystemInsertType"[])
 RETURNS VOID AS $$

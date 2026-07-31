@@ -135,7 +135,6 @@ namespace elite_dangerous_colonise.Models.Internal
                     starSystem.ReserveLevel,
                     starSystem.LandableCount,
                     starSystem.WalkableCount,
-                    starSystem.DistanceToSol,
                     starSystem.TotalHotspots,
                     starSystem.SystemValue,
                     BlackHoleCount,

@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using elite_dangerous_colonise.Models.Json_Structure;
 using elite_dangerous_colonise.Models.Internal;
+using System.Numerics;
 
 namespace elite_dangerous_colonise.Services
 {
@@ -29,6 +30,35 @@ namespace elite_dangerous_colonise.Services
             this.dataSource = dataSource;
             this.logger = logger;
             this.verboseReporting = verboseReporting;
+        }
+
+        private async Task<List<Region>> SelectRegions()
+        {
+            List<Region> regions = new List<Region>();
+
+            await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
+            {
+                await using (NpgsqlCommand command = new NpgsqlCommand("Select \"SelectRegions\"()", conn))
+                {
+                    await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            regions.Add(new Region(
+                                reader.GetString(0),
+                                reader.GetInt32(1),
+                                new Vector3(
+                                    reader.GetFloat(2),
+                                    reader.GetFloat(3),
+                                    reader.GetFloat(4)
+                                    )
+                            ));
+                        }
+                    }
+                }
+            }
+
+            return regions;
         }
 
         private async Task InsertStarSystemsBulk(NpgsqlConnection conn, NpgsqlTransaction transaction,
@@ -185,7 +215,7 @@ namespace elite_dangerous_colonise.Services
             }
             catch (UnauthorizedAccessException ex)
             {
-                logger.LogError("Database Writer", 1, ex);
+                logger.LogError("Database Writer", 3, ex);
             }
             catch (Exception ex)
             {
@@ -229,37 +259,54 @@ namespace elite_dangerous_colonise.Services
 
                 DatabaseDataLists dataLists = new DatabaseDataLists();
 
-                while (await jsonReader.ReadAsync())
+                List<Region> regions = await SelectRegions();
+
+                if (regions.Count > 0)
                 {
-                    if (jsonReader.TokenType == JsonToken.StartObject)
+                    while (await jsonReader.ReadAsync())
                     {
-                        SystemJson? systemJson = serializer.Deserialize<SystemJson>(jsonReader);
-
-                        if (systemJson != null && SolDistanceChecker.InRangeOfSol(systemJson.Coordinates))
+                        if (jsonReader.TokenType == JsonToken.StartObject)
                         {
-                            StarSystem? decodedSystem = systemJson.ConvertToStarSystem();
-                            if (decodedSystem != null)
-                            {
-                                decodedSystem.AddToDataLists(dataLists);
-                            }
+                            SystemJson? systemJson = serializer.Deserialize<SystemJson>(jsonReader);
 
-                            if (dataLists.Count() >= BULK_SIZE)
+                            if (systemJson != null)
                             {
-                                await BulkInsertIntoDatabase(dataLists);
-                                dataLists.ClearLists();
+                                foreach (Region region in regions)
+                                {
+                                    if (region.PointWithinRegion(systemJson.Coordinates))
+                                    {
+                                        StarSystem? decodedSystem = systemJson.ConvertToStarSystem();
+                                        if (decodedSystem != null)
+                                        {
+                                            decodedSystem.AddToDataLists(dataLists);
+                                        }
+
+                                        if (dataLists.Count() >= BULK_SIZE)
+                                        {
+                                            await BulkInsertIntoDatabase(dataLists);
+                                            dataLists.ClearLists();
+                                        }
+
+                                        break;
+                                    }
+                                }
                             }
+                            recordsRead++;
                         }
-                        recordsRead++;
                     }
-                }
 
-                if (dataLists.Count() > 0)
+                    if (dataLists.Count() > 0)
+                    {
+                        await BulkInsertIntoDatabase(dataLists);
+                    }
+
+                    cancellationToken.Cancel();
+                    await readingReportingTask;
+                }
+                else
                 {
-                    await BulkInsertIntoDatabase(dataLists);
+                    logger.LogWarning("Database Writer", 7, "Not regions found in database.");
                 }
-
-                cancellationToken.Cancel();
-                await readingReportingTask;
             }
         }
     }

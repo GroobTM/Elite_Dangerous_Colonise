@@ -84,8 +84,6 @@ namespace elite_dangerous_colonise.Models.Internal
         public short LandableCount { get; private set; }
         /// <summary> The number of walkable bodies in the system. </summary>
         public short WalkableCount { get; private set; }
-        /// <summary> The system's distance to Sol. </summary>
-        public int DistanceToSol {  get; private set; }
         /// <summary> The number of hotspots in the system. </summary>
         public short TotalHotspots { get; private set; }
         /// <summary> The system's value. </summary>
@@ -113,7 +111,6 @@ namespace elite_dangerous_colonise.Models.Internal
             WalkableCount = walkableCount;
             Rings = rings;
             BodyCounts = bodyCounts;
-            DistanceToSol = (int)coordinates.Length();
             TotalHotspots = CountHotspots();
             SystemValue = CalculateSystemValue();
         }
