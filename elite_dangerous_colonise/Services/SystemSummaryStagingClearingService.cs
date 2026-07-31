@@ -69,16 +69,6 @@ namespace elite_dangerous_colonise.Services
                 }
             }
         }
-        private async Task CalculateTrailblazerDistances(NpgsqlConnection conn)
-        {
-            logger.LogInformation("System Summary Staging Clearing Service", 10, "Updating Trailblazers distance table.");
-
-            await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"InsertTrailblazerDistances\"()", conn))
-            {
-                command.CommandTimeout = 120;
-                await command.ExecuteNonQueryAsync();
-            }
-        }
 
         private async Task RefreshDistinctColonisedStarSystems(NpgsqlConnection conn)
         {
@@ -95,16 +85,6 @@ namespace elite_dangerous_colonise.Services
             logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing DistinctUncolonisedStarSystems view.");
 
             await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"RefreshDistinctUncolonisedStarSystems\"()", conn))
-            {
-                await command.ExecuteNonQueryAsync();
-            }
-        }
-
-        private async Task RefreshClosestTrailblazerByStarSystem(NpgsqlConnection conn)
-        {
-            logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing ClosestTrailblazerByStarSystem view.");
-
-            await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"RefreshClosestTrailblazerByStarSystem\"()", conn))
             {
                 await command.ExecuteNonQueryAsync();
             }
@@ -127,10 +107,6 @@ namespace elite_dangerous_colonise.Services
                 await RefreshDistinctColonisedStarSystems(conn);
                 await RefreshDistinctUncolonisedStarSystems(conn);
                 await RefreshMaxSearchValues(conn);
-
-                await CalculateTrailblazerDistances(conn);
-                await RefreshClosestTrailblazerByStarSystem(conn);
-                
 
                 await transaction.CommitAsync();
 
