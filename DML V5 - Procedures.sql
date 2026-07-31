@@ -1,18 +1,22 @@
-CREATE OR REPLACE FUNCTION "GetRegionCube"("centre" GEOMETRY, "range" SMALLINT)
-RETURNS GEOMETRY AS $$
-	SELECT ST_3DMakeBox(
-		ST_MakePoint(
-			ST_X("centre") - "range",
-			ST_Y("centre") - "range",
-			ST_Z("centre") - "range"
+-- Run second, after creating extensions in DDL
+CREATE OR REPLACE FUNCTION "GetRegionCube"("centre" PUBLIC.GEOMETRY, "range" SMALLINT)
+RETURNS PUBLIC.GEOMETRY AS $$
+	SELECT PUBLIC.ST_3DMakeBox(
+		PUBLIC.ST_MakePoint(
+			PUBLIC.ST_X("centre") - "range",
+			PUBLIC.ST_Y("centre") - "range",
+			PUBLIC.ST_Z("centre") - "range"
 		),
-		ST_MakePoint(
-			ST_X("centre") + "range",
-			ST_Y("centre") + "range",
-			ST_Z("centre") + "range"
+		PUBLIC.ST_MakePoint(
+			PUBLIC.ST_X("centre") + "range",
+			PUBLIC.ST_Y("centre") + "range",
+			PUBLIC.ST_Z("centre") + "range"
 		)
-	)::geometry
+	)::PUBLIC.GEOMETRY
 $$ LANGUAGE sql IMMUTABLE PARALLEL SAFE;
+
+-- Run fourth, after running rest of DDL
+BEGIN TRANSACTION;
 
 CREATE OR REPLACE FUNCTION "InsertRegion"(
 	"inputRegionName" VARCHAR(75),
@@ -77,7 +81,7 @@ RETURNS VOID AS $$
 		ins."systemID",
 		ins."stationName",
 		f."factionID"
-	unnest("inputStations") AS ins
+	FROM unnest("inputStations") AS ins
 	INNER JOIN "Factions" f ON ins."controllingFaction" = f."factionName"
 	ON CONFLICT ("stationID") DO UPDATE
 	SET
@@ -452,7 +456,7 @@ RETURNS jsonb AS $$
 		ORDER BY
 			CASE WHEN "sortOrder" = 'SystemValue' THEN uss."systemValue" END DESC,
 			CASE WHEN "sortOrder" = 'MostWalkables' THEN uss."walkableCount" END DESC,
-			CASE WHEN "sortOrder" = 'distanceToRegionCentre' THEN "distanceToRegionCentre" END ASC,
+			CASE WHEN "sortOrder" = 'DistanceToRegionCentre' THEN ST_3DDistance(ss."systemCoords", reg."regionCentreCoords")::INT END ASC,
 			CASE WHEN "sortOrder" = 'MostHotspots' THEN uss."totalHotspots" END DESC
 		OFFSET (("pageNo" - 1) * "resultsPerPage") ROWS
 		LIMIT "resultsPerPage" * 11
@@ -616,3 +620,5 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+COMMIT TRANSACTION;

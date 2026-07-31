@@ -1,3 +1,6 @@
+-- Run fifth after
+BEGIN TRANSACTION;
+
 CREATE OR REPLACE FUNCTION "TriggerAddNewSystemsToAvailabilityOnInsert"()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -31,11 +34,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER "TriggerRemoveUncolonisedSystemOnUpdate"
+CREATE TRIGGER "TriggerRemoveUncolonisedSystemAndStageColonisedOnUpdate"
 AFTER UPDATE OF "isColonised" ON "StarSystems"
 FOR EACH ROW
 WHEN (OLD."isColonised" = FALSE AND NEW."isColonised" = TRUE)
-EXECUTE FUNCTION "TriggerRemoveUncolonisedSystemOnUpdate"();
+EXECUTE FUNCTION "TriggerRemoveUncolonisedSystemAndStageColonisedOnUpdate"();
 
 CREATE OR REPLACE FUNCTION "TriggerAddNewSystemToStaging"()
 RETURNS TRIGGER AS $$
@@ -90,3 +93,5 @@ BEFORE UPDATE OF "claimReportCount" ON "UncolonisedStarSystemsAvailability"
 FOR EACH ROW
 WHEN (OLD."claimReportCount" IS DISTINCT FROM NEW."claimReportCount")
 EXECUTE FUNCTION "TriggerUpdateAvailabilityClaim"();
+
+COMMIT TRANSACTION;

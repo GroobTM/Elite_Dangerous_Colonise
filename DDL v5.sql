@@ -1,7 +1,9 @@
-BEGIN TRANSACTION;
-
+-- Run first, then create "GetRegionCube" from DML
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+-- Run third
+BEGIN TRANSACTION;
 
 CREATE TYPE "ResultOrderType" AS ENUM (
 	'SystemValue',
@@ -95,7 +97,7 @@ CREATE TABLE "UncolonisedStarSystems" (
 	"lastUpdated" TIMESTAMPTZ NOT NULL,
 	"reserveLevel" "ReserveType" NOT NULL,
 	"landableCount" SMALLINT NOT NULL,
-	"walkableCount" SMALLINT NOT NULL
+	"walkableCount" SMALLINT NOT NULL,
 	"totalHotspots" SMALLINT NOT NULL,
 	"systemValue" NUMERIC(5,2) NOT NULL,
 	FOREIGN KEY ("systemID") REFERENCES "StarSystems"("systemID") ON DELETE CASCADE
@@ -244,7 +246,6 @@ CREATE INDEX "idx_SS_systemName_trgm" ON "StarSystems" USING GIN("systemName" gi
 
 CREATE UNIQUE INDEX "idx_DCSS_colonisedSystemID" ON "DistinctColonisedStarSystems"("colonisedSystemID");
 CREATE UNIQUE INDEX "idx_DUSS_uncolonisedSystemID" ON "DistinctUncolonisedStarSystems"("uncolonisedSystemID");
-CREATE UNIQUE INDEX "idx_DCSSC_key" ON "DistinctColonisableStarSystemsCount"("key");
 
 CREATE TYPE "StarSystemInsertType" AS (
     "systemID" BIGINT,
