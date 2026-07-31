@@ -24,9 +24,7 @@
             Console.WriteLine("-----------------------Elite Dangerous Colonise-----------------------");
             Console.WriteLine("Launch Options:");
             Console.WriteLine("1. Insert galaxy Json data into database.");
-            Console.WriteLine("2. Insert Sol Json data into database.");
-            Console.WriteLine("3. Insert Colonia Json data into database.");
-            Console.WriteLine("4. Exit");
+            Console.WriteLine("2. Exit");
             Console.WriteLine("----------------------------------------------------------------------");
         }
 
@@ -47,14 +45,6 @@
                         break;
 
                     case "2":
-                        selectionValid = true;
-                        break;
-
-                    case "3":
-                        selectionValid = true;
-                        break;
-
-                    case "4":
                         selectionValid = true;
                         break;
 

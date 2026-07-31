@@ -25,7 +25,7 @@ namespace elite_dangerous_colonise.Services
 
             await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
             {
-                await using (NpgsqlCommand command = new NpgsqlCommand("Select \"SelectRegions\"()", conn))
+                await using (NpgsqlCommand command = new NpgsqlCommand("Select * FROM \"SelectRegions\"()", conn))
                 {
                     await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                     {
