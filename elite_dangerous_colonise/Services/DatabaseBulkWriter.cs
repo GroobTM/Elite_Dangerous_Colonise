@@ -11,9 +11,10 @@ namespace elite_dangerous_colonise.Services
     {
         private const int BULK_SIZE = 2000;
 
-        private readonly bool verboseReporting;
         private readonly NpgsqlDataSource dataSource;
         private readonly AppLogger logger;
+        private readonly RegionStore regionStore;
+        private readonly bool verboseReporting;
 
         private int recordsRead = 0;
         private int recordsAddedOrUpdated = 0;
@@ -23,42 +24,15 @@ namespace elite_dangerous_colonise.Services
         /// <summary> Instantiates a DatabaseBulkWriter. </summary>
         /// <param name="dataSource"> The database datasource service. </param>
         /// <param name="logger"> The logger service. </param>
+        /// <param name="regionStore"> The region store service. </param>
         /// <param name="verboseReporting"> If the database writer should report its reading progress. </param>
         /// <remarks> Verbose Reporting is enabled by default. </remarks>
-        public DatabaseBulkWriter(NpgsqlDataSource dataSource, AppLogger logger, bool verboseReporting = true)
+        public DatabaseBulkWriter(NpgsqlDataSource dataSource, AppLogger logger, RegionStore regionStore, bool verboseReporting = true)
         {
             this.dataSource = dataSource;
             this.logger = logger;
+            this.regionStore = regionStore;
             this.verboseReporting = verboseReporting;
-        }
-
-        private async Task<List<Region>> SelectRegions()
-        {
-            List<Region> regions = new List<Region>();
-
-            await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
-            {
-                await using (NpgsqlCommand command = new NpgsqlCommand("Select \"SelectRegions\"()", conn))
-                {
-                    await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            regions.Add(new Region(
-                                reader.GetString(0),
-                                reader.GetInt32(1),
-                                new Vector3(
-                                    reader.GetFloat(2),
-                                    reader.GetFloat(3),
-                                    reader.GetFloat(4)
-                                    )
-                            ));
-                        }
-                    }
-                }
-            }
-
-            return regions;
         }
 
         private async Task InsertStarSystemsBulk(NpgsqlConnection conn, NpgsqlTransaction transaction,
@@ -249,6 +223,14 @@ namespace elite_dangerous_colonise.Services
 
         private async Task InsertJsonIntoDatabase(StreamReader streamReader)
         {
+            IReadOnlyList<Region> regions = regionStore.GetRegions();
+
+            if (regions.Count == 0)
+            {
+                logger.LogWarning("Database Writer", 7, "No regions found in database.");
+                return;
+            }
+
             using (JsonTextReader jsonReader = new JsonTextReader(streamReader))
             {
                 jsonReader.CloseInput = false;
@@ -259,54 +241,46 @@ namespace elite_dangerous_colonise.Services
 
                 DatabaseDataLists dataLists = new DatabaseDataLists();
 
-                List<Region> regions = await SelectRegions();
-
-                if (regions.Count > 0)
+                
+                while (await jsonReader.ReadAsync())
                 {
-                    while (await jsonReader.ReadAsync())
+                    if (jsonReader.TokenType == JsonToken.StartObject)
                     {
-                        if (jsonReader.TokenType == JsonToken.StartObject)
+                        SystemJson? systemJson = serializer.Deserialize<SystemJson>(jsonReader);
+
+                        if (systemJson != null)
                         {
-                            SystemJson? systemJson = serializer.Deserialize<SystemJson>(jsonReader);
-
-                            if (systemJson != null)
+                            foreach (Region region in regions)
                             {
-                                foreach (Region region in regions)
+                                if (region.PointWithinRegion(systemJson.Coordinates))
                                 {
-                                    if (region.PointWithinRegion(systemJson.Coordinates))
+                                    StarSystem? decodedSystem = systemJson.ConvertToStarSystem();
+                                    if (decodedSystem != null)
                                     {
-                                        StarSystem? decodedSystem = systemJson.ConvertToStarSystem();
-                                        if (decodedSystem != null)
-                                        {
-                                            decodedSystem.AddToDataLists(dataLists);
-                                        }
-
-                                        if (dataLists.Count() >= BULK_SIZE)
-                                        {
-                                            await BulkInsertIntoDatabase(dataLists);
-                                            dataLists.ClearLists();
-                                        }
-
-                                        break;
+                                        decodedSystem.AddToDataLists(dataLists);
                                     }
+
+                                    if (dataLists.Count() >= BULK_SIZE)
+                                    {
+                                        await BulkInsertIntoDatabase(dataLists);
+                                        dataLists.ClearLists();
+                                    }
+
+                                    break;
                                 }
                             }
-                            recordsRead++;
                         }
+                        recordsRead++;
                     }
-
-                    if (dataLists.Count() > 0)
-                    {
-                        await BulkInsertIntoDatabase(dataLists);
-                    }
-
-                    cancellationToken.Cancel();
-                    await readingReportingTask;
                 }
-                else
+
+                if (dataLists.Count() > 0)
                 {
-                    logger.LogWarning("Database Writer", 7, "Not regions found in database.");
+                    await BulkInsertIntoDatabase(dataLists);
                 }
+
+                cancellationToken.Cancel();
+                await readingReportingTask;
             }
         }
     }

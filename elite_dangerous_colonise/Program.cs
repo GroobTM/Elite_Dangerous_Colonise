@@ -81,6 +81,10 @@ dataSourceBuilder.MapComposite<ColonisableInsertType>("ColonisableInsertType");
 NpgsqlDataSource dataSource = dataSourceBuilder.Build();
 builder.Services.AddSingleton(dataSource);
 
+// Configures the region store service.
+builder.Services.AddSingleton<RegionStore>();
+
+// Configures the database bulk writer service.
 builder.Services.AddScoped<DatabaseBulkWriter>(provider => ActivatorUtilities.CreateInstance<DatabaseBulkWriter>(provider, debugEnabled || verboseReporting));
 
 // Configures Altcha service
@@ -100,6 +104,14 @@ builder.Services.AddSingleton<AltchaService>(service =>
 // Configures the update status service used by the UpdateHub.
 builder.Services.AddSingleton<UpdateStatusService>();
 
+// Configures the memory reporting background service.
+builder.Services.AddHostedService<MemoryReportingService>();
+
+// Configures the self ping background service.
+//builder.Services.AddHttpClient();
+//builder.Services.AddHostedService<SelfPingService>();
+
+// Disabled database updating services while in debug mode.
 if (!debugEnabled)
 {
     // Configures the Spansh download background service.
@@ -111,13 +123,6 @@ if (!debugEnabled)
 
     // Configures the EDDN listening background service.
     builder.Services.AddHostedService<EDDNListeningService>(provider => ActivatorUtilities.CreateInstance<EDDNListeningService>(provider, verboseReporting));
-
-    // Configures the self ping background service.
-    //builder.Services.AddHttpClient();
-    //builder.Services.AddHostedService<SelfPingService>();
-
-    // Configures the memory reporting background service.
-    builder.Services.AddHostedService<MemoryReportingService>();
 }
 
 var app = builder.Build();
@@ -147,6 +152,12 @@ app.MapRazorPages();
 app.MapControllers();
 
 app.MapHub<UpdateHub>("/updateHub");
+
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    RegionStore regionStore = scope.ServiceProvider.GetRequiredService<RegionStore>();
+    await regionStore.Initialise();
+}
 
 if (debugEnabled)
 {

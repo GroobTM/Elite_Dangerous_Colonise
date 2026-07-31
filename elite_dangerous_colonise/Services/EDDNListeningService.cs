@@ -7,6 +7,7 @@ using NetMQ;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using NpgsqlTypes;
+using elite_dangerous_colonise.Models.Internal;
 
 namespace elite_dangerous_colonise.Services
 {
@@ -18,18 +19,21 @@ namespace elite_dangerous_colonise.Services
 
         private readonly NpgsqlDataSource dataSource;
         private readonly AppLogger logger;
+        private readonly RegionStore regionStore;
         private readonly bool verboseReporting;
+
         private List<Task> colonyShipUpdates = new List<Task>();
-        private List<Task> trailblazerUpdates = new List<Task>();
 
         /// <summary> Instantiates a EDDNListeningService. </summary>
         /// <param name="dataSource"> The database datasource service. </param>
         /// <param name="logger"> The logger service. </param>
+        /// <param name="regionStore"> The region store service. </param>
         /// <param name="verboseReporting"> If the service should report every update. </param>
-        public EDDNListeningService(NpgsqlDataSource dataSource, AppLogger logger, bool verboseReporting = true)
+        public EDDNListeningService(NpgsqlDataSource dataSource, AppLogger logger, RegionStore regionStore, bool verboseReporting = true)
         {
             this.dataSource = dataSource;
             this.logger = logger;
+            this.regionStore = regionStore;
             this.verboseReporting = verboseReporting;
         }
 
@@ -67,26 +71,30 @@ namespace elite_dangerous_colonise.Services
             return new Vector3(coords[0], coords[1], coords[2]);
         }
 
-        private async Task UpdateColonisingTracker(JToken message)
+        private async Task UpdateColonisingTracker(JToken message, IReadOnlyList<Region> regions)
         {
             try
             {
                 Vector3 coords = ConvertJsonToVector(message);
 
-                if (SolDistanceChecker.InRangeOfSol(coords))
+                foreach (Region region in regions)
                 {
-                    if (long.TryParse(message["SystemAddress"].ToString(), out long systemID)
-                        && DateTime.TryParse(message["timestamp"].ToString(), null, DateTimeStyles.AdjustToUniversal, out DateTime timestamp))
+                    if (region.PointWithinRegion(coords))
                     {
-                        timestamp = DateTime.SpecifyKind(timestamp, DateTimeKind.Utc);
-                        await UpdateColonisationDatabase(systemID, timestamp);
-
-                        if (verboseReporting)
+                        if (long.TryParse(message["SystemAddress"].ToString(), out long systemID)
+                            && DateTime.TryParse(message["timestamp"].ToString(), null, DateTimeStyles.AdjustToUniversal, out DateTime timestamp))
                         {
-                            logger.LogInformation("EDDN Listening Service", 1, $"Updating system {systemID}.");
+                            timestamp = DateTime.SpecifyKind(timestamp, DateTimeKind.Utc);
+                            await UpdateColonisationDatabase(systemID, timestamp);
+
+                            if (verboseReporting)
+                            {
+                                logger.LogInformation("EDDN Listening Service", 1, $"Updating system {systemID}.");
+                            }
                         }
+
+                        break;
                     }
-                        
                 }
             }
             catch (Exception ex)
@@ -131,6 +139,14 @@ namespace elite_dangerous_colonise.Services
 
         private async Task ListenToEDDN(CancellationToken cancellationToken)
         {
+            IReadOnlyList<Region> regions = regionStore.GetRegions();
+
+            if (regions.Count == 0)
+            {
+                logger.LogWarning("EDDN Listening Service", 10, "No regions found in database.");
+                return;
+            }
+
             using (SubscriberSocket subscriber = new SubscriberSocket())
             {
                 subscriber.Connect(EDDN_ADDRESS);
@@ -141,7 +157,6 @@ namespace elite_dangerous_colonise.Services
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     colonyShipUpdates.RemoveAll(task => task.IsCompleted || task.IsFaulted || task.IsCanceled);
-                    trailblazerUpdates.RemoveAll(task => task.IsCompleted || task.IsFaulted || task.IsCanceled);
 
                     try
                     {
@@ -156,7 +171,7 @@ namespace elite_dangerous_colonise.Services
                         {
                             if (IsSystemColonisationShip(messageStationName))
                             {
-                                Task task = Task.Run(async () => await UpdateColonisingTracker(message), cancellationToken);
+                                Task task = Task.Run(async () => await UpdateColonisingTracker(message, regions), cancellationToken);
 
                                 colonyShipUpdates.Add(task);
                             }
