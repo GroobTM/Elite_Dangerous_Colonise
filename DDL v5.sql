@@ -1,10 +1,12 @@
 BEGIN TRANSACTION;
 
+CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 CREATE TYPE "ResultOrderType" AS ENUM (
 	'SystemValue',
 	'MostWalkables',
-	'DistanceToSol',
-	'DistanceToTrailblazer',
+	'DistanceToRegionCentre',
 	'MostHotspots'
 );
 
@@ -60,6 +62,13 @@ CREATE TYPE "HotspotType" AS ENUM (
 	'Water'
 );
 
+CREATE TABLE "Regions" (
+	"regionID" SERIAL PRIMARY KEY,
+	"regionName" VARCHAR(75) UNIQUE NOT NULL,
+	"regionRange" SMALLINT NOT NULL,
+	"regionCentreCoords" GEOMETRY(PointZ, 0) NOT NULL
+);
+
 CREATE TABLE "Factions" (
 	"factionID" SERIAL PRIMARY KEY,
 	"factionName" VARCHAR(75) UNIQUE NOT NULL
@@ -86,8 +95,7 @@ CREATE TABLE "UncolonisedStarSystems" (
 	"lastUpdated" TIMESTAMPTZ NOT NULL,
 	"reserveLevel" "ReserveType" NOT NULL,
 	"landableCount" SMALLINT NOT NULL,
-	"walkableCount" SMALLINT NOT NULL,
-	"distanceToSol" INT NOT NULL,
+	"walkableCount" SMALLINT NOT NULL
 	"totalHotspots" SMALLINT NOT NULL,
 	"systemValue" NUMERIC(5,2) NOT NULL,
 	FOREIGN KEY ("systemID") REFERENCES "StarSystems"("systemID") ON DELETE CASCADE
@@ -142,28 +150,12 @@ CREATE TABLE "Hotspots" (
 	FOREIGN KEY ("ringID") REFERENCES "Rings"("ringID") ON DELETE CASCADE
 );
 
-CREATE TABLE "TrailblazerMegaships" (
-	"trailblazerID" NUMERIC(20, 0) PRIMARY KEY,
-	"trailblazerName" VARCHAR(25) NOT NULL,
-	"trailblazerCoords" GEOMETRY(PointZ, 0) NOT NULL,
-	"lastUpdate" TIMESTAMPTZ NOT NULL
-);
-
 CREATE TABLE "ColonisableStarSystems" (
 	"colonisedSystemID" BIGINT,
 	"uncolonisedSystemID" BIGINT,
 	PRIMARY KEY ("colonisedSystemID", "uncolonisedSystemID"),
 	FOREIGN KEY ("colonisedSystemID") REFERENCES "StarSystems"("systemID") ON DELETE CASCADE,
 	FOREIGN KEY ("uncolonisedSystemID") REFERENCES "UncolonisedStarSystems"("systemID") ON DELETE CASCADE
-);
-
-CREATE TABLE "TrailblazerDistances" (
-	"uncolonisedSystemID" BIGINT,
-	"trailblazerID" NUMERIC(20, 0),
-	"distanceBetween" INT NOT NULL,
-	PRIMARY KEY ("uncolonisedSystemID", "trailblazerID"),
-	FOREIGN KEY ("uncolonisedSystemID") REFERENCES "UncolonisedStarSystems"("systemID") ON DELETE CASCADE,
-	FOREIGN KEY ("trailblazerID") REFERENCES "TrailblazerMegaships"("trailblazerID") ON DELETE CASCADE
 );
 
 CREATE TABLE "StagedStarSystems" (
@@ -181,47 +173,35 @@ INNER JOIN "StarSystems" ss ON css."colonisedSystemID" = ss."systemID";
 CREATE MATERIALIZED VIEW "DistinctUncolonisedStarSystems" AS
 SELECT DISTINCT "uncolonisedSystemID" FROM "ColonisableStarSystems";
 
-CREATE MATERIALIZED VIEW "ClosestTrailblazerByStarSystem" AS
-SELECT 
-	"uncolonisedSystemID",
-    "distanceBetween" "distanceToTrailblazer"
-FROM (
-	SELECT DISTINCT ON ("uncolonisedSystemID")
-	    "uncolonisedSystemID",
-	    "distanceBetween"
-	FROM
-	    "TrailblazerDistances"
-	ORDER BY
-	    "uncolonisedSystemID",
-	    "distanceBetween" ASC
-) as "ClosestTrailblazer"
-ORDER BY "distanceToTrailblazer" ASC;
-
 CREATE MATERIALIZED VIEW "MaxSearchValues" AS
-SELECT 
-	MAX("landableCount") "landableCount",
-	MAX("walkableCount") "walkableCount",
-	MAX("distanceToSol") "distanceToSol",
-	MAX("totalHotspots") "totalHotspots",
-	MAX("blackHoleCount") "blackHoleCount",
-	MAX("neutronStarCount") "neutronStarCount",
-	MAX("whiteDwarves") "whiteDwarves",
-	MAX("otherStarCount") "otherStarCount",
-	MAX("earthLikeCount") "earthLikeCount",
-	MAX("waterWorldCount") "waterWorldCount",
-	MAX("ammoniaWorldCount") "ammoniaWorldCount",
-	MAX("gasGiantCount") "gasGiantCount",
-	MAX("highMetalContentCount") "highMetalContentCount",
-	MAX("metalRichCount") "metalRichCount",
-	MAX("rockyIceBodyCount") "rockyIceBodyCount",
-	MAX("rockBodyCount") "rockBodyCount",
-	MAX("icyBodyCount") "icyBodyCount",
-	MAX("organicCount") "organicCount",
-	MAX("geologicalsCount") "geologicalsCount",
-	MAX("ringCount") "ringCount"
+SELECT
+	reg."regionID",
+	MAX(uss."landableCount") "landableCount",
+	MAX(uss."walkableCount") "walkableCount",
+	MAX(ST_3DDistance(ss."systemCoords", reg."regionCentreCoords")::INT) "distanceToRegionCentre",
+	MAX(uss."totalHotspots") "totalHotspots",
+	MAX(coc."blackHoleCount") "blackHoleCount",
+	MAX(coc."neutronStarCount") "neutronStarCount",
+	MAX(coc."whiteDwarves") "whiteDwarves",
+	MAX(coc."otherStarCount") "otherStarCount",
+	MAX(coc."earthLikeCount") "earthLikeCount",
+	MAX(coc."waterWorldCount") "waterWorldCount",
+	MAX(coc."ammoniaWorldCount") "ammoniaWorldCount",
+	MAX(coc."gasGiantCount") "gasGiantCount",
+	MAX(coc."highMetalContentCount") "highMetalContentCount",
+	MAX(coc."metalRichCount") "metalRichCount",
+	MAX(coc."rockyIceBodyCount") "rockyIceBodyCount",
+	MAX(coc."rockBodyCount") "rockBodyCount",
+	MAX(coc."icyBodyCount") "icyBodyCount",
+	MAX(coc."organicCount") "organicCount",
+	MAX(coc."geologicalsCount") "geologicalsCount",
+	MAX(coc."ringCount") "ringCount"
 FROM "DistinctUncolonisedStarSystems" duss
+INNER JOIN "StarSystems" ss ON duss."uncolonisedSystemID" = ss."systemID"
+INNER JOIN "Regions" reg ON ST_3DIntersects(ss."systemCoords", "GetRegionCube"(reg."regionCentreCoords", reg."regionRange"))
 INNER JOIN "ColonyOverrideCounts" coc ON duss."uncolonisedSystemID" = coc."systemID"
-INNER JOIN "UncolonisedStarSystems" uss  ON duss."uncolonisedSystemID" = uss."systemID";
+INNER JOIN "UncolonisedStarSystems" uss  ON duss."uncolonisedSystemID" = uss."systemID"
+GROUP BY reg."regionID";
 
 CREATE INDEX "idx_F_factionName" ON "Factions"("factionName");
 CREATE INDEX "idx_SS_systemName" ON "StarSystems"("systemName");
@@ -231,7 +211,6 @@ CREATE INDEX "idx_S_controllingFaction" ON "Stations"("controllingFaction");
 CREATE INDEX "idx_USS_lastUpdated" ON "UncolonisedStarSystems"("lastUpdated");
 CREATE INDEX "idx_USS_landableCount" ON "UncolonisedStarSystems"("landableCount");
 CREATE INDEX "idx_USS_walkableCount" ON "UncolonisedStarSystems"("walkableCount");
-CREATE INDEX "idx_USS_distanceToSol" ON "UncolonisedStarSystems"("distanceToSol");
 CREATE INDEX "idx_USS_totalHotspots" ON "UncolonisedStarSystems"("totalHotspots");
 CREATE INDEX "idx_USS_systemValue" ON "UncolonisedStarSystems"("systemValue");
 CREATE INDEX "idx_COC_blackHoleCount" ON "ColonyOverrideCounts"("blackHoleCount");
@@ -254,21 +233,18 @@ CREATE INDEX "idx_R_systemID" ON "Rings"("systemID");
 CREATE INDEX "idx_H_ringID" ON "Hotspots"("ringID");
 CREATE INDEX "idx_CSS_colonisedSystemID" ON "ColonisableStarSystems"("colonisedSystemID");
 CREATE INDEX "idx_CSS_uncolonisedSystemID" ON "ColonisableStarSystems"("uncolonisedSystemID");
-CREATE INDEX "idx_TD_uncolonisedSystemID" ON "TrailblazerDistances"("uncolonisedSystemID");
-CREATE INDEX "idx_TD_trailblazerID" ON "TrailblazerDistances"("trailblazerID");
-CREATE INDEX "idx_TD_distanceBetween" ON "TrailblazerDistances"("distanceBetween");
 CREATE INDEX "idx_DCSS_systemName" ON "DistinctColonisedStarSystems"("systemName");
-
 
 CREATE INDEX "idx_USSA_isLocked_isClaimed" ON "UncolonisedStarSystemsAvailability"("isLocked", "isClaimed");
 
-CREATE INDEX "idx_SS_systemCoords" ON "StarSystems" USING GIST("systemCoords");
-CREATE INDEX "idx_TM_trailblazerCoords" ON "TrailblazerMegaships" USING GIST("trailblazerCoords");
+CREATE INDEX "idx_SS_systemCoords" ON "StarSystems" USING GIST("systemCoords" gist_geometry_ops_nd);
+
+CREATE INDEX "idx_F_factionName_trgm" ON "Factions" USING GIN("factionName" gin_trgm_ops);
+CREATE INDEX "idx_SS_systemName_trgm" ON "StarSystems" USING GIN("systemName" gin_trgm_ops);
 
 CREATE UNIQUE INDEX "idx_DCSS_colonisedSystemID" ON "DistinctColonisedStarSystems"("colonisedSystemID");
 CREATE UNIQUE INDEX "idx_DUSS_uncolonisedSystemID" ON "DistinctUncolonisedStarSystems"("uncolonisedSystemID");
 CREATE UNIQUE INDEX "idx_DCSSC_key" ON "DistinctColonisableStarSystemsCount"("key");
-CREATE UNIQUE INDEX "idx_CTBSS_uncolonisedSystemID" ON "ClosestTrailblazerByStarSystem"("uncolonisedSystemID");
 
 CREATE TYPE "StarSystemInsertType" AS (
     "systemID" BIGINT,
@@ -292,7 +268,6 @@ CREATE TYPE "UncolonisedDetailsInsertType" AS (
 	"reserveLevel" "ReserveType",
 	"landableCount" SMALLINT,
 	"walkableCount" SMALLINT,
-	"distanceToSol" INT,
 	"totalHotspots" SMALLINT,
 	"systemValue" NUMERIC(5,2),
 	"blackHoleCount" SMALLINT,
