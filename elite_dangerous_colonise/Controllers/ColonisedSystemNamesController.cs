@@ -12,13 +12,14 @@ namespace elite_dangerous_colonise.Controllers
         public ColonisedSystemNamesController(NpgsqlDataSource dataSource, AppLogger logger)
             : base(dataSource, logger, "Colonised System Names Controller") { }
 
-        protected override async Task<IActionResult> ExecuteDatabaseQuery(string query)
+        protected override async Task<IActionResult> ExecuteDatabaseQuery(string query, string region)
         {
             await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
             {
-                await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"SelectColonisedSystemNamesJson\"(@name)", conn))
+                await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"SelectColonisedSystemNamesJson\"(@systemName, @regionName)", conn))
                 {
-                    command.Parameters.AddWithValue("name", query);
+                    command.Parameters.AddWithValue("systemName", query);
+                    command.Parameters.AddWithValue("regionName", query);
 
                     await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                     {

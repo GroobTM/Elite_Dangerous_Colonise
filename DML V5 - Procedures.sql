@@ -425,7 +425,6 @@ RETURNS jsonb AS $$
 		INNER JOIN "UncolonisedStarSystemsAvailability" ussa ON duss."uncolonisedSystemID" = ussa."systemID"
 		WHERE ussa."isLocked" = FALSE
 			AND ussa."isClaimed" = FALSE
-			AND reg."regionName" = "inputRegionName"
 			AND coc."blackHoleCount" BETWEEN "inputMinBlackHoles" AND "inputMaxBlackHoles"
 			AND coc."neutronStarCount" BETWEEN "inputMinNeutronStars" AND "inputMaxNeutronStars"
 			AND coc."whiteDwarves" BETWEEN "inputMinWhiteDwarves" AND "inputMaxWhiteDwarves"
@@ -567,7 +566,7 @@ RETURNS jsonb AS $$
 	) tr;
 $$ LANGUAGE sql;
 
-CREATE OR REPLACE FUNCTION "SelectFactionNamesJson"("name" VARCHAR(75))
+CREATE OR REPLACE FUNCTION "SelectFactionNamesJson"("inputFactionName" VARCHAR(75), "inputRegionName" VARCHAR(75))
 RETURNS jsonb AS $$
 	SELECT jsonb_agg(
 		jsonb_build_object(
@@ -575,14 +574,15 @@ RETURNS jsonb AS $$
 		)
 	)
 	FROM (
-		SELECT "factionName"
-		FROM "Factions"
-		WHERE "factionName" ILIKE '%' || "name" || '%'
+		SELECT DISTINCT "factionName"
+		FROM "FactionsByRegion"
+		WHERE "factionName" ILIKE '%' || "inputFactionName" || '%'
+		AND "regionName" = "inputRegionName"
 		LIMIT 20
 	) as "factionNames";
 $$ LANGUAGE sql;
 
-CREATE OR REPLACE FUNCTION "SelectColonisedSystemNamesJson"("name" VARCHAR(75))
+CREATE OR REPLACE FUNCTION "SelectColonisedSystemNamesJson"("inputSystemName" VARCHAR(75), "inputRegionName" VARCHAR(75))
 RETURNS jsonb AS $$
 	SELECT jsonb_agg(
 		jsonb_build_object(
@@ -590,10 +590,10 @@ RETURNS jsonb AS $$
 		)
 	)
 	FROM (
-		SELECT "systemName"
-		FROM "StarSystems"
-		WHERE "isColonised" = TRUE
-		AND "systemName" ILIKE '%' || "name" || '%'
+		SELECT DISTINCT "systemName"
+		FROM "SystemsByRegion"
+		WHERE "systemName" ILIKE '%' || "inputSystemName" || '%'
+		AND "regionName" = "inputRegionName"
 		LIMIT 20
 	) as "systemNames";
 $$ LANGUAGE sql;
@@ -619,6 +619,20 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+CREATE OR REPLACE FUNCTION "RefreshSystemsByRegion"()
+RETURNS void AS $$
+BEGIN
+    REFRESH MATERIALIZED VIEW "SystemsByRegion";
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION "RefreshFactionsByRegion"()
+RETURNS void AS $$
+BEGIN
+    REFRESH MATERIALIZED VIEW "FactionsByRegion";
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 CREATE OR REPLACE FUNCTION "ReportStarSystem"("inputSystemID" NUMERIC(20, 0), "isLockReport" BOOLEAN)
 RETURNS VOID AS $$
 BEGIN
@@ -636,5 +650,13 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION "SelectMaxValues"("inputRegionName" VARCHAR(75))
+RETURNS "MaxSearchValues" AS $$
+	SELECT msv.* FROM "MaxSearchValues" msv
+	INNER JOIN "Regions" r ON msv."regionID" = r."regionID"
+	WHERE r."regionName" = "inputRegionName"
+	LIMIT 1;
+$$ LANGUAGE sql;
 
 COMMIT TRANSACTION;

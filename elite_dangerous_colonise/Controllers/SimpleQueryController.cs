@@ -23,9 +23,9 @@ namespace elite_dangerous_colonise.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] string? query)
+        public async Task<IActionResult> Get([FromQuery] string? query, [FromQuery] string? region)
         {
-            if (string.IsNullOrEmpty(query) || query.Length < MIN_QUERY_LENGTH)
+            if (string.IsNullOrEmpty(query) || string.IsNullOrEmpty(region) || query.Length < MIN_QUERY_LENGTH)
             {
                 return Ok(new JArray());
             }
@@ -36,7 +36,7 @@ namespace elite_dangerous_colonise.Controllers
                 {
                     try
                     {
-                        return await ExecuteDatabaseQuery(query);
+                        return await ExecuteDatabaseQuery(query, region);
                     }
                     catch (Exception)
                     {
@@ -80,6 +80,6 @@ namespace elite_dangerous_colonise.Controllers
             });
         }
 
-        protected abstract Task<IActionResult> ExecuteDatabaseQuery(string query);
+        protected abstract Task<IActionResult> ExecuteDatabaseQuery(string query, string region);
     }
 }

@@ -80,34 +80,38 @@ public class IndexModel : PageModel
             {
                 await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
                 {
-                    await using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"MaxSearchValues\"", conn))
+                    await using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"SelectMaxValues\"(@regionName)", conn))
                     {
+                        command.Parameters.AddWithValue("regionName", "Sol");
+
                         await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                         {
-                            await reader.ReadAsync();
+                            if (await reader.ReadAsync())
+                            {
 
-                            return new SelectMaxSearchValuesResult(
-                                reader.GetInt32(0),
-                                reader.GetInt32(1),
-                                reader.GetInt32(2),
-                                reader.GetInt32(3),
-                                reader.GetInt32(4),
-                                reader.GetInt32(5),
-                                reader.GetInt32(6),
-                                reader.GetInt32(7),
-                                reader.GetInt32(8),
-                                reader.GetInt32(9),
-                                reader.GetInt32(10),
-                                reader.GetInt32(11),
-                                reader.GetInt32(12),
-                                reader.GetInt32(13),
-                                reader.GetInt32(14),
-                                reader.GetInt32(15),
-                                reader.GetInt32(16),
-                                reader.GetInt32(17),
-                                reader.GetInt32(18),
-                                reader.GetInt32(19)
-                                );
+                                return new SelectMaxSearchValuesResult(
+                                    reader.GetInt32(1),
+                                    reader.GetInt32(2),
+                                    reader.GetInt32(3),
+                                    reader.GetInt32(4),
+                                    reader.GetInt32(5),
+                                    reader.GetInt32(6),
+                                    reader.GetInt32(7),
+                                    reader.GetInt32(8),
+                                    reader.GetInt32(9),
+                                    reader.GetInt32(10),
+                                    reader.GetInt32(11),
+                                    reader.GetInt32(12),
+                                    reader.GetInt32(13),
+                                    reader.GetInt32(14),
+                                    reader.GetInt32(15),
+                                    reader.GetInt32(16),
+                                    reader.GetInt32(17),
+                                    reader.GetInt32(18),
+                                    reader.GetInt32(19),
+                                    reader.GetInt32(20)
+                                    );
+                            }
                         }
                     }
                 }

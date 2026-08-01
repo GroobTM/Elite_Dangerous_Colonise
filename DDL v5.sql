@@ -205,6 +205,23 @@ INNER JOIN "ColonyOverrideCounts" coc ON duss."uncolonisedSystemID" = coc."syste
 INNER JOIN "UncolonisedStarSystems" uss  ON duss."uncolonisedSystemID" = uss."systemID"
 GROUP BY reg."regionID";
 
+CREATE MATERIALIZED VIEW "SystemsByRegion" AS
+SELECT DISTINCT
+	ss."systemName",
+	reg."regionName"
+FROM "StarSystems" ss
+INNER JOIN "Regions" reg ON ST_3DIntersects(ss."systemCoords", "GetRegionCube"(reg."regionCentreCoords", reg."regionRange"))
+WHERE ss."isColonised" = TRUE;
+
+CREATE MATERIALIZED VIEW "FactionsByRegion" AS
+SELECT DISTINCT
+	f."factionName",
+	reg."regionName"
+FROM "Factions" f
+INNER JOIN "Stations" s ON f."factionID" = s."controllingFaction"
+INNER JOIN "StarSystems" ss ON s."systemID" = ss."systemID"
+INNER JOIN "Regions" reg ON ST_3DIntersects(ss."systemCoords", "GetRegionCube"(reg."regionCentreCoords", reg."regionRange"));
+
 CREATE INDEX "idx_F_factionName" ON "Factions"("factionName");
 CREATE INDEX "idx_SS_systemName" ON "StarSystems"("systemName");
 CREATE INDEX "idx_SS_isColonised" ON "StarSystems"("isColonised");
@@ -236,13 +253,15 @@ CREATE INDEX "idx_H_ringID" ON "Hotspots"("ringID");
 CREATE INDEX "idx_CSS_colonisedSystemID" ON "ColonisableStarSystems"("colonisedSystemID");
 CREATE INDEX "idx_CSS_uncolonisedSystemID" ON "ColonisableStarSystems"("uncolonisedSystemID");
 CREATE INDEX "idx_DCSS_systemName" ON "DistinctColonisedStarSystems"("systemName");
+CREATE INDEX "idx_SBR_regionName" ON "SystemsByRegion"("regionName");
+CREATE INDEX "idx_FBR_regionName" ON "FactionsByRegion"("regionName");
 
 CREATE INDEX "idx_USSA_isLocked_isClaimed" ON "UncolonisedStarSystemsAvailability"("isLocked", "isClaimed");
 
 CREATE INDEX "idx_SS_systemCoords" ON "StarSystems" USING GIST("systemCoords" gist_geometry_ops_nd);
 
-CREATE INDEX "idx_F_factionName_trgm" ON "Factions" USING GIN("factionName" gin_trgm_ops);
-CREATE INDEX "idx_SS_systemName_trgm" ON "StarSystems" USING GIN("systemName" gin_trgm_ops);
+CREATE INDEX "idx_SBR_systemName" ON "SystemsByRegion" USING GIN("systemName" gin_trgm_ops);
+CREATE INDEX "idx_FBR_factionName" ON "FactionsByRegion" USING GIN("factionName" gin_trgm_ops);
 
 CREATE UNIQUE INDEX "idx_DCSS_colonisedSystemID" ON "DistinctColonisedStarSystems"("colonisedSystemID");
 CREATE UNIQUE INDEX "idx_DUSS_uncolonisedSystemID" ON "DistinctUncolonisedStarSystems"("uncolonisedSystemID");

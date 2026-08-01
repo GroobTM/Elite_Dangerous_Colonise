@@ -100,6 +100,26 @@ namespace elite_dangerous_colonise.Services
             }
         }
 
+        private async Task RefreshSystemsByRegion(NpgsqlConnection conn)
+        {
+            logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing RefreshSystemsByRegion view.");
+
+            await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"RefreshSystemsByRegion\"()", conn))
+            {
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private async Task RefreshFactionsByRegion(NpgsqlConnection conn)
+        {
+            logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing RefreshFactionsByRegion view.");
+
+            await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"RefreshFactionsByRegion\"()", conn))
+            {
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
         private async Task RefreshValuesTables(NpgsqlConnection conn)
         {
             await using (NpgsqlTransaction transaction = await conn.BeginTransactionAsync())
@@ -107,6 +127,8 @@ namespace elite_dangerous_colonise.Services
                 await RefreshDistinctColonisedStarSystems(conn);
                 await RefreshDistinctUncolonisedStarSystems(conn);
                 await RefreshMaxSearchValues(conn);
+                await RefreshSystemsByRegion(conn);
+                await RefreshFactionsByRegion(conn);
 
                 await transaction.CommitAsync();
 

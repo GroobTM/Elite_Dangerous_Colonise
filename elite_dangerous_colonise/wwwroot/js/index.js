@@ -21,6 +21,7 @@ var formData;
 var resultsPerPage = 10;
 var currentPage = 1;
 var maxPages = 1;
+var regionName = "Sol";
 
 var updateHour = 5;
 var updateMinute = 0;
@@ -124,6 +125,7 @@ function SetupSearchInput(id, api) {
         new HSComboBox(this, {
             apiUrl: api,
             apiSearchQuery: "query",
+            apiQuery: `region=${regionName}`,
             outputItemTemplate: `
                 <div class="w-full cursor-pointer px-4 py-2 text-[#0F0F0F] hover:bg-[#E1E1E1]" data-hs-combo-box-output-item>
                     <div class="flex justify-between items-center w-full">
@@ -145,13 +147,13 @@ function SetupSearchInput(id, api) {
     });
 }
 
-function SetupMaxDistanceFromSolSlider() {
-    const distanceFromSolSlider = document.querySelector("#distance_from_sol_slider");
-    const distanceFromSolValue = document.querySelector("#distance_from_sol_value");
-    const distanceFromSolSliderInstance = new HSRangeSlider(distanceFromSolSlider);
+function SetupMaxDistanceFromRegionCentreSlider() {
+    const distanceFromRegionCentreSlider = document.querySelector("#distance_from_region_centre_slider");
+    const distanceFromRegionCentreValue = document.querySelector("#distance_from_region_centre_value");
+    const distanceFromRegionCentreSliderInstance = new HSRangeSlider(distanceFromRegionCentreSlider);
 
-    distanceFromSolSlider.noUiSlider.on("update", function (values) {
-        distanceFromSolValue.textContent = Math.trunc(values[0]) + " ly";
+    distanceFromRegionCentreSlider.noUiSlider.on("update", function (values) {
+        distanceFromRegionCentreValue.textContent = Math.trunc(values[0]) + " ly";
     });
 }
 
@@ -200,7 +202,7 @@ $(window).on("load", function () {
 
     SetupSearchInput("colonised_system_search", "/api/ColonisedSystemNames");
     SetupSearchInput("faction_search", "/api/FactionNames");
-    SetupMaxDistanceFromSolSlider();
+    SetupMaxDistanceFromRegionCentreSlider();
     SetupGenericSlider("landable_bodies_slider", "landable_bodies_value");
     SetupGenericSlider("walkable_bodies_slider", "walkable_bodies_value");
     SetupGenericSlider("black_holes_slider", "black_holes_value");
@@ -243,7 +245,7 @@ function UpdateFormFromParams(searchParams) {
     $("#sort_order").val(searchParams.sortOrder);
     $("#faction").val(searchParams.factionName);
 
-    document.querySelector("#distance_from_sol_slider").noUiSlider.set(searchParams.maxDistanceToSol);
+    document.querySelector("#distance_from_region_centre_slider").noUiSlider.set(searchParams.maxDistanceToRegionCentre);
     document.querySelector("#landable_bodies_slider").noUiSlider.set([searchParams.minLandables, searchParams.maxLandables]);
     document.querySelector("#walkable_bodies_slider").noUiSlider.set([searchParams.minWalkables, searchParams.maxWalkables]);
     document.querySelector("#black_holes_slider").noUiSlider.set([searchParams.minBlackHoles, searchParams.maxBlackHoles]);
@@ -306,7 +308,7 @@ $(window).on("load", function () {
                 && initialParams.has("minIces") && initialParams.has("maxIces") && initialParams.has("minOrganics") && initialParams.has("maxOrganics")
                 && initialParams.has("minGeologicals") && initialParams.has("maxGeologicals") && initialParams.has("minRings") && initialParams.has("maxRings")
                 && initialParams.has("minLandables") && initialParams.has("maxLandables") && initialParams.has("minWalkables") && initialParams.has("maxWalkables")
-                && initialParams.has("maxDistanceToSol") && initialParams.has("hotspotTypes")) {
+                && initialParams.has("maxDistanceToRegionCentre") && initialParams.has("hotspotTypes")) {
 
                 UpdateFormFromParams(Object.fromEntries(initialParams));
 
@@ -382,8 +384,10 @@ function AddSliderDataToForm(sliderID, sliderName) {
 function SetFormData() {
     formData = new FormData(document.getElementById("systems_search"));
 
-    const distanceFromSol = document.querySelector("#distance_from_sol_slider").noUiSlider.get();
-    formData.append("MaxDistanceFromSol", distanceFromSol);
+    formData.append("RegionName", regionName);
+
+    const distanceFromRegionCentre = document.querySelector("#distance_from_region_centre_slider").noUiSlider.get();
+    formData.append("MaxDistanceFromRegionCentre", distanceFromRegionCentre);
 
     AddSliderDataToForm("landable_bodies_slider", "Landables");
     AddSliderDataToForm("walkable_bodies_slider", "Walkables");
@@ -457,7 +461,7 @@ async function LoadResults(updateUrl = true) {
         maxLandables: parseInt(formData.get("MaxLandables")),
         minWalkables: parseInt(formData.get("MinWalkables")),
         maxWalkables: parseInt(formData.get("MaxWalkables")),
-        maxDistanceToSol: parseInt(formData.get("MaxDistanceFromSol")),
+        maxDistanceToRegionCentre: parseInt(formData.get("MaxDistanceFromRegionCentre")),
         hotspotTypes: formData.get("HotspotTypes")
     });
 
@@ -515,7 +519,7 @@ function FormatResults(results) {
                         <h3 class="mt-3 font-bold">Last Updated:</h3>
                         <p class="mt-3">${FormatDate(system.lastUpdate)}</p>
                         <h3 class="mt-3 font-bold">Distance to Sol:</h3>
-                        <p class="mt-3">${system.distanceToSol} ly</p>
+                        <p class="mt-3">${system.distanceToRegionCentre} ly</p>
                         <h3 class="mt-3 font-bold">System Reserve:</h3>
                         <p class="mt-3">${system.reserveLevel}</p>
                         <h3 class="mt-3 font-bold">Landable Bodies:</h3>
@@ -688,22 +692,6 @@ function FormatStations(colonisedSystemID, inputStations) {
     }
     
     return stationList;
-}
-
-function FormatTrailblazers(inputTrailblazers) {
-    var trailblazersList = ``;
-
-    inputTrailblazers.sort((a, b) => a.trailblazerName.localeCompare(b.trailblazerName, undefined, { numeric: true }));
-
-    inputTrailblazers.forEach(trailblazer => {
-        trailblazersList += `
-        <li class="list-inside list-disc">
-            <a href="https://spansh.co.uk/station/${trailblazer.trailblazerID}" target="_blank" class="text-blue-800 underline">${trailblazer.trailblazerName}</a>&nbsp;-&nbsp;${trailblazer.distanceBetween}&nbsp;ly
-        </li>
-        `;
-    });
-
-    return trailblazersList;
 }
 
 function FormatColonisedSystemTooltips(systemID, inputColonisedSystems) {

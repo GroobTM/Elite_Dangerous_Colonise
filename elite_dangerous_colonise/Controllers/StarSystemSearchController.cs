@@ -91,6 +91,7 @@ namespace elite_dangerous_colonise.Controllers
                             await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
                             {
                                 await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"SelectSearchResults\"(" +
+                                    "@regionName, " +
                                     "@sortOrder, " +
                                     "@pageNo, " +
                                     "@resultsPerPage, " +
@@ -137,6 +138,7 @@ namespace elite_dangerous_colonise.Controllers
                                     "@removedSystemIDs" +
                                     ")", conn))
                                 {
+                                    command.Parameters.AddWithValue("regionName", searchQuery.RegionName);
                                     command.Parameters.AddWithValue("sortOrder", ParseSortOrder(searchQuery.SortOrder));
                                     command.Parameters.AddWithValue("pageNo", Math.Max(1, searchQuery.PageNo));
                                     command.Parameters.AddWithValue("resultsPerPage", Math.Min((short)50, searchQuery.ResultsPerPage));
@@ -253,6 +255,7 @@ namespace elite_dangerous_colonise.Controllers
 
         public class SearchQueryModel
         {
+            public required string RegionName { get; set; }
             public required string SortOrder { get; set; }
             public int PageNo { get; set; }
             public short ResultsPerPage { get; set; }

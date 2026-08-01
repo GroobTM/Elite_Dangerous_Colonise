@@ -13,7 +13,7 @@ namespace elite_dangerous_colonise.Controllers
         private readonly NpgsqlDataSource dataSource;
         private readonly AppLogger logger;
 
-        private List<long>? reportedStarSystems = null;
+        private List<ulong>? reportedStarSystems = null;
         private DateTime? lastReport = null;
 
         public StarSystemReportController(NpgsqlDataSource dataSource, AppLogger logger)
@@ -86,7 +86,7 @@ namespace elite_dangerous_colonise.Controllers
 
             if (!string.IsNullOrEmpty(reportedStarSystemsJson))
             {
-                reportedStarSystems = JsonConvert.DeserializeObject<List<long>>(reportedStarSystemsJson);
+                reportedStarSystems = JsonConvert.DeserializeObject<List<ulong>>(reportedStarSystemsJson);
             }
 
             if (!string.IsNullOrEmpty(lastReportJson))
@@ -101,7 +101,7 @@ namespace elite_dangerous_colonise.Controllers
             {
                 await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"ReportStarSystem\"(@inputSystemID, @isLocked)", conn))
                 {
-                    command.Parameters.AddWithValue("inputSystemID", reportData.ReportedSystemID);
+                    command.Parameters.AddWithValue("inputSystemID", (decimal)reportData.ReportedSystemID);
                     command.Parameters.AddWithValue("isLocked", reportData.IsLocked);
 
                     await command.ExecuteNonQueryAsync();
@@ -109,7 +109,7 @@ namespace elite_dangerous_colonise.Controllers
             }
         }
 
-        private void AddStarSystemToReportList(long systemID)
+        private void AddStarSystemToReportList(ulong systemID)
         {
             reportedStarSystems.Add(systemID);
             HttpContext.Session.SetString("reportedStarSystemsJson", JsonConvert.SerializeObject(reportedStarSystems));
@@ -117,7 +117,7 @@ namespace elite_dangerous_colonise.Controllers
 
         public class ReportQueryModel
         {
-            public long ReportedSystemID { get; set; }
+            public ulong ReportedSystemID { get; set; }
             public bool IsLocked { get; set; }
         }
     }
