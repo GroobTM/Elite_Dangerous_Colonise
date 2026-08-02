@@ -58,6 +58,7 @@ $$ LANGUAGE sql;
 
 CREATE OR REPLACE FUNCTION "InsertStarSystemsBulk"("inputStarSystems" "StarSystemInsertType"[])
 RETURNS VOID AS $$
+	-- Insert Star Systems
 	INSERT INTO "StarSystems" (
 		"systemID",
 		"systemName",
@@ -75,6 +76,18 @@ RETURNS VOID AS $$
 		"isColonised" = EXCLUDED."isColonised"
 	WHERE "StarSystems"."isColonised" = FALSE
 	AND EXCLUDED."isColonised" = TRUE;
+	
+	-- Insert Star System Region
+	INSERT INTO "StarSystemsByRegion" (
+		"systemID",
+		"regionID"
+	)
+	SELECT
+		inss."systemID",
+		reg."regionID"
+	FROM unnest("inputStarSystems") AS inss
+	INNER JOIN "Regions" reg ON ST_3DIntersects(ST_MakePoint(inss."coordinateX", inss."coordinateY", inss."coordinateZ"), "GetRegionCube"(reg."regionCentreCoords", reg."regionRange"))
+	ON CONFLICT ("systemID", "regionID") DO NOTHING;
 $$ LANGUAGE sql;
 
 CREATE OR REPLACE FUNCTION "InsertStationsBulk"("inputStations" "StationInsertType"[])
@@ -418,12 +431,13 @@ RETURNS jsonb AS $$
 			coc."ringCount"
 		FROM "DistinctUncolonisedStarSystems" duss
 		INNER JOIN "StarSystems" ss ON duss."uncolonisedSystemID" = ss."systemID"
-		INNER JOIN "Regions" reg ON reg."regionName" = "inputRegionName"
-			AND ST_3DIntersects(ss."systemCoords", "GetRegionCube"(reg."regionCentreCoords", reg."regionRange"))
+		INNER JOIN "StarSystemsByRegion" ssbr ON ss."systemID" = ssbr."systemID"
+		INNER JOIN "Regions" reg ON ssbr."regionID" = reg."regionID"
 		INNER JOIN "UncolonisedStarSystems" uss ON duss."uncolonisedSystemID" = uss."systemID"
 		INNER JOIN "ColonyOverrideCounts" coc ON duss."uncolonisedSystemID" = coc."systemID"
 		INNER JOIN "UncolonisedStarSystemsAvailability" ussa ON duss."uncolonisedSystemID" = ussa."systemID"
-		WHERE ussa."isLocked" = FALSE
+		WHERE reg."regionName" = "inputRegionName"
+			AND ussa."isLocked" = FALSE
 			AND ussa."isClaimed" = FALSE
 			AND coc."blackHoleCount" BETWEEN "inputMinBlackHoles" AND "inputMaxBlackHoles"
 			AND coc."neutronStarCount" BETWEEN "inputMinNeutronStars" AND "inputMaxNeutronStars"

@@ -83,6 +83,14 @@ CREATE TABLE "StarSystems" (
 	"isColonised" BOOLEAN NOT NULL
 );
 
+CREATE TABLE "StarSystemsByRegion" (
+	"systemID" NUMERIC(20, 0),
+	"regionID" INT,
+	PRIMARY KEY ("systemID", "regionID"),
+	FOREIGN KEY ("systemID") REFERENCES "StarSystems"("systemID") ON DELETE CASCADE,
+	FOREIGN KEY ("regionID") REFERENCES "Regions"("regionID") ON DELETE CASCADE
+);
+
 CREATE TABLE "Stations" (
 	"stationID" NUMERIC(20, 0) PRIMARY KEY,
 	"systemID" NUMERIC(20, 0) NOT NULL,
@@ -200,7 +208,8 @@ SELECT
 	MAX(coc."ringCount") "ringCount"
 FROM "DistinctUncolonisedStarSystems" duss
 INNER JOIN "StarSystems" ss ON duss."uncolonisedSystemID" = ss."systemID"
-INNER JOIN "Regions" reg ON ST_3DIntersects(ss."systemCoords", "GetRegionCube"(reg."regionCentreCoords", reg."regionRange"))
+INNER JOIN "StarSystemsByRegion" ssbr ON ss."systemID" = ssbr."systemID"
+INNER JOIN "Regions" reg ON ssbr."regionID" = reg."regionID"
 INNER JOIN "ColonyOverrideCounts" coc ON duss."uncolonisedSystemID" = coc."systemID"
 INNER JOIN "UncolonisedStarSystems" uss  ON duss."uncolonisedSystemID" = uss."systemID"
 GROUP BY reg."regionID";
@@ -210,7 +219,8 @@ SELECT DISTINCT
 	ss."systemName",
 	reg."regionName"
 FROM "StarSystems" ss
-INNER JOIN "Regions" reg ON ST_3DIntersects(ss."systemCoords", "GetRegionCube"(reg."regionCentreCoords", reg."regionRange"))
+INNER JOIN "StarSystemsByRegion" ssbr ON ss."systemID" = ssbr."systemID"
+INNER JOIN "Regions" reg ON ssbr."regionID" = reg."regionID"
 WHERE ss."isColonised" = TRUE;
 
 CREATE MATERIALIZED VIEW "FactionsByRegion" AS
@@ -220,11 +230,14 @@ SELECT DISTINCT
 FROM "Factions" f
 INNER JOIN "Stations" s ON f."factionID" = s."controllingFaction"
 INNER JOIN "StarSystems" ss ON s."systemID" = ss."systemID"
-INNER JOIN "Regions" reg ON ST_3DIntersects(ss."systemCoords", "GetRegionCube"(reg."regionCentreCoords", reg."regionRange"));
+INNER JOIN "StarSystemsByRegion" ssbr ON ss."systemID" = ssbr."systemID"
+INNER JOIN "Regions" reg ON ssbr."regionID" = reg."regionID";
 
 CREATE INDEX "idx_F_factionName" ON "Factions"("factionName");
 CREATE INDEX "idx_SS_systemName" ON "StarSystems"("systemName");
 CREATE INDEX "idx_SS_isColonised" ON "StarSystems"("isColonised");
+CREATE INDEX "idx_SSBR_systemID" ON "StarSystemsByRegion"("systemID");
+CREATE INDEX "idx_SSBR_regionID" ON "StarSystemsByRegion"("regionID");
 CREATE INDEX "idx_S_systemID" ON "Stations"("systemID");
 CREATE INDEX "idx_S_controllingFaction" ON "Stations"("controllingFaction");
 CREATE INDEX "idx_USS_lastUpdated" ON "UncolonisedStarSystems"("lastUpdated");
