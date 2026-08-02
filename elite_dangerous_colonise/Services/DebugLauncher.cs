@@ -1,4 +1,7 @@
-﻿namespace elite_dangerous_colonise.Services
+﻿using System.IO.Compression;
+using System.Net.Sockets;
+
+namespace elite_dangerous_colonise.Services
 {
     /// <summary> Creates a launcher for manually inserting a Json file into the database </summary>
     public class DebugLauncher
@@ -23,7 +26,8 @@
         {
             Console.WriteLine("-----------------------Elite Dangerous Colonise-----------------------");
             Console.WriteLine("Launch Options:");
-            Console.WriteLine("1. Insert galaxy Json data into database.");
+            Console.WriteLine("1. Insert galaxy Json file into database.");
+            Console.WriteLine("2. Insert galaxy GZip file into database.");
             Console.WriteLine("2. Exit");
             Console.WriteLine("----------------------------------------------------------------------");
         }
@@ -40,11 +44,16 @@
                 switch (input)
                 {
                     case "1":
-                        await InsertIntoDatabase();
+                        await InsertIntoDatabase(true);
                         selectionValid = true;
                         break;
 
                     case "2":
+                        selectionValid = true;
+                        await InsertIntoDatabase(false);
+                        break;
+
+                    case "3":
                         selectionValid = true;
                         break;
 
@@ -55,7 +64,7 @@
             }
         }
 
-        private async Task InsertIntoDatabase()
+        private async Task InsertIntoDatabase(bool readAsJson)
         {
             string? filePath = null;
 
@@ -68,7 +77,18 @@
             await using AsyncServiceScope scope = serviceProvider.CreateAsyncScope();
             DatabaseBulkWriter dbWriter = scope.ServiceProvider.GetRequiredService<DatabaseBulkWriter>();
 
-            await dbWriter.InsertJsonIntoDatabase(filePath);
+            if (readAsJson)
+            {
+                await dbWriter.InsertJsonIntoDatabase(filePath);
+            }
+            else
+            {
+                using FileStream streamReader = File.OpenRead(filePath);
+                await using (GZipStream decompressionStream = new GZipStream(streamReader, CompressionMode.Decompress))
+                {
+                    await dbWriter.InsertJsonIntoDatabase(decompressionStream);
+                }
+            }
         }
     }
 }
