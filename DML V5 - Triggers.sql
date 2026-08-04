@@ -7,7 +7,6 @@ BEGIN
 	INSERT INTO "UncolonisedStarSystemsAvailability" ("systemID")
 	SELECT "systemID"
 	FROM "NewlyInserted"
-	WHERE "isColonised" = FALSE
 	ON CONFLICT("systemID") DO NOTHING;
 	
 	RETURN NULL;
@@ -15,7 +14,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER "TriggerAddNewSystemsToAvailabilityOnInsert"
-AFTER INSERT ON "StarSystems"
+AFTER INSERT ON "UncolonisedStarSystems"
 REFERENCING NEW TABLE AS "NewlyInserted"
 FOR EACH STATEMENT
 EXECUTE FUNCTION "TriggerAddNewSystemsToAvailabilityOnInsert"();
@@ -24,7 +23,6 @@ CREATE OR REPLACE FUNCTION "TriggerRemoveUncolonisedSystemAndStageColonisedOnUpd
 RETURNS TRIGGER AS $$
 BEGIN
 	DELETE FROM "UncolonisedStarSystems" WHERE "systemID" = NEW."systemID";
-	DELETE FROM "UncolonisedStarSystemsAvailability" WHERE "systemID" = NEW."systemID";
 	
 	INSERT INTO "StagedStarSystems" ("systemID")
 	VALUES (NEW."systemID")
