@@ -86,6 +86,7 @@ CREATE TABLE "StarSystems" (
 CREATE TABLE "StarSystemsByRegion" (
 	"systemID" NUMERIC(20, 0),
 	"regionID" INT,
+	"distanceToCentre" INT NOT NULL,
 	PRIMARY KEY ("systemID", "regionID"),
 	FOREIGN KEY ("systemID") REFERENCES "StarSystems"("systemID") ON DELETE CASCADE,
 	FOREIGN KEY ("regionID") REFERENCES "Regions"("regionID") ON DELETE CASCADE
@@ -185,10 +186,10 @@ SELECT DISTINCT "uncolonisedSystemID" FROM "ColonisableStarSystems";
 
 CREATE MATERIALIZED VIEW "MaxSearchValues" AS
 SELECT
-	reg."regionID",
+	ssbr."regionID",
 	MAX(uss."landableCount") "landableCount",
 	MAX(uss."walkableCount") "walkableCount",
-	MAX(ST_3DDistance(ss."systemCoords", reg."regionCentreCoords")::INT) "distanceToRegionCentre",
+	MAX(ssbr."distanceToCentre") "distanceToRegionCentre",
 	MAX(uss."totalHotspots") "totalHotspots",
 	MAX(coc."blackHoleCount") "blackHoleCount",
 	MAX(coc."neutronStarCount") "neutronStarCount",
@@ -207,12 +208,10 @@ SELECT
 	MAX(coc."geologicalsCount") "geologicalsCount",
 	MAX(coc."ringCount") "ringCount"
 FROM "DistinctUncolonisedStarSystems" duss
-INNER JOIN "StarSystems" ss ON duss."uncolonisedSystemID" = ss."systemID"
-INNER JOIN "StarSystemsByRegion" ssbr ON ss."systemID" = ssbr."systemID"
-INNER JOIN "Regions" reg ON ssbr."regionID" = reg."regionID"
+INNER JOIN "StarSystemsByRegion" ssbr ON duss."uncolonisedSystemID" = ssbr."systemID"
 INNER JOIN "ColonyOverrideCounts" coc ON duss."uncolonisedSystemID" = coc."systemID"
 INNER JOIN "UncolonisedStarSystems" uss  ON duss."uncolonisedSystemID" = uss."systemID"
-GROUP BY reg."regionID";
+GROUP BY ssbr."regionID";
 
 CREATE MATERIALIZED VIEW "SystemsByRegion" AS
 SELECT DISTINCT
@@ -238,6 +237,7 @@ CREATE INDEX "idx_SS_systemName" ON "StarSystems"("systemName");
 CREATE INDEX "idx_SS_isColonised" ON "StarSystems"("isColonised");
 CREATE INDEX "idx_SSBR_systemID" ON "StarSystemsByRegion"("systemID");
 CREATE INDEX "idx_SSBR_regionID" ON "StarSystemsByRegion"("regionID");
+CREATE INDEX "idx_SSBR_distanceToCentre" ON "StarSystemsByRegion"("distanceToCentre");
 CREATE INDEX "idx_S_systemID" ON "Stations"("systemID");
 CREATE INDEX "idx_S_controllingFaction" ON "Stations"("controllingFaction");
 CREATE INDEX "idx_USS_lastUpdated" ON "UncolonisedStarSystems"("lastUpdated");
@@ -270,6 +270,8 @@ CREATE INDEX "idx_SBR_regionName" ON "SystemsByRegion"("regionName");
 CREATE INDEX "idx_FBR_regionName" ON "FactionsByRegion"("regionName");
 
 CREATE INDEX "idx_USSA_isLocked_isClaimed" ON "UncolonisedStarSystemsAvailability"("isLocked", "isClaimed");
+CREATE INDEX "idx_SSBR_regionID_systemID" ON "StarSystemsByRegion" ("regionID", "systemID");
+CREATE INDEX "idx_SSBR_regionID_distance" ON "StarSystemsByRegion"("regionID", "distanceToCentre");
 
 CREATE INDEX "idx_SS_systemCoords" ON "StarSystems" USING GIST("systemCoords" gist_geometry_ops_nd);
 
@@ -278,6 +280,8 @@ CREATE INDEX "idx_FBR_factionName" ON "FactionsByRegion" USING GIN("factionName"
 
 CREATE UNIQUE INDEX "idx_DCSS_colonisedSystemID" ON "DistinctColonisedStarSystems"("colonisedSystemID");
 CREATE UNIQUE INDEX "idx_DUSS_uncolonisedSystemID" ON "DistinctUncolonisedStarSystems"("uncolonisedSystemID");
+
+CREATE STATISTICS "stats_SSBR_region_dist" ON "regionID", "distanceToCentre" FROM "StarSystemsByRegion";
 
 CREATE TYPE "StarSystemInsertType" AS (
     "systemID" NUMERIC(20, 0),

@@ -80,13 +80,21 @@ RETURNS VOID AS $$
 	-- Insert Star System Region
 	INSERT INTO "StarSystemsByRegion" (
 		"systemID",
-		"regionID"
+		"regionID",
+		"distanceToCentre"
 	)
 	SELECT
-		inss."systemID",
-		reg."regionID"
-	FROM unnest("inputStarSystems") AS inss
-	INNER JOIN "Regions" reg ON ST_3DIntersects(ST_MakePoint(inss."coordinateX", inss."coordinateY", inss."coordinateZ"), "GetRegionCube"(reg."regionCentreCoords", reg."regionRange"))
+		pt."systemID",
+		reg."regionID",
+		ST_3DDistance(pt."point", reg."regionCentreCoords")
+	FROM (
+		SELECT 
+			inss."systemID",
+			ST_MakePoint(inss."coordinateX", inss."coordinateY", inss."coordinateZ") AS "point"
+		FROM unnest("inputStarSystems") AS inss
+	) pt
+	INNER JOIN "Regions" reg 
+		ON ST_3DIntersects(pt."point", "GetRegionCube"(reg."regionCentreCoords", reg."regionRange"))
 	ON CONFLICT ("systemID", "regionID") DO NOTHING;
 $$ LANGUAGE sql;
 
@@ -401,6 +409,79 @@ CREATE OR REPLACE FUNCTION "SelectSearchResults" (
 	"inputRemovedSystemIDs" NUMERIC(20, 0)[]
 )
 RETURNS jsonb AS $$
+DECLARE
+    "savedRegionID" INT;
+	"targetSystemIDs" NUMERIC(20, 0)[] := NULL;
+    "result" jsonb;
+BEGIN
+	SELECT "regionID" INTO "savedRegionID" FROM "Regions" WHERE "regionName" = "inputRegionName";
+	
+	IF "inputSystemName" IS NOT NULL AND "inputFactionName" IS NOT NULL THEN
+		SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
+		FROM "ColonisableStarSystems" css
+		INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
+		INNER JOIN "Stations" s ON dcss."colonisedSystemID" = s."systemID"
+		INNER JOIN "Factions" f ON s."controllingFaction" = f."factionID"
+		WHERE dcss."systemName" = "inputSystemName" AND f."factionName" = "inputFactionName";
+		
+	ELSIF "inputSystemName" IS NOT NULL THEN
+		SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
+		FROM "ColonisableStarSystems" css
+		INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
+		WHERE dcss."systemName" = "inputSystemName";
+		
+	ELSIF "inputFactionName" IS NOT NULL THEN
+		SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
+		FROM "ColonisableStarSystems" css
+		INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
+		INNER JOIN "Stations" s ON dcss."colonisedSystemID" = s."systemID"
+		INNER JOIN "Factions" f ON s."controllingFaction" = f."factionID"
+		WHERE f."factionName" = "inputFactionName";
+	END IF;
+	
+	IF ("inputSystemName" IS NOT NULL OR "inputFactionName" IS NOT NULL) AND "targetSystemIDs" IS NULL THEN
+		"targetSystemIDs" := ARRAY[-1]::NUMERIC(20, 0);
+	END IF;
+	
+	IF "inputHotspotTypes" IS NOT NULL AND CARDINALITY("inputHotspotTypes") > 0 THEN
+		IF "targetSystemIDs" IS NULL OR "targetSystemIDs" <> ARRAY[-1]::NUMERIC(20, 0)[] THEN
+			DECLARE
+				"hotspotSystemIDs" NUMERIC(20, 0)[];
+			BEGIN
+				SELECT array_agg(DISTINCT r."systemID") INTO "hotspotSystemIDs"
+				FROM "Rings" r
+				INNER JOIN "Hotspots" h ON r."ringID" = h."ringID"
+				INNER JOIN "StarSystemsByRegion" ssbr ON ssbr."systemID" = r."systemID"
+				WHERE h."hotspotType" = ANY("inputHotspotTypes")
+					AND ssbr."regionID" = "savedRegionID"
+					AND ssbr."distanceToCentre" <= "inputMaxDistanceToRegionCentre"
+					AND ("targetSystemIDs" IS NULL OR r."systemID" = ANY("targetSystemIDs"));
+					
+				"targetSystemIDs" := "hotspotSystemIDs";
+			END;
+		
+			IF "targetSystemIDs" IS NULL THEN
+				"targetSystemIDs" := ARRAY[-1]::NUMERIC(20, 0);
+			END IF;
+		END IF;
+	END IF;
+	
+	IF "inputRemovedSystemIDs" IS NULL THEN
+		"inputRemovedSystemIDs" := '{}'::NUMERIC(20, 0)[];
+	END IF;
+	
+	IF "targetSystemIDs" IS NOT NULL AND "targetSystemIDs" <> ARRAY[-1]::NUMERIC(20, 0)[] AND CARDINALITY("inputRemovedSystemIDs") > 0 THEN
+		SELECT array_agg("pruned") INTO "targetSystemIDs"
+		FROM unnest("targetSystemIDs") AS "pruned"
+		WHERE NOT ("pruned" = ANY("inputRemovedSystemIDs"));
+		
+		IF "targetSystemIDs" IS NULL THEN
+			"targetSystemIDs" := ARRAY[-1]::NUMERIC(20, 0);
+		END IF;
+		
+		"inputRemovedSystemIDs" := '{}'::NUMERIC(20, 0)[];
+	END IF;
+
 	WITH "TopResults" AS (
 		SELECT 
 			duss."uncolonisedSystemID",
@@ -410,7 +491,7 @@ RETURNS jsonb AS $$
 			uss."reserveLevel",
 			uss."landableCount",
 			uss."walkableCount",
-			ST_3DDistance(ss."systemCoords", reg."regionCentreCoords")::INT AS "distanceToRegionCentre",
+			ssbr."distanceToCentre" AS "distanceToRegionCentre",
 			uss."totalHotspots",
 			uss."systemValue",
 			coc."blackHoleCount",
@@ -432,11 +513,11 @@ RETURNS jsonb AS $$
 		FROM "DistinctUncolonisedStarSystems" duss
 		INNER JOIN "StarSystems" ss ON duss."uncolonisedSystemID" = ss."systemID"
 		INNER JOIN "StarSystemsByRegion" ssbr ON ss."systemID" = ssbr."systemID"
-		INNER JOIN "Regions" reg ON ssbr."regionID" = reg."regionID"
 		INNER JOIN "UncolonisedStarSystems" uss ON duss."uncolonisedSystemID" = uss."systemID"
 		INNER JOIN "ColonyOverrideCounts" coc ON duss."uncolonisedSystemID" = coc."systemID"
 		INNER JOIN "UncolonisedStarSystemsAvailability" ussa ON duss."uncolonisedSystemID" = ussa."systemID"
-		WHERE reg."regionName" = "inputRegionName"
+		WHERE ssbr."regionID" = "savedRegionID"
+			AND ssbr."distanceToCentre" <= "inputMaxDistanceToRegionCentre"
 			AND ussa."isLocked" = FALSE
 			AND ussa."isClaimed" = FALSE
 			AND coc."blackHoleCount" BETWEEN "inputMinBlackHoles" AND "inputMaxBlackHoles"
@@ -457,35 +538,13 @@ RETURNS jsonb AS $$
 			AND coc."ringCount" BETWEEN "inputMinRings" AND "inputMaxRings"
 			AND uss."landableCount" BETWEEN "inputMinLandables" AND "inputMaxLandables"
 			AND uss."walkableCount" BETWEEN "inputMinWalkables" AND "inputMaxWalkables"
-			AND ST_3DDistance(ss."systemCoords", reg."regionCentreCoords") <= "inputMaxDistanceToRegionCentre"
 			AND ("inputRemovedSystemIDs" IS NULL OR NOT (duss."uncolonisedSystemID" = ANY("inputRemovedSystemIDs")))
-			AND (
-				("inputSystemName" IS NULL AND "inputFactionName" IS NULL)
-				OR EXISTS (
-					SELECT 1
-					FROM "ColonisableStarSystems" css
-					INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
-					INNER JOIN "Stations" s ON dcss."colonisedSystemID" = s."systemID"
-					INNER JOIN "Factions" f ON s."controllingFaction" = f."factionID"
-					WHERE css."uncolonisedSystemID" = duss."uncolonisedSystemID"
-						AND ("inputSystemName" IS NULL OR dcss."systemName" = "inputSystemName")
-						AND ("inputFactionName" IS NULL OR f."factionName" = "inputFactionName")
-				)
-			)
-			AND (
-				("inputHotspotTypes" IS NULL OR CARDINALITY("inputHotspotTypes") = 0)
-				OR EXISTS (
-					SELECT 1
-					FROM "Rings" r
-					INNER JOIN "Hotspots" h ON r."ringID" = h."ringID"
-					WHERE r."systemID" = duss."uncolonisedSystemID"
-						AND h."hotspotType" = ANY("inputHotspotTypes")
-				)
-			)
+			AND ("targetSystemIDs" IS NULL OR duss."uncolonisedSystemID" = ANY ("targetSystemIDs"))
+			AND NOT (duss."uncolonisedSystemID" = ANY("inputRemovedSystemIDs"))
 		ORDER BY
 			CASE WHEN "sortOrder" = 'SystemValue' THEN uss."systemValue" END DESC,
 			CASE WHEN "sortOrder" = 'MostWalkables' THEN uss."walkableCount" END DESC,
-			CASE WHEN "sortOrder" = 'DistanceToRegionCentre' THEN ST_3DDistance(ss."systemCoords", reg."regionCentreCoords")::INT END ASC,
+			CASE WHEN "sortOrder" = 'DistanceToRegionCentre' THEN ssbr."distanceToCentre" END ASC,
 			CASE WHEN "sortOrder" = 'MostHotspots' THEN uss."totalHotspots" END DESC
 		OFFSET (("pageNo" - 1) * "resultsPerPage") ROWS
 		LIMIT "resultsPerPage" * 11
@@ -577,8 +636,11 @@ RETURNS jsonb AS $$
 			GREATEST((COUNT(*) OVER()) / "resultsPerPage", 1) - 1 AS "minFollwingPages"
 			FROM "TopResults"
 			LIMIT "resultsPerPage"
-	) tr;
-$$ LANGUAGE sql;
+	) tr INTO "result";
+	
+	RETURN "result";
+END;
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION "SelectFactionNamesJson"("inputFactionName" VARCHAR(75), "inputRegionName" VARCHAR(75))
 RETURNS jsonb AS $$
