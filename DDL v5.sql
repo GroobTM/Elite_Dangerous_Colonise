@@ -120,7 +120,7 @@ CREATE TABLE "UncolonisedStarSystemsAvailability" (
 	"claimReportCount" SMALLINT NOT NULL DEFAULT 0,
 	"lockReportDate" TIMESTAMPTZ DEFAULT NULL,
 	"claimReportDate" TIMESTAMPTZ DEFAULT NULL,
-	FOREIGN KEY ("systemID") REFERENCES "StarSystems"("systemID") ON DELETE CASCADE
+	FOREIGN KEY ("systemID") REFERENCES "UncolonisedStarSystems"("systemID") ON DELETE CASCADE
 );
 
 CREATE TABLE "ColonyOverrideCounts" (
