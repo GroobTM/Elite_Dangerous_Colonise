@@ -64,14 +64,14 @@ namespace elite_dangerous_colonise.Controllers
             }
         }
 
-        private List<long> ParseSessionReportedStarSystems()
+        private List<decimal> ParseSessionReportedStarSystems()
         {
-            List<long> reportedStarSystems = new List<long>();
+            List<decimal> reportedStarSystems = new List<decimal>();
             string? reportedStarSystemsJson = HttpContext.Session.GetString("reportedStarSystemsJson");
 
             if (!string.IsNullOrEmpty(reportedStarSystemsJson))
             {
-                reportedStarSystems = JsonConvert.DeserializeObject<List<long>>(reportedStarSystemsJson);
+                reportedStarSystems = JsonConvert.DeserializeObject<List<decimal>>(reportedStarSystemsJson);
             }
 
             return reportedStarSystems;
@@ -180,7 +180,7 @@ namespace elite_dangerous_colonise.Controllers
                                     command.Parameters.AddWithValue("maxLandables", searchQuery.MaxLandables);
                                     command.Parameters.AddWithValue("minWalkables", searchQuery.MinWalkables);
                                     command.Parameters.AddWithValue("maxWalkables", searchQuery.MaxWalkables);
-                                    command.Parameters.AddWithValue("maxDistanceToSol", searchQuery.MaxDistanceToSol);
+                                    command.Parameters.AddWithValue("maxDistanceToSol", searchQuery.MaxDistanceToRegionCentre);
                                     command.Parameters.AddWithValue("hotspotTypes", (object?)ParseHotspotTypes(searchQuery.HotspotTypes) ?? DBNull.Value);
                                     command.Parameters.AddWithValue("removedSystemIDs", ParseSessionReportedStarSystems());
 
@@ -297,7 +297,7 @@ namespace elite_dangerous_colonise.Controllers
             public short MaxLandables { get; set; }
             public short MinWalkables { get; set; }
             public short MaxWalkables { get; set; }
-            public int MaxDistanceToSol { get; set; }
+            public int MaxDistanceToRegionCentre { get; set; }
             public string? HotspotTypes { get; set; }
         }
     }

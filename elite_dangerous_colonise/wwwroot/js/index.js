@@ -384,8 +384,6 @@ function AddSliderDataToForm(sliderID, sliderName) {
 function SetFormData() {
     formData = new FormData(document.getElementById("systems_search"));
 
-    formData.append("RegionName", regionName);
-
     const distanceFromRegionCentre = document.querySelector("#distance_from_region_centre_slider").noUiSlider.get();
     formData.append("MaxDistanceFromRegionCentre", distanceFromRegionCentre);
 
@@ -418,8 +416,9 @@ function SetFormData() {
 async function LoadResults(updateUrl = true) {
     ToggleSearch(true);        
     $("#loading").addClass("flex").removeClass("hidden");
-
+    
     const searchParams = new URLSearchParams({
+        regionName: regionName,
         sortOrder: formData.get("SortOrder"),
         pageNo: currentPage,
         resultsPerPage: resultsPerPage,

@@ -408,7 +408,9 @@ CREATE OR REPLACE FUNCTION "SelectSearchResults" (
 	"inputHotspotTypes" "HotspotType"[],
 	"inputRemovedSystemIDs" NUMERIC(20, 0)[]
 )
-RETURNS jsonb AS $$
+RETURNS jsonb
+SET plan_cache_mode = force_custom_plan
+AS $$
 DECLARE
     "savedRegionID" INT;
 	"targetSystemIDs" NUMERIC(20, 0)[] := NULL;
