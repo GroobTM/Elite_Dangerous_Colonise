@@ -6,7 +6,7 @@ namespace elite_dangerous_colonise.Models.Database_Types
     public class UncolonisedDetailsInsertType
     {
         [PgName("systemID")]
-        public long SystemID { get; set; }
+        public decimal SystemID { get; set; }
         [PgName("lastUpdated")]
         public DateTime LastUpdate { get; set; }
         [PgName("reserveLevel")]
@@ -15,8 +15,6 @@ namespace elite_dangerous_colonise.Models.Database_Types
         public short LandableCount { get; set; }
         [PgName("walkableCount")]
         public short WalkableCount { get; set; }
-        [PgName("distanceToSol")]
-        public int DistanceToSol {  get; set; }
         [PgName("totalHotspots")]
         public short TotalHotspots { get; set; }
         [PgName("systemValue")]
@@ -56,8 +54,8 @@ namespace elite_dangerous_colonise.Models.Database_Types
 
         public UncolonisedDetailsInsertType() { }
         public UncolonisedDetailsInsertType(
-            long systemID, DateTime lastUpdate, ReserveType reserveLevel, short landableCount, short walkableCount,
-            int distanceToSol, short totalHotspots, double systemValue, short blackHoleCount, short neutronStarCount, short whiteDwarves, short otherStarCount,
+            ulong systemID, DateTime lastUpdate, ReserveType reserveLevel, short landableCount, short walkableCount,
+            short totalHotspots, double systemValue, short blackHoleCount, short neutronStarCount, short whiteDwarves, short otherStarCount,
             short earthLikeCount, short waterWorldCount, short ammoniaWorldCount, short gasGiantCount, short highMetalContentCount, short metalRichCount,
             short rockyIceBodyCount, short rockBodyCount, short icyBodyCount, short organicCount, short geologicalsCount, short ringCount
         )
@@ -67,7 +65,6 @@ namespace elite_dangerous_colonise.Models.Database_Types
             ReserveLevel = reserveLevel;
             LandableCount = landableCount;
             WalkableCount = walkableCount;
-            DistanceToSol = distanceToSol;
             TotalHotspots = totalHotspots;
             SystemValue = (decimal)systemValue;
             BlackHoleCount = blackHoleCount;

@@ -1,4 +1,4 @@
-﻿using elite_dangerous_colonise.Classes;
+﻿using elite_dangerous_colonise.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Npgsql;
@@ -11,13 +11,15 @@ namespace elite_dangerous_colonise.Controllers
     {
         private const int REPORT_DELAY = 10;
         private readonly NpgsqlDataSource dataSource;
+        private readonly AppLogger logger;
 
-        private List<long>? reportedStarSystems = null;
+        private List<ulong>? reportedStarSystems = null;
         private DateTime? lastReport = null;
 
-        public StarSystemReportController(NpgsqlDataSource dataSource)
+        public StarSystemReportController(NpgsqlDataSource dataSource, AppLogger logger)
         {
             this.dataSource = dataSource;
+            this.logger = logger;
         }
 
         [HttpPost]
@@ -55,7 +57,7 @@ namespace elite_dangerous_colonise.Controllers
                 }
                 catch (NpgsqlException ex)
                 {
-                    Logger.LogError("Star System Report Controller", 0, ex);
+                    logger.LogError("Star System Report Controller", 0, ex);
 
                     return StatusCode(500, new
                     {
@@ -66,7 +68,7 @@ namespace elite_dangerous_colonise.Controllers
 
                 catch (Exception ex)
                 {
-                    Logger.LogError("Star System Report Controller", 1, ex);
+                    logger.LogError("Star System Report Controller", 1, ex);
 
                     return StatusCode(500, new
                     {
@@ -84,7 +86,7 @@ namespace elite_dangerous_colonise.Controllers
 
             if (!string.IsNullOrEmpty(reportedStarSystemsJson))
             {
-                reportedStarSystems = JsonConvert.DeserializeObject<List<long>>(reportedStarSystemsJson);
+                reportedStarSystems = JsonConvert.DeserializeObject<List<ulong>>(reportedStarSystemsJson);
             }
 
             if (!string.IsNullOrEmpty(lastReportJson))
@@ -99,7 +101,7 @@ namespace elite_dangerous_colonise.Controllers
             {
                 await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"ReportStarSystem\"(@inputSystemID, @isLocked)", conn))
                 {
-                    command.Parameters.AddWithValue("inputSystemID", reportData.ReportedSystemID);
+                    command.Parameters.AddWithValue("inputSystemID", (decimal)reportData.ReportedSystemID);
                     command.Parameters.AddWithValue("isLocked", reportData.IsLocked);
 
                     await command.ExecuteNonQueryAsync();
@@ -107,7 +109,7 @@ namespace elite_dangerous_colonise.Controllers
             }
         }
 
-        private void AddStarSystemToReportList(long systemID)
+        private void AddStarSystemToReportList(ulong systemID)
         {
             reportedStarSystems.Add(systemID);
             HttpContext.Session.SetString("reportedStarSystemsJson", JsonConvert.SerializeObject(reportedStarSystems));
@@ -115,7 +117,7 @@ namespace elite_dangerous_colonise.Controllers
 
         public class ReportQueryModel
         {
-            public long ReportedSystemID { get; set; }
+            public ulong ReportedSystemID { get; set; }
             public bool IsLocked { get; set; }
         }
     }

@@ -10,7 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@tailwindcss/cli": "^4.2.1",
+    "@tailwindcss/cli": "^4.2.2",
     "@tailwindcss/forms": "^0.5.10",
     "nouislider": "^15.8.1",
     "preline": "^3.2.3",

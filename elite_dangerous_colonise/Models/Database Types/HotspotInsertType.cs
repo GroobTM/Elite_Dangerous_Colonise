@@ -6,7 +6,7 @@ namespace elite_dangerous_colonise.Models.Database_Types
     public class HotspotInsertType
     {
         [PgName("systemID")]
-        public long SystemID { get; set; }
+        public decimal SystemID { get; set; }
         [PgName("ringName")]
         public string RingName { get; set; }
         [PgName("hotspotType")]
@@ -15,7 +15,7 @@ namespace elite_dangerous_colonise.Models.Database_Types
         public short HotspotCount { get; set; }
 
         public HotspotInsertType() { }
-        public HotspotInsertType(long systemID, string ringName, HotspotType hotspotType, short hotspotCount)
+        public HotspotInsertType(ulong systemID, string ringName, HotspotType hotspotType, short hotspotCount)
         {
             SystemID = systemID;
             RingName = ringName;

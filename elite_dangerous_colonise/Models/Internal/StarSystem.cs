@@ -1,22 +1,26 @@
 ﻿using elite_dangerous_colonise.Models.Database_Types;
 using System.Numerics;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Models.Internal
 {
-    /// <summary> Defines the StarSystem abstract class. </summary>
+    /// <summary> Contains information about a Star System. </summary>
     public abstract class StarSystem
     {
-        public long SystemID { get; private set; }
+        /// <summary> The system's ID.</summary>
+        public ulong SystemID { get; private set; }
+        /// <summary> The system's name.</summary>
         public string Name { get; private set; }
+        /// <summary> The system's colonisation status.</summary>
         public bool IsColonised { get; private set; }
+        /// <summary> The system's coordinates.</summary>
         public Vector3 Coordinates { get; private set; }
 
-        /// <summary> Instantiates a StarSystem object. </summary>
+        /// <summary> Instantiates a StarSystem. </summary>
         /// <param name="systemID"> The system's Spansh ID. </param>
         /// <param name="name"> The name of the system. </param>
         /// <param name="isColonised"> If the system is colonised. </param>
         /// <param name="coordinates"> The system's coordinates. </param>
-        public StarSystem(long systemID, string name, bool isColonised, Vector3 coordinates)
+        public StarSystem(ulong systemID, string name, bool isColonised, Vector3 coordinates)
         {
             SystemID = systemID;
             Name = name;
@@ -35,15 +39,16 @@ namespace elite_dangerous_colonise.Classes
         public abstract void AddToDataLists(DatabaseDataLists dataLists);
     }
 
-    /// <summary> Defines the ColonisedStarSystem class. </summary>
+    /// <summary> Contains information about a Colonised Star System. </summary>
     public class ColonisedStarSystem : StarSystem
     {
+        /// <summary> Stations in the system. </summary>
         public List<Station> Stations { get; private set; }
 
-        /// <summary> Instantiates a ColonisedStarSystem object. </summary>
-        /// <inheritdoc cref="StarSystem.StarSystem(long, string, bool, Vector3"/>
-        /// <param name="stations"> The list of the system's stations. </param>
-        public ColonisedStarSystem(long systemID, string name, Vector3 coordinates, List<Station> stations) :
+        /// <summary> Instantiates a ColonisedStarSystem. </summary>
+        /// <inheritdoc cref="StarSystem(ulong, string, bool, Vector3"/>
+        /// <param name="stations"> A list of the stations in the system. </param>
+        public ColonisedStarSystem(ulong systemID, string name, Vector3 coordinates, List<Station> stations) :
             base(systemID, name, true, coordinates)
         {
             Stations = stations;
@@ -60,7 +65,7 @@ namespace elite_dangerous_colonise.Classes
             }
         }
 
-        /// <summary> Adds the StarSystem and its Stations to the data list. </summary>
+        /// <summary> Adds the ColonisedStarSystem and its Stations to the data lists. </summary>
         public override void AddToDataLists(DatabaseDataLists dataLists)
         {
             AddSystemToDataList(dataLists);
@@ -68,27 +73,35 @@ namespace elite_dangerous_colonise.Classes
         }
     }
 
-    /// <summary> Defines the UncolonisedStarSystem class. </summary>
+    /// <summary> Contains information about an Uncolonised Star System. </summary>
     public class UncolonisedStarSystem : StarSystem
     {
+        /// <summary> When the system was last updated. </summary>
         public DateTime LastUpdate { get; private set; }
+        /// <summary> The system's reserve level. </summary>
         public ReserveType ReserveLevel { get; private set; }
+        /// <summary> The number of landable bodies in the system. </summary>
         public short LandableCount { get; private set; }
+        /// <summary> The number of walkable bodies in the system. </summary>
         public short WalkableCount { get; private set; }
-        public int DistanceToSol {  get; private set; }
+        /// <summary> The number of hotspots in the system. </summary>
         public short TotalHotspots { get; private set; }
+        /// <summary> The system's value. </summary>
         public double SystemValue { get; private set; }
+        /// <summary> The rings in the system. </summary>
         public List<Ring> Rings { get; private set; }
+        /// <summary> The number of different body types in the system. </summary>
         public BodyCount BodyCounts { get; private set; }
 
-        /// <summary> Instantiates a UncolonisedStarSystem object. </summary>
-        /// <inheritdoc cref="StarSystem.StarSystem(long, string, bool, Vector3"/>
-        /// <param name="lastUpdate"></param>
-        /// <param name="reserveLevel"></param>
-        /// <param name="landableCount"></param>
-        /// <param name="walkableCount"></param>
-        /// <param name="rings"></param>
-        public UncolonisedStarSystem(long systemID, string name, Vector3 coordinates, DateTime lastUpdate, ReserveType reserveLevel,
+        /// <summary> Instantiates a UncolonisedStarSystem. </summary>
+        /// <inheritdoc cref="StarSystem(ulong, string, bool, Vector3"/>
+        /// <param name="lastUpdate"> The last time the system was updated. </param>
+        /// <param name="reserveLevel"> The reserve level of the system. </param>
+        /// <param name="landableCount"> The number of landable bodies in the system. </param>
+        /// <param name="walkableCount"> The number of walkable bodies in the system. </param>
+        /// <param name="rings"> A list of rings in the system. </param>
+        /// <param name="bodyCounts"> The BodyCount for the system. </param>
+        public UncolonisedStarSystem(ulong systemID, string name, Vector3 coordinates, DateTime lastUpdate, ReserveType reserveLevel,
             short landableCount, short walkableCount, List<Ring> rings, BodyCount bodyCounts)
             : base(systemID, name, false, coordinates)
         {
@@ -98,7 +111,6 @@ namespace elite_dangerous_colonise.Classes
             WalkableCount = walkableCount;
             Rings = rings;
             BodyCounts = bodyCounts;
-            DistanceToSol = (int)coordinates.Length();
             TotalHotspots = CountHotspots();
             SystemValue = CalculateSystemValue();
         }
@@ -145,6 +157,7 @@ namespace elite_dangerous_colonise.Classes
             }
         }
 
+        /// <summary> Adds the UncolonisedStarSystem, its details, and its Rings to the data lists. </summary>
         public override void AddToDataLists(DatabaseDataLists dataLists)
         {
             if (SystemValue > 0 && !BodyCounts.IsBoringlyEmpty())

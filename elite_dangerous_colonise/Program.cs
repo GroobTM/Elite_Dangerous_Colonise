@@ -2,12 +2,11 @@ using Serilog;
 using Serilog.Events;
 using Microsoft.AspNetCore.DataProtection;
 using Npgsql;
-using elite_dangerous_colonise.Classes;
 using elite_dangerous_colonise.Models.Database_Types;
 using System.Text;
 using Ixnas.AltchaNet;
-
-const bool DEBUG = false;
+using elite_dangerous_colonise.Services;
+using elite_dangerous_colonise.Models.Internal;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +17,11 @@ builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
     .AddJsonFile(rootDir + "\\private\\Secrets.json", optional: false, reloadOnChange: true);
+
+bool debugEnabled = builder.Configuration.GetValue<bool>("EnableDebugLauncher", false);
+bool verboseReporting = builder.Configuration.GetValue<bool>("VerboseReporting", false);
+
+builder.Services.Configure<UpdateTimeOptions>(builder.Configuration.GetSection("UpdateTime"));
 
 // Adds the RazorPages service.
 builder.Services.AddRazorPages();
@@ -55,6 +59,8 @@ Log.Logger = new LoggerConfiguration()
         restrictedToMinimumLevel: LogEventLevel.Information, rollingInterval: RollingInterval.Day)
     .CreateLogger();
 builder.Host.UseSerilog();
+builder.Services.AddSingleton(Log.Logger);
+builder.Services.AddSingleton<AppLogger>();
 
 // Configures database connection.
 string connectionString = builder.Configuration.GetConnectionString("SystemsDatabase")
@@ -75,10 +81,11 @@ dataSourceBuilder.MapComposite<ColonisableInsertType>("ColonisableInsertType");
 NpgsqlDataSource dataSource = dataSourceBuilder.Build();
 builder.Services.AddSingleton(dataSource);
 
-builder.Services.AddScoped<DatabaseBulkWriter>(provider =>
-{
-    return new DatabaseBulkWriter(dataSource, DEBUG);
-});
+// Configures the region store service.
+builder.Services.AddSingleton<RegionStore>();
+
+// Configures the database bulk writer service.
+builder.Services.AddScoped<DatabaseBulkWriter>(provider => ActivatorUtilities.CreateInstance<DatabaseBulkWriter>(provider, debugEnabled || verboseReporting));
 
 // Configures Altcha service
 string altchaKey = builder.Configuration["AltchaKey"];
@@ -94,7 +101,18 @@ builder.Services.AddSingleton<AltchaService>(service =>
         .Build()
 );
 
-if (!DEBUG)
+// Configures the update status service used by the UpdateHub.
+builder.Services.AddSingleton<UpdateStatusService>();
+
+// Configures the memory reporting background service.
+builder.Services.AddHostedService<MemoryReportingService>();
+
+// Configures the self ping background service.
+//builder.Services.AddHttpClient();
+//builder.Services.AddHostedService<SelfPingService>();
+
+// Disabled database updating services while in debug mode.
+if (!debugEnabled)
 {
     // Configures the Spansh download background service.
     builder.Services.AddSingleton<SpanshDataDumpDownloadService>();
@@ -104,14 +122,7 @@ if (!DEBUG)
     builder.Services.AddHostedService<SystemSummaryStagingClearingService>();
 
     // Configures the EDDN listening background service.
-    builder.Services.AddHostedService<EDDNListeningService>();
-
-    // Configures the self ping background service.
-    builder.Services.AddHttpClient();
-    builder.Services.AddHostedService<SelfPingService>();
-
-    // Configures the memory reporting background service.
-    builder.Services.AddHostedService<MemoryReportingService>();
+    builder.Services.AddHostedService<EDDNListeningService>(provider => ActivatorUtilities.CreateInstance<EDDNListeningService>(provider, verboseReporting));
 }
 
 var app = builder.Build();
@@ -142,15 +153,16 @@ app.MapControllers();
 
 app.MapHub<UpdateHub>("/updateHub");
 
-if (DEBUG)
+using (IServiceScope scope = app.Services.CreateScope())
 {
-    // Configures and runs Launcher.
-    await Launcher.Main(app.Services);
+    RegionStore regionStore = scope.ServiceProvider.GetRequiredService<RegionStore>();
+    await regionStore.Initialise();
+}
 
-    if (Launcher.Start)
-    {
-        app.Run();
-    }
+if (debugEnabled)
+{
+    DebugLauncher launcher = new DebugLauncher(app.Services);
+    await launcher.Run();
 }
 else
 {

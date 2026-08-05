@@ -1,14 +1,13 @@
 ﻿using Newtonsoft.Json;
-using elite_dangerous_colonise.Classes;
 
 namespace elite_dangerous_colonise.Models.Json_Structure
 {
-    /// <summary> Defines the Json structure of the system's bodies. </summary>
+    /// <summary> Represents the Json structure of the system's bodies. </summary>
     public class BodyJson
     {
 
         [JsonProperty("id64")]
-        public required long BodyID { get; set; }
+        public required ulong BodyID { get; set; }
         [JsonProperty("subType")]
         public required string BodyType { get; set; }
         [JsonProperty("isLandable")]

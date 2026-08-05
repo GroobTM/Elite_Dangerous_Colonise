@@ -1,22 +1,31 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Npgsql;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Services
 {
-    /// <summary> Defines a SystemSummaryStagingClearingService service. </summary>
+    /// <summary> Converts the staged changes to Star Systems in the database into live records and rebuilds saved queries. </summary>
     public class SystemSummaryStagingClearingService : BackgroundService
     {
         private readonly NpgsqlDataSource dataSource;
         private readonly SpanshDataDumpDownloadService spanshService;
         private readonly IHubContext<UpdateHub> hubContext;
+        private readonly UpdateStatusService updateStatusService;
+        private readonly AppLogger logger;
 
-        /// <summary> Instantiates a SystemSummaryStagingClearingService object. </summary>
+        /// <summary> Instantiates a SystemSummaryStagingClearingService. </summary>
+        /// <param name="dataSource"> The database data source. </param>
+        /// <param name="spanshService"> The Spansh datadump download service. </param>
+        /// <param name="hubContext"> The UpdateHub's context. </param>
+        /// <param name="updateStatusService"> The update status service. </param>
+        /// <param name="logger"> The logger service. </param>
         public SystemSummaryStagingClearingService(NpgsqlDataSource dataSource, SpanshDataDumpDownloadService spanshService,
-            IHubContext<UpdateHub> hubContext)
+            IHubContext<UpdateHub> hubContext, UpdateStatusService updateStatusService, AppLogger logger)
         {
             this.dataSource = dataSource;
             this.spanshService = spanshService;
             this.hubContext = hubContext;
+            this.updateStatusService = updateStatusService;
+            this.logger = logger;
         }
 
         private async Task InsertColonisableStarSystemsFromStaged(NpgsqlConnection conn, bool insertColonised)
@@ -44,36 +53,26 @@ namespace elite_dangerous_colonise.Classes
                 try
                 {
                     await InsertColonisableStarSystemsFromStaged(conn, true);
-                    Logger.LogInformation("System Summary Staging Clearing Service", 2, "Colonised staged systems added.");
+                    logger.LogInformation("System Summary Staging Clearing Service", 2, "Colonised staged systems added.");
                     await InsertColonisableStarSystemsFromStaged(conn, false);
-                    Logger.LogInformation("System Summary Staging Clearing Service", 3, "Uncolonised staged systems added.");
+                    logger.LogInformation("System Summary Staging Clearing Service", 3, "Uncolonised staged systems added.");
                     await TruncateStagedStarSystems(conn);
 
                     await transaction.CommitAsync();
 
-                    Logger.LogInformation("System Summary Staging Clearing Service", 4, "Processing Complete.");
+                    logger.LogInformation("System Summary Staging Clearing Service", 4, "Processing Complete.");
                 }
                 catch (NpgsqlException ex)
                 {
                     await transaction.RollbackAsync();
-                    Logger.LogError("System Summary Staging Clearing Service", 6, ex);
+                    logger.LogError("System Summary Staging Clearing Service", 6, ex);
                 }
-            }
-        }
-        private async Task CalculateTrailblazerDistances(NpgsqlConnection conn)
-        {
-            Logger.LogInformation("System Summary Staging Clearing Service", 10, "Updating Trailblazers distance table.");
-
-            await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"InsertTrailblazerDistances\"()", conn))
-            {
-                command.CommandTimeout = 120;
-                await command.ExecuteNonQueryAsync();
             }
         }
 
         private async Task RefreshDistinctColonisedStarSystems(NpgsqlConnection conn)
         {
-            Logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing DistinctColonisedStarSystems view.");
+            logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing DistinctColonisedStarSystems view.");
 
             await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"RefreshDistinctColonisedStarSystems\"()", conn))
             {
@@ -83,7 +82,7 @@ namespace elite_dangerous_colonise.Classes
 
         private async Task RefreshDistinctUncolonisedStarSystems(NpgsqlConnection conn)
         {
-            Logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing DistinctUncolonisedStarSystems view.");
+            logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing DistinctUncolonisedStarSystems view.");
 
             await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"RefreshDistinctUncolonisedStarSystems\"()", conn))
             {
@@ -91,21 +90,31 @@ namespace elite_dangerous_colonise.Classes
             }
         }
 
-        private async Task RefreshClosestTrailblazerByStarSystem(NpgsqlConnection conn)
+        private async Task RefreshMaxSearchValues(NpgsqlConnection conn)
         {
-            Logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing ClosestTrailblazerByStarSystem view.");
+            logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing MaxSearchValues view.");
 
-            await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"RefreshClosestTrailblazerByStarSystem\"()", conn))
+            await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"RefreshMaxSearchValues\"()", conn))
             {
                 await command.ExecuteNonQueryAsync();
             }
         }
 
-        private async Task RefreshMaxSearchValues(NpgsqlConnection conn)
+        private async Task RefreshSystemsByRegion(NpgsqlConnection conn)
         {
-            Logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing MaxSearchValues view.");
+            logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing RefreshSystemsByRegion view.");
 
-            await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"RefreshMaxSearchValues\"()", conn))
+            await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"RefreshSystemsByRegion\"()", conn))
+            {
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        private async Task RefreshFactionsByRegion(NpgsqlConnection conn)
+        {
+            logger.LogInformation("System Summary Staging Clearing Service", 9, "Refreshing RefreshFactionsByRegion view.");
+
+            await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"RefreshFactionsByRegion\"()", conn))
             {
                 await command.ExecuteNonQueryAsync();
             }
@@ -118,27 +127,25 @@ namespace elite_dangerous_colonise.Classes
                 await RefreshDistinctColonisedStarSystems(conn);
                 await RefreshDistinctUncolonisedStarSystems(conn);
                 await RefreshMaxSearchValues(conn);
-
-                await CalculateTrailblazerDistances(conn);
-                await RefreshClosestTrailblazerByStarSystem(conn);
-                
+                await RefreshSystemsByRegion(conn);
+                await RefreshFactionsByRegion(conn);
 
                 await transaction.CommitAsync();
 
-                Logger.LogInformation("System Summary Staging Clearing Service", 11, "Update complete.");
+                logger.LogInformation("System Summary Staging Clearing Service", 11, "Update complete.");
             }
         }
 
         private async Task OnDataDumpProcessingComplete(object? sender, EventArgs e)
         {
-            Logger.LogInformation("System Summary Staging Clearing Service", 1, "Running staged system processing.");
+            logger.LogInformation("System Summary Staging Clearing Service", 1, "Running staged system processing.");
             try
             {
                 await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
                 {
                     await ProcessStagedSystemSummaries(conn);
 
-                    UpdateHub.BlockSearch();
+                    updateStatusService.BlockSearch();
                     await hubContext.Clients.All.SendAsync("SearchBlockEnabled");
 
                     await RefreshValuesTables(conn);
@@ -146,18 +153,19 @@ namespace elite_dangerous_colonise.Classes
             }
             catch (Exception ex)
             {
-                Logger.LogError("System Summary Staging Clearing Service", 7, ex);
+                logger.LogError("System Summary Staging Clearing Service", 7, ex);
             }
             finally
             {
-                UpdateHub.EndUpdate();
+                updateStatusService.EndUpdate();
                 await hubContext.Clients.All.SendAsync("SystemUpdateComplete");
             }
         }
 
+        /// <summary> Awaits the DataDumpProcessingComplete event and then stages new database changes and rebuilds saved queries. </summary>
         protected override Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            Logger.LogInformation("System Summary Staging Clearing Service", 0, "Staging Clearing Service starting.");
+            logger.LogInformation("System Summary Staging Clearing Service", 0, "Staging Clearing Service starting.");
 
             spanshService.DataDumpProcessingComplete += (sender, e) => Task.Run(async () => await OnDataDumpProcessingComplete(sender, e));
 
@@ -165,12 +173,11 @@ namespace elite_dangerous_colonise.Classes
         }
 
         /// <summary> Stops the background service. </summary>
-        /// <returns> A completed task. </returns>
         public override Task StopAsync(CancellationToken cancellationToken)
         { 
             spanshService.DataDumpProcessingComplete -= (sender, e) => Task.Run(async () => await OnDataDumpProcessingComplete(sender, e));
 
-            Logger.LogInformation("System Summary Staging Clearing Service", 8, "Staging Clearing Service stopped.");
+            logger.LogInformation("System Summary Staging Clearing Service", 8, "Staging Clearing Service stopped.");
 
             return Task.CompletedTask;
         }

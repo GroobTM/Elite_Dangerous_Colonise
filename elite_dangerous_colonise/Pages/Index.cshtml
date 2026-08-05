@@ -14,6 +14,22 @@
     <script src="~/js/index.js" asp-append-version="true"></script>
 }
 
+<svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="influence_icon" viewBox="0 0 924 924">
+        <g>
+            <path style="fill: var(--icon-bl);" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
+            <path style="fill: var(--icon-br);" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
+            <path style="fill: var(--icon-tl);" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
+            <path style="fill: var(--icon-tr);" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
+        </g>
+        <g>
+            <path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" style="display:inline" />
+            <path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" />
+            <rect x="327" y="433" width="270" height="58" />
+        </g>
+    </symbol>
+</svg>
+
 <aside class="mt-3 w-full rounded-md bg-[#F0F0F0]">
     <p id="update_countdown" class="text-center text-xl leading-15 text-[#0F0F0F]">Time Until Next Update: 0h 0m 0s</p>
 </aside>
@@ -33,7 +49,7 @@
                     <option value="SystemValue">System Value</option>
                     <option value="MostWalkables">Most Walkable Bodies</option>
                     <option value="MostHotspots">Most Hotspots</option>
-                    <option value="DistanceToSol">Distance to Sol</option>
+                    <option value="DistanceToRegionCentre">Distance to Sol</option>
                 </select>
                 <label for="sort_order" class="pointer-events-none absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 rounded-3xl bg-white px-2 text-[#0F0F0F]">Sort Order</label>
                 <svg class="pointer-events-none absolute top-4 right-3 z-10 h-5 w-4 shrink-0 rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
@@ -72,13 +88,13 @@
             <div class="z-10 mr-2 ml-2 flex min-h-13 flex-col justify-around">
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Max Distance From Sol</span>
-                    <span id="distance_from_sol_value" class="absolute right-1">@Model.MaxValues.DistanceToSol ly</span>
+                    <span id="distance_from_region_centre_value" class="absolute right-1">@Model.MaxValues.DistanceToRegionCentre ly</span>
                 </div>
-                <div id="distance_from_sol_slider" class="--prevent-on-load-init" data-hs-range-slider='{
-                    "start": @Model.MaxValues.DistanceToSol,
+                <div id="distance_from_region_centre_slider" class="--prevent-on-load-init" data-hs-range-slider='{
+                    "start": @Model.MaxValues.DistanceToRegionCentre,
                     "range": {
                         "min": 0,
-                        "max": @Model.MaxValues.DistanceToSol
+                        "max": @Model.MaxValues.DistanceToRegionCentre
                     },
                     "step": 1,
                     "connect": "lower",
@@ -146,14 +162,9 @@
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Black Holes</span>
                     <div class="absolute right-1">
-                        <svg data-tooltip-target="black_holes_slider_tooltip" class="absolute right-20 h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-	                        <g id="g1">
-		                        <path class="fill-[#00FFFF]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-		                        <path class="fill-[#6600E5]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-		                        <path class="fill-[#00FFFF]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-		                        <path class="fill-[#6600E5]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-	                        </g>
-	                        <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+                        <svg data-tooltip-target="black_holes_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #00FFFF; --icon-br: #6600E5; --icon-tl: #00FFFF; --icon-tr: #6600E5;">
+                            <use href="#influence_icon"></use>
                         </svg>
                         <span id="black_holes_value" >0 - @Model.MaxValues.BlackHoleCount</span>
                     </div>
@@ -176,7 +187,7 @@
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="black_holes_slider_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                <div id="black_holes_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: High Tech and Tourism
                 </div>
             </div>
@@ -184,14 +195,9 @@
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Neutron Stars</span>
                     <div class="absolute right-1">
-                        <svg data-tooltip-target="neutron_stars_slider_tooltip" class="absolute right-20 h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-	                        <g id="g1">
-		                        <path class="fill-[#00FFFF]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-		                        <path class="fill-[#6600E5]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-		                        <path class="fill-[#00FFFF]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-		                        <path class="fill-[#6600E5]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-	                        </g>
-	                        <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+                        <svg data-tooltip-target="neutron_stars_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #00FFFF; --icon-br: #6600E5; --icon-tl: #00FFFF; --icon-tr: #6600E5;">
+                            <use href="#influence_icon"></use>
                         </svg>
                         <span id="neutron_stars_value" >0 - @Model.MaxValues.NeutronStarCount</span>
                     </div>
@@ -214,7 +220,7 @@
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="neutron_stars_slider_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                <div id="neutron_stars_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: High Tech and Tourism
                 </div>
             </div>
@@ -222,14 +228,9 @@
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">White Dwarves</span>
                     <div class="absolute right-1">
-                        <svg data-tooltip-target="white_dwarves_slider_tooltip" class="absolute right-20 h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-	                        <g id="g1">
-		                        <path class="fill-[#00FFFF]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-		                        <path class="fill-[#6600E5]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-		                        <path class="fill-[#00FFFF]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-		                        <path class="fill-[#6600E5]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-	                        </g>
-	                        <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+                        <svg data-tooltip-target="white_dwarves_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #00FFFF; --icon-br: #6600E5; --icon-tl: #00FFFF; --icon-tr: #6600E5;">
+                            <use href="#influence_icon"></use>
                         </svg>
                         <span id="white_dwarves_value" >0 - @Model.MaxValues.WhiteDwarves</span>
                     </div>
@@ -252,7 +253,7 @@
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="white_dwarves_slider_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                <div id="white_dwarves_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: High Tech and Tourism
                 </div>
             </div>
@@ -260,14 +261,9 @@
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Other Stars</span>
                     <div class="absolute right-1">
-                        <svg data-tooltip-target="other_stars_slider_tooltip" class="absolute right-20 h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-	                        <g id="g1">
-		                        <path class="fill-[#E500E5]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-		                        <path class="fill-[#E500E5]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-		                        <path class="fill-[#E500E5]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-		                        <path class="fill-[#E500E5]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-	                        </g>
-	                        <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+                        <svg data-tooltip-target="other_stars_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #E500E5; --icon-br: #E500E5; --icon-tl: #E500E5; --icon-tr: #E500E5;">
+                            <use href="#influence_icon"></use>
                         </svg>
                         <span id="other_stars_value" >0 - @Model.MaxValues.OtherStarCount</span>
                     </div>
@@ -290,7 +286,7 @@
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="other_stars_slider_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                <div id="other_stars_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: Military
                 </div>
             </div>
@@ -298,14 +294,9 @@
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Earth-like Worlds</span>
                     <div class="absolute right-1">
-                        <svg data-tooltip-target="earth_likes_slider_tooltip" class="absolute right-20 h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-	                        <g id="g1">
-		                        <path class="fill-[#E500E5]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-		                        <path class="fill-[#6600E5]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-		                        <path class="fill-[#80FF00]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-		                        <path class="fill-[#00FFFF]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-	                        </g>
-	                        <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+                        <svg data-tooltip-target="earth_likes_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #E500E5; --icon-br: #6600E5; --icon-tl: #80FF00; --icon-tr: #00FFFF;">
+                            <use href="#influence_icon"></use>
                         </svg>
                         <span id="earth_likes_value" >0 - @Model.MaxValues.EarthLikeCount</span>
                     </div>
@@ -328,7 +319,7 @@
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="earth_likes_slider_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                <div id="earth_likes_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: Argriculture, High Tech, Tourism, and Military
                 </div>
             </div>
@@ -336,14 +327,9 @@
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Water Worlds</span>
                     <div class="absolute right-1">
-                        <svg data-tooltip-target="water_worlds_slider_tooltip" class="absolute right-20 h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-	                        <g id="g1">
-                                <path class="fill-[#80FF00]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-		                        <path class="fill-[#6600E5]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-		                        <path class="fill-[#80FF00]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-		                        <path class="fill-[#6600E5]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-	                        </g>
-	                        <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+                        <svg data-tooltip-target="water_worlds_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #80FF00; --icon-br: #6600E5; --icon-tl: #80FF00; --icon-tr: #6600E5;">
+                            <use href="#influence_icon"></use>
                         </svg>
                         <span id="water_worlds_value" >0 - @Model.MaxValues.WaterWorldCount</span>
                     </div>
@@ -366,7 +352,7 @@
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="water_worlds_slider_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                <div id="water_worlds_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: Argriculture and Tourism
                 </div>
             </div>
@@ -374,14 +360,9 @@
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Ammonia Worlds</span>
                     <div class="absolute right-1">
-                        <svg data-tooltip-target="ammonia_worlds_slider_tooltip" class="absolute right-20 h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-	                        <g id="g1">
-                                <path class="fill-[#00FFFF]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-		                        <path class="fill-[#6600E5]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-		                        <path class="fill-[#00FFFF]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-		                        <path class="fill-[#6600E5]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-	                        </g>
-	                        <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+                        <svg data-tooltip-target="ammonia_worlds_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #00FFFF; --icon-br: #6600E5; --icon-tl: #00FFFF; --icon-tr: #6600E5;">
+                            <use href="#influence_icon"></use>
                         </svg>
                         <span id="ammonia_worlds_value" >0 - @Model.MaxValues.AmmoniaWorldCount</span>
                     </div>
@@ -404,7 +385,7 @@
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="ammonia_worlds_slider_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                <div id="ammonia_worlds_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: High Tech and Tourism
                 </div>
             </div>
@@ -412,14 +393,9 @@
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Gas Giants</span>
                     <div class="absolute right-1">
-                        <svg data-tooltip-target="gas_giants_slider_tooltip" class="absolute right-20 h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-	                        <g id="g1">
-                                <path class="fill-[#00FFFF]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-		                        <path class="fill-[#FFFF00]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-		                        <path class="fill-[#00FFFF]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-		                        <path class="fill-[#FFFF00]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-	                        </g>
-	                        <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+                        <svg data-tooltip-target="gas_giants_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #00FFFF; --icon-br: #FFFF00; --icon-tl: #00FFFF; --icon-tr: #FFFF00;">
+                            <use href="#influence_icon"></use>
                         </svg>
                         <span id="gas_giants_value" >0 - @Model.MaxValues.GasGiantCount</span>
                     </div>
@@ -442,7 +418,7 @@
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="gas_giants_slider_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                <div id="gas_giants_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: High Tech and Industrial
                 </div>
             </div>
@@ -450,14 +426,9 @@
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">High Metal Content Worlds</span>
                     <div class="absolute right-1">
-                        <svg data-tooltip-target="high_metal_content_slider_tooltip" class="absolute right-20 h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-	                        <g id="g1">
-                                <path class="fill-[#FF0000]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-		                        <path class="fill-[#FF0000]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-		                        <path class="fill-[#FF0000]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-		                        <path class="fill-[#FF0000]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-	                        </g>
-	                        <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+                        <svg data-tooltip-target="high_metal_content_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #FF0000; --icon-br: #FF0000; --icon-tl: #FF0000; --icon-tr: #FF0000;">
+                            <use href="#influence_icon"></use>
                         </svg>
                         <span id="high_metal_content_value" >0 - @Model.MaxValues.HighMetalContentCount</span>
                     </div>
@@ -480,7 +451,7 @@
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="high_metal_content_slider_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                <div id="high_metal_content_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: Extraction
                 </div>
             </div>
@@ -488,14 +459,9 @@
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Metal Rich Bodies</span>
                     <div class="absolute right-1">
-                        <svg data-tooltip-target="metal_rich_slider_tooltip" class="absolute right-20 h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-	                        <g id="g1">
-                                <path class="fill-[#FF0000]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-		                        <path class="fill-[#FF0000]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-		                        <path class="fill-[#FF0000]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-		                        <path class="fill-[#FF0000]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-	                        </g>
-	                        <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+                        <svg data-tooltip-target="metal_rich_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #FF0000; --icon-br: #FF0000; --icon-tl: #FF0000; --icon-tr: #FF0000;">
+                            <use href="#influence_icon"></use>
                         </svg>
                         <span id="metal_rich_value" >0 - @Model.MaxValues.MetalRichCount</span>
                     </div>
@@ -518,7 +484,7 @@
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="metal_rich_slider_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                <div id="metal_rich_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: Extraction
                 </div>
             </div>
@@ -526,14 +492,9 @@
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Rocky Ice Worlds</span>
                     <div class="absolute right-1">
-                        <svg data-tooltip-target="rocky_ice_world_slider_tooltip" class="absolute right-20 h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-	                        <g id="g1">
-                                <path class="fill-[#FF8000]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                                <path class="fill-[#FFFF00]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                                <path class="fill-[#FF8000]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                                <path class="fill-[#FFFF00]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-	                        </g>
-	                        <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+                        <svg data-tooltip-target="rocky_ice_world_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #FF8000; --icon-br: #FFFF00; --icon-tl: #FF8000; --icon-tr: #FFFF00;">
+                            <use href="#influence_icon"></use>
                         </svg>
                         <span id="rocky_ice_world_value" >0 - @Model.MaxValues.RockyIceBodyCount</span>
                     </div>
@@ -556,7 +517,7 @@
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="rocky_ice_world_slider_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                <div id="rocky_ice_world_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: Refinery and Industrial
                 </div>
             </div>
@@ -564,14 +525,9 @@
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Rocky Bodies</span>
                     <div class="absolute right-1">
-                        <svg data-tooltip-target="rocky_bodies_slider_tooltip" class="absolute right-20 h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                        <g id="g1">
-                            <path class="fill-[#FF8000]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                            <path class="fill-[#FF8000]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                            <path class="fill-[#FF8000]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                            <path class="fill-[#FF8000]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                         </g>
-                        <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+                        <svg data-tooltip-target="rocky_bodies_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #FF8000; --icon-br: #FF8000; --icon-tl: #FF8000; --icon-tr: #FF8000;">
+                            <use href="#influence_icon"></use>
                         </svg>
                         <span id="rocky_bodies_value">0 - @Model.MaxValues.RockBodyCount</span>
                     </div>
@@ -594,7 +550,7 @@
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="rocky_bodies_slider_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                <div id="rocky_bodies_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: Refinery
                 </div>
             </div>
@@ -602,14 +558,9 @@
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Icy Bodies</span>
                     <div class="absolute right-1">
-                        <svg data-tooltip-target="icy_bodies_slider_tooltip" class="absolute right-20 h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                        <g id="g1">
-                            <path class="fill-[#FFFF00]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                            <path class="fill-[#FFFF00]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                            <path class="fill-[#FFFF00]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                            <path class="fill-[#FFFF00]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                         </g>
-                        <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+                        <svg data-tooltip-target="icy_bodies_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #FFFF00; --icon-br: #FFFF00; --icon-tl: #FFFF00; --icon-tr: #FFFF00;">
+                            <use href="#influence_icon"></use>
                         </svg>
                         <span id="icy_bodies_value">0 - @Model.MaxValues.IcyBodyCount</span>
                     </div>
@@ -632,7 +583,7 @@
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="icy_bodies_slider_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                <div id="icy_bodies_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: Industrial
                 </div>
             </div>
@@ -640,14 +591,9 @@
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Rings</span>
                     <div class="absolute right-1">
-                        <svg data-tooltip-target="rings_slider_tooltip" class="absolute right-20 h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                        <g id="g1">
-                        <path class="fill-[#FF0000]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                        <path class="fill-[#FF0000]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                        <path class="fill-[#FF0000]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                        <path class="fill-[#FF0000]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                         </g>
-                        <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+                        <svg data-tooltip-target="rings_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #FF0000; --icon-br: #FF0000; --icon-tl: #FF0000; --icon-tr: #FF0000;">
+                            <use href="#influence_icon"></use>
                         </svg>
                         <span id="rings_value">0 - @Model.MaxValues.RingCount</span>
                     </div>
@@ -670,7 +616,7 @@
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="rings_slider_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                <div id="rings_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: Extraction
                 </div>
             </div>
@@ -678,14 +624,9 @@
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Bodies with Geologicals</span>
                     <div class="absolute right-1">
-                        <svg data-tooltip-target="geologicals_slider_tooltip" class="absolute right-20 h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                        <g id="g1">
-                        <path class="fill-[#FF0000]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                        <path class="fill-[#FFFF00]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                        <path class="fill-[#FF0000]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                        <path class="fill-[#FFFF00]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                         </g>
-                        <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+                        <svg data-tooltip-target="geologicals_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #FF0000; --icon-br: #FFFF00; --icon-tl: #FF0000; --icon-tr: #FFFF00;">
+                            <use href="#influence_icon"></use>
                         </svg>
                         <span id="geologicals_value">0 - @Model.MaxValues.GeologicalsCount</span>
                     </div>
@@ -708,7 +649,7 @@
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="geologicals_slider_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                <div id="geologicals_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: Extraction and Industrial
                 </div>
             </div>
@@ -716,14 +657,9 @@
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Bodies with Organics</span>
                     <div class="absolute right-1">
-                        <svg data-tooltip-target="organics_slider_tooltip" class="absolute right-20 h-6 w-6" version="1.1" id="Layer_1" x="0px" y="0px" width="924" height="924" viewBox="0 0 924 924" enable-background="new 0 0 924 924" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs3" />
-                        <g id="g1">
-                        <path class="fill-[#80FF00]" d="M 458.18182,917.9913 8.1454545,468.46402 46.836364,883.88221 Z" id="path7" />
-                        <path class="fill-[#009900]" d="M 458.84246,917.9913 908.87883,468.46402 870.18792,883.88221 Z" id="path8" />
-                        <path class="fill-[#80FF00]" d="M 458.18182,12.727273 8.1454545,462.25455 46.836364,46.836364 Z" id="path9" />
-                        <path class="fill-[#009900]" d="M 458.84246,12.727273 908.87883,462.25455 870.18792,46.836364 Z" id="path10" />
-                         </g>
-                        <g id="g3"><path d="M 462,29.698 894.302,462 462,894.302 29.698,462 462,29.698 M 462,0 0,462 462,924 924,462 Z" id="path2" style="display:inline" /><path d="M 462,21.083 866.97,57.031 902.918,462 866.97,866.97 462,902.918 57.031,866.97 21.083,462 57.031,57.031 462,21.083 M 462,0 37.667,37.667 0,462 37.667,886.333 462,924 886.333,886.333 924,462 886.333,37.667 Z" id="path1" /><rect x="327" y="433" width="270" height="58" id="rect1" /></g>
+                        <svg data-tooltip-target="organics_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #80FF00; --icon-br: #009900; --icon-tl: #80FF00; --icon-tr: #009900;">
+                            <use href="#influence_icon"></use>
                         </svg>
                         <span id="organics_value">0 - @Model.MaxValues.OrganicCount</span>
                     </div>
@@ -746,7 +682,7 @@
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="organics_slider_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                <div id="organics_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: Agriculture and Terraforming
                 </div>
             </div>
@@ -850,7 +786,7 @@
     </div>
     <div id="error_modal" class="hs-overlay pointer-events-none fixed start-0 top-0 z-80 hidden size-full overflow-x-hidden overflow-y-auto" role="dialog" tabindex="-1">
         <div class="hs-overlay-animation-target m-3 flex min-h-[calc(100%-56px)] scale-95 items-center opacity-0 transition-all duration-200 ease-in-out sm:mx-auto sm:w-full sm:max-w-lg hs-overlay-open:scale-100 hs-overlay-open:opacity-100">
-            <div class="pointer-events-auto flex w-full flex-col rounded-xl border border-gray-200 bg-white shadow-2xs">
+            <div class="shadow-2xs pointer-events-auto flex w-full flex-col rounded-xl border border-gray-200 bg-white">
                 <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3">
                     <h3 class="font-bold text-[#0F0F0F]">
                         Something went wrong.

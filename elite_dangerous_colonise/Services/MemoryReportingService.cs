@@ -1,11 +1,20 @@
-﻿
-using System.Diagnostics;
-using elite_dangerous_colonise.Classes;
+﻿using System.Diagnostics;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Services
 {
+    /// <summary> A service that periodically reports the apps memory usage.</summary>
     public class MemoryReportingService : BackgroundService
     {
+        private readonly AppLogger logger;
+
+        /// <summary> Instantiates a MemoryReportingService. </summary>
+        /// <param name="logger"> The logger service. </param>
+        public MemoryReportingService(AppLogger logger)
+        {
+            this.logger = logger;
+        }
+
+        /// <summary> Reports the starting memory usage followed by an hourly report. </summary>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             ReportUsage("Service Started");
@@ -21,6 +30,7 @@ namespace elite_dangerous_colonise.Classes
             }
         }
 
+        /// <summary> Reports the final memory usage and stops the service.</summary>
         public override Task StopAsync(CancellationToken cancellationToken)
         {
             ReportUsage("Service Stopped");
@@ -38,11 +48,11 @@ namespace elite_dangerous_colonise.Classes
                 long privateMemory = proc.PrivateMemorySize64 / 1024 / 1024;
                 long heap = GC.GetTotalMemory(false) / 1024 / 1024;
 
-                Logger.LogInformation("Memory Reporting Service", 1,$"{context} | Physical Memory: {physicalMemory}MB | Private Memory: {privateMemory}MB | Managed Heap: {heap}MB");
+                logger.LogInformation("Memory Reporting Service", 1,$"{context} | Physical Memory: {physicalMemory}MB | Private Memory: {privateMemory}MB | Managed Heap: {heap}MB");
             }
             catch (Exception ex)
             {
-                Logger.LogError("Memory Reporting Service", 2, ex);
+                logger.LogError("Memory Reporting Service", 2, ex);
             }
         }
     }

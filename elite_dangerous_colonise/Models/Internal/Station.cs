@@ -1,17 +1,18 @@
 ﻿using elite_dangerous_colonise.Models.Database_Types;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Models.Internal
 {
-    /// <summary> Defines a station. </summary>
+    /// <summary> Contains information about a Station. </summary>
     public class Station
     {
+        /// <summary> The stations ID. </summary>
         public ulong StationID { get; private set; }
+        /// <summary> The station's name. </summary>
         public string Name { get; private set; }
+        /// <summary> The station's controlling faction. </summary>
         public string Faction { get; private set; }
 
-        /// <summary>
-        /// Instantiates a station object.
-        /// </summary>
+        /// <summary> Instantiates a Station. </summary>
         /// <param name="stationID"> The Spansh ID of the station. </param>
         /// <param name="name"> The name of the station. </param>
         /// <param name="faction"> The station's controlling faction. </param>
@@ -22,10 +23,8 @@ namespace elite_dangerous_colonise.Classes
             Faction = faction;
         }
 
-        /// <summary>
-        /// Adds the Station to the data lists.
-        /// </summary>
-        public void AddToDataList(DatabaseDataLists dataLists, long systemID)
+        /// <summary> Adds the Station to the Stations data list. </summary>
+        public void AddToDataList(DatabaseDataLists dataLists, ulong systemID)
         {
             dataLists.Stations.Add(new StationInsertType(StationID, systemID, Name, Faction != null ? Faction : "None"));
         }

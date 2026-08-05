@@ -1,4 +1,4 @@
-﻿using elite_dangerous_colonise.Classes;
+﻿using elite_dangerous_colonise.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Npgsql;
@@ -7,71 +7,36 @@ namespace elite_dangerous_colonise.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ColonisedSystemNamesController : ControllerBase
+    public class ColonisedSystemNamesController : SimpleQueryController
     {
-        private const int MIN_QUERY_LENGTH = 2;
+        public ColonisedSystemNamesController(NpgsqlDataSource dataSource, AppLogger logger)
+            : base(dataSource, logger, "Colonised System Names Controller") { }
 
-        private readonly NpgsqlDataSource dataSource;
-
-        public ColonisedSystemNamesController(NpgsqlDataSource dataSource)
+        protected override async Task<IActionResult> ExecuteDatabaseQuery(string query, string region)
         {
-            this.dataSource = dataSource;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] string? query)
-        {
-            if (string.IsNullOrEmpty(query) || query.Length < MIN_QUERY_LENGTH)
+            await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
             {
-                return Ok(new JArray());
-            }
-
-            try
-            {
-                await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
+                await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"SelectColonisedSystemNamesJson\"(@systemName, @regionName)", conn))
                 {
-                    await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"SelectColonisedSystemNamesJson\"(@name)", conn))
+                    command.Parameters.AddWithValue("systemName", query);
+                    command.Parameters.AddWithValue("regionName", query);
+
+                    await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                     {
-                        command.Parameters.AddWithValue("name", query);
-
-                        await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                        if (await reader.ReadAsync() && !await reader.IsDBNullAsync(0))
                         {
-                            if (await reader.ReadAsync() && !await reader.IsDBNullAsync(0))
-                            {
-                                string jsonResult = reader.GetFieldValue<string>(0);
+                            string jsonResult = reader.GetFieldValue<string>(0);
 
-                                JArray parsedJson = JArray.Parse(jsonResult);
+                            JArray parsedJson = JArray.Parse(jsonResult);
 
-                                return Content(parsedJson.ToString(), "application/json");
-                            }
-                            else
-                            {
-                                return Content("[]", "application/json");
-                            }
+                            return Content(parsedJson.ToString(), "application/json");
+                        }
+                        else
+                        {
+                            return Content("[]", "application/json");
                         }
                     }
                 }
-            }
-            catch (NpgsqlException ex)
-            {
-                Logger.LogError("Colonised System Names Controller", 0, ex);
-
-                return StatusCode(500, new
-                {
-                    success = false,
-                    error = "A database error occurred."
-                });
-            }
-
-            catch (Exception ex)
-            {
-                Logger.LogError("Colonised System Names Controller", 1, ex);
-
-                return StatusCode(500, new
-                {
-                    success = false,
-                    error = "An unexpected error occurred. Please try again later."
-                });
             }
         }
     }

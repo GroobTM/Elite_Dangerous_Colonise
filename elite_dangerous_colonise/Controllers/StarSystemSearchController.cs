@@ -1,5 +1,5 @@
-﻿using elite_dangerous_colonise.Classes;
-using elite_dangerous_colonise.Models.Database_Types;
+﻿using elite_dangerous_colonise.Models.Database_Types;
+using elite_dangerous_colonise.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,11 +12,18 @@ namespace elite_dangerous_colonise.Controllers
     [Route("api/[controller]")]
     public class StarSystemSearchController : ControllerBase
     {
-        private readonly NpgsqlDataSource dataSource;
+        private const int MAX_QUERY_ATTEMPTS = 3;
+        private const int QUERY_ATTEMPT_DELAY = 1;
 
-        public StarSystemSearchController(NpgsqlDataSource dataSource)
+        private readonly NpgsqlDataSource dataSource;
+        private readonly UpdateStatusService updateStatusService;
+        private readonly AppLogger logger;
+
+        public StarSystemSearchController(NpgsqlDataSource dataSource, UpdateStatusService updateStatusService, AppLogger logger)
         {
             this.dataSource = dataSource;
+            this.updateStatusService = updateStatusService;
+            this.logger = logger;
         }
 
 
@@ -57,14 +64,14 @@ namespace elite_dangerous_colonise.Controllers
             }
         }
 
-        private List<long> ParseSessionReportedStarSystems()
+        private List<decimal> ParseSessionReportedStarSystems()
         {
-            List<long> reportedStarSystems = new List<long>();
+            List<decimal> reportedStarSystems = new List<decimal>();
             string? reportedStarSystemsJson = HttpContext.Session.GetString("reportedStarSystemsJson");
 
             if (!string.IsNullOrEmpty(reportedStarSystemsJson))
             {
-                reportedStarSystems = JsonConvert.DeserializeObject<List<long>>(reportedStarSystemsJson);
+                reportedStarSystems = JsonConvert.DeserializeObject<List<decimal>>(reportedStarSystemsJson);
             }
 
             return reportedStarSystems;
@@ -73,125 +80,144 @@ namespace elite_dangerous_colonise.Controllers
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] SearchQueryModel searchQuery)
         {
-            if (!UpdateHub.isSearchBlocked)
+            if (!updateStatusService.IsSearchBlocked)
             {
                 try
                 {
-                    await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
+                    for (int attempt = 1; attempt <= MAX_QUERY_ATTEMPTS; attempt++)
                     {
-                        await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"SelectSearchResults\"(" +
-                            "@sortOrder, " +
-                            "@pageNo, " +
-                            "@resultsPerPage, " +
-                            "@systemName, " +
-                            "@factionName, " +
-                            "@minBlackHoles, " +
-                            "@maxBlackHoles, " +
-                            "@minNeutronStars, " +
-                            "@maxNeutronStars, " +
-                            "@minWhiteDwarves, " +
-                            "@maxWhiteDwarves, " +
-                            "@minOtherStars, " +
-                            "@maxOtherStars, " +
-                            "@minEarthLikes, " +
-                            "@maxEarthLikes, " +
-                            "@minWaterWorlds, " +
-                            "@maxWaterWorlds, " +
-                            "@minAmmoniaWorlds, " +
-                            "@maxAmmoniaWorlds, " +
-                            "@minGasGiants, " +
-                            "@maxGasGiants, " +
-                            "@minHighMetalContents, " +
-                            "@maxHighMetalContents, " +
-                            "@minMetalRiches, " +
-                            "@maxMetalRiches, " +
-                            "@minRockyIces, " +
-                            "@maxRockyIces, " +
-                            "@minRocks, " +
-                            "@maxRocks, " +
-                            "@minIces, " +
-                            "@maxIces, " +
-                            "@minOrganics, " +
-                            "@maxOrganics, " +
-                            "@minGeologicals, " +
-                            "@maxGeologicals, " +
-                            "@minRings, " +
-                            "@maxRings, " +
-                            "@minLandables, " +
-                            "@maxLandables, " +
-                            "@minWalkables, " +
-                            "@maxWalkables, " +
-                            "@maxDistanceToSol, " +
-                            "@hotspotTypes," +
-                            "@removedSystemIDs" +
-                            ")", conn))
+                        try
                         {
-                            command.Parameters.AddWithValue("sortOrder", ParseSortOrder(searchQuery.SortOrder));
-                            command.Parameters.AddWithValue("pageNo", Math.Max(1, searchQuery.PageNo));
-                            command.Parameters.AddWithValue("resultsPerPage", Math.Min((short)50, searchQuery.ResultsPerPage));
-                            command.Parameters.AddWithValue("systemName", NpgsqlDbType.Varchar, (object?)searchQuery.SystemName ?? DBNull.Value);
-                            command.Parameters.AddWithValue("factionName", NpgsqlDbType.Varchar, (object?)searchQuery.FactionName ?? DBNull.Value);
-                            command.Parameters.AddWithValue("minBlackHoles", searchQuery.MinBlackHoles);
-                            command.Parameters.AddWithValue("maxBlackHoles", searchQuery.MaxBlackHoles);
-                            command.Parameters.AddWithValue("minNeutronStars",searchQuery.MinNeutronStars);
-                            command.Parameters.AddWithValue("maxNeutronStars",searchQuery.MaxNeutronStars);
-                            command.Parameters.AddWithValue("minWhiteDwarves",searchQuery.MinWhiteDwarves);
-                            command.Parameters.AddWithValue("maxWhiteDwarves",searchQuery.MaxWhiteDwarves);
-                            command.Parameters.AddWithValue("minOtherStars",searchQuery.MinOtherStars);
-                            command.Parameters.AddWithValue("maxOtherStars",searchQuery.MaxOtherStars);
-                            command.Parameters.AddWithValue("minEarthLikes",searchQuery.MinEarthLikes);
-                            command.Parameters.AddWithValue("maxEarthLikes",searchQuery.MaxEarthLikes);
-                            command.Parameters.AddWithValue("minWaterWorlds",searchQuery.MinWaterWorlds);
-                            command.Parameters.AddWithValue("maxWaterWorlds",searchQuery.MaxWaterWorlds);
-                            command.Parameters.AddWithValue("minAmmoniaWorlds",searchQuery.MinAmmoniaWorlds);
-                            command.Parameters.AddWithValue("maxAmmoniaWorlds",searchQuery.MaxAmmoniaWorlds);
-                            command.Parameters.AddWithValue("minGasGiants",searchQuery.MinGasGiants);
-                            command.Parameters.AddWithValue("maxGasGiants",searchQuery.MaxGasGiants);
-                            command.Parameters.AddWithValue("minHighMetalContents",searchQuery.MinHighMetalContents);
-                            command.Parameters.AddWithValue("maxHighMetalContents",searchQuery.MaxHighMetalContents);
-                            command.Parameters.AddWithValue("minMetalRiches",searchQuery.MinMetalRiches);
-                            command.Parameters.AddWithValue("maxMetalRiches",searchQuery.MaxMetalRiches);
-                            command.Parameters.AddWithValue("minRockyIces",searchQuery.MinRockyIces);
-                            command.Parameters.AddWithValue("maxRockyIces",searchQuery.MaxRockyIces);
-                            command.Parameters.AddWithValue("minRocks",searchQuery.MinRocks);
-                            command.Parameters.AddWithValue("maxRocks",searchQuery.MaxRocks);
-                            command.Parameters.AddWithValue("minIces",searchQuery.MinIces);
-                            command.Parameters.AddWithValue("maxIces",searchQuery.MaxIces);
-                            command.Parameters.AddWithValue("minOrganics",searchQuery.MinOrganics);
-                            command.Parameters.AddWithValue("maxOrganics",searchQuery.MaxOrganics);
-                            command.Parameters.AddWithValue("minGeologicals",searchQuery.MinGeologicals);
-                            command.Parameters.AddWithValue("maxGeologicals",searchQuery.MaxGeologicals);
-                            command.Parameters.AddWithValue("minRings",searchQuery.MinRings);
-                            command.Parameters.AddWithValue("maxRings",searchQuery.MaxRings);
-                            command.Parameters.AddWithValue("minLandables",searchQuery.MinLandables);
-                            command.Parameters.AddWithValue("maxLandables",searchQuery.MaxLandables);
-                            command.Parameters.AddWithValue("minWalkables",searchQuery.MinWalkables);
-                            command.Parameters.AddWithValue("maxWalkables",searchQuery.MaxWalkables);
-                            command.Parameters.AddWithValue("maxDistanceToSol",searchQuery.MaxDistanceToSol);
-                            command.Parameters.AddWithValue("hotspotTypes", (object?)ParseHotspotTypes(searchQuery.HotspotTypes) ?? DBNull.Value);
-                            command.Parameters.AddWithValue("removedSystemIDs", ParseSessionReportedStarSystems());
-
-                            await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                            await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
                             {
-                                if (await reader.ReadAsync() && !await reader.IsDBNullAsync(0))
+                                await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"SelectSearchResults\"(" +
+                                    "@regionName, " +
+                                    "@sortOrder, " +
+                                    "@pageNo, " +
+                                    "@resultsPerPage, " +
+                                    "@systemName, " +
+                                    "@factionName, " +
+                                    "@minBlackHoles, " +
+                                    "@maxBlackHoles, " +
+                                    "@minNeutronStars, " +
+                                    "@maxNeutronStars, " +
+                                    "@minWhiteDwarves, " +
+                                    "@maxWhiteDwarves, " +
+                                    "@minOtherStars, " +
+                                    "@maxOtherStars, " +
+                                    "@minEarthLikes, " +
+                                    "@maxEarthLikes, " +
+                                    "@minWaterWorlds, " +
+                                    "@maxWaterWorlds, " +
+                                    "@minAmmoniaWorlds, " +
+                                    "@maxAmmoniaWorlds, " +
+                                    "@minGasGiants, " +
+                                    "@maxGasGiants, " +
+                                    "@minHighMetalContents, " +
+                                    "@maxHighMetalContents, " +
+                                    "@minMetalRiches, " +
+                                    "@maxMetalRiches, " +
+                                    "@minRockyIces, " +
+                                    "@maxRockyIces, " +
+                                    "@minRocks, " +
+                                    "@maxRocks, " +
+                                    "@minIces, " +
+                                    "@maxIces, " +
+                                    "@minOrganics, " +
+                                    "@maxOrganics, " +
+                                    "@minGeologicals, " +
+                                    "@maxGeologicals, " +
+                                    "@minRings, " +
+                                    "@maxRings, " +
+                                    "@minLandables, " +
+                                    "@maxLandables, " +
+                                    "@minWalkables, " +
+                                    "@maxWalkables, " +
+                                    "@maxDistanceToSol, " +
+                                    "@hotspotTypes," +
+                                    "@removedSystemIDs" +
+                                    ")", conn))
                                 {
-                                    string jsonResult = reader.GetFieldValue<string>(0);
+                                    command.Parameters.AddWithValue("regionName", searchQuery.RegionName);
+                                    command.Parameters.AddWithValue("sortOrder", ParseSortOrder(searchQuery.SortOrder));
+                                    command.Parameters.AddWithValue("pageNo", Math.Max(1, searchQuery.PageNo));
+                                    command.Parameters.AddWithValue("resultsPerPage", Math.Min((short)50, searchQuery.ResultsPerPage));
+                                    command.Parameters.AddWithValue("systemName", NpgsqlDbType.Varchar, (object?)searchQuery.SystemName ?? DBNull.Value);
+                                    command.Parameters.AddWithValue("factionName", NpgsqlDbType.Varchar, (object?)searchQuery.FactionName ?? DBNull.Value);
+                                    command.Parameters.AddWithValue("minBlackHoles", searchQuery.MinBlackHoles);
+                                    command.Parameters.AddWithValue("maxBlackHoles", searchQuery.MaxBlackHoles);
+                                    command.Parameters.AddWithValue("minNeutronStars", searchQuery.MinNeutronStars);
+                                    command.Parameters.AddWithValue("maxNeutronStars", searchQuery.MaxNeutronStars);
+                                    command.Parameters.AddWithValue("minWhiteDwarves", searchQuery.MinWhiteDwarves);
+                                    command.Parameters.AddWithValue("maxWhiteDwarves", searchQuery.MaxWhiteDwarves);
+                                    command.Parameters.AddWithValue("minOtherStars", searchQuery.MinOtherStars);
+                                    command.Parameters.AddWithValue("maxOtherStars", searchQuery.MaxOtherStars);
+                                    command.Parameters.AddWithValue("minEarthLikes", searchQuery.MinEarthLikes);
+                                    command.Parameters.AddWithValue("maxEarthLikes", searchQuery.MaxEarthLikes);
+                                    command.Parameters.AddWithValue("minWaterWorlds", searchQuery.MinWaterWorlds);
+                                    command.Parameters.AddWithValue("maxWaterWorlds", searchQuery.MaxWaterWorlds);
+                                    command.Parameters.AddWithValue("minAmmoniaWorlds", searchQuery.MinAmmoniaWorlds);
+                                    command.Parameters.AddWithValue("maxAmmoniaWorlds", searchQuery.MaxAmmoniaWorlds);
+                                    command.Parameters.AddWithValue("minGasGiants", searchQuery.MinGasGiants);
+                                    command.Parameters.AddWithValue("maxGasGiants", searchQuery.MaxGasGiants);
+                                    command.Parameters.AddWithValue("minHighMetalContents", searchQuery.MinHighMetalContents);
+                                    command.Parameters.AddWithValue("maxHighMetalContents", searchQuery.MaxHighMetalContents);
+                                    command.Parameters.AddWithValue("minMetalRiches", searchQuery.MinMetalRiches);
+                                    command.Parameters.AddWithValue("maxMetalRiches", searchQuery.MaxMetalRiches);
+                                    command.Parameters.AddWithValue("minRockyIces", searchQuery.MinRockyIces);
+                                    command.Parameters.AddWithValue("maxRockyIces", searchQuery.MaxRockyIces);
+                                    command.Parameters.AddWithValue("minRocks", searchQuery.MinRocks);
+                                    command.Parameters.AddWithValue("maxRocks", searchQuery.MaxRocks);
+                                    command.Parameters.AddWithValue("minIces", searchQuery.MinIces);
+                                    command.Parameters.AddWithValue("maxIces", searchQuery.MaxIces);
+                                    command.Parameters.AddWithValue("minOrganics", searchQuery.MinOrganics);
+                                    command.Parameters.AddWithValue("maxOrganics", searchQuery.MaxOrganics);
+                                    command.Parameters.AddWithValue("minGeologicals", searchQuery.MinGeologicals);
+                                    command.Parameters.AddWithValue("maxGeologicals", searchQuery.MaxGeologicals);
+                                    command.Parameters.AddWithValue("minRings", searchQuery.MinRings);
+                                    command.Parameters.AddWithValue("maxRings", searchQuery.MaxRings);
+                                    command.Parameters.AddWithValue("minLandables", searchQuery.MinLandables);
+                                    command.Parameters.AddWithValue("maxLandables", searchQuery.MaxLandables);
+                                    command.Parameters.AddWithValue("minWalkables", searchQuery.MinWalkables);
+                                    command.Parameters.AddWithValue("maxWalkables", searchQuery.MaxWalkables);
+                                    command.Parameters.AddWithValue("maxDistanceToSol", searchQuery.MaxDistanceToRegionCentre);
+                                    command.Parameters.AddWithValue("hotspotTypes", (object?)ParseHotspotTypes(searchQuery.HotspotTypes) ?? DBNull.Value);
+                                    command.Parameters.AddWithValue("removedSystemIDs", ParseSessionReportedStarSystems());
 
-                                    JObject parsedJson = JObject.Parse(jsonResult);
+                                    await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                                    {
+                                        if (await reader.ReadAsync() && !await reader.IsDBNullAsync(0))
+                                        {
+                                            string jsonResult = reader.GetFieldValue<string>(0);
 
-                                    return Content(parsedJson.ToString(), "application/json");
+                                            JObject parsedJson = JObject.Parse(jsonResult);
+
+                                            return Content(parsedJson.ToString(), "application/json");
+                                        }
+                                        else
+                                        {
+                                            return Content("{}", "application/json");
+                                        }
+                                    }
                                 }
-                                else
-                                {
-                                    return Content("{}", "application/json");
-                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            if (attempt < MAX_QUERY_ATTEMPTS)
+                            {
+                                await Task.Delay(TimeSpan.FromSeconds(QUERY_ATTEMPT_DELAY));
+                            }
+                            else
+                            {
+                                throw;
                             }
                         }
                     }
                 }
                 catch (NpgsqlException ex)
                 {
-                    Logger.LogError("Index Page", 0, ex);
+                    logger.LogError("Star System Search Controller", 0, ex);
 
                     return StatusCode(500, new
                     {
@@ -202,7 +228,7 @@ namespace elite_dangerous_colonise.Controllers
 
                 catch (Exception ex)
                 {
-                    Logger.LogError("Index Page", 1, ex);
+                    logger.LogError("Star System Search Controller", 1, ex);
 
                     return StatusCode(500, new
                     {
@@ -210,6 +236,12 @@ namespace elite_dangerous_colonise.Controllers
                         error = "An unexpected error occurred. Please try again later."
                     });
                 }
+
+                return StatusCode(500, new
+                {
+                    success = false,
+                    error = "An unexpected error occurred. Please try again later."
+                });
             }
             else
             {
@@ -223,6 +255,7 @@ namespace elite_dangerous_colonise.Controllers
 
         public class SearchQueryModel
         {
+            public required string RegionName { get; set; }
             public required string SortOrder { get; set; }
             public int PageNo { get; set; }
             public short ResultsPerPage { get; set; }
@@ -264,7 +297,7 @@ namespace elite_dangerous_colonise.Controllers
             public short MaxLandables { get; set; }
             public short MinWalkables { get; set; }
             public short MaxWalkables { get; set; }
-            public int MaxDistanceToSol { get; set; }
+            public int MaxDistanceToRegionCentre { get; set; }
             public string? HotspotTypes { get; set; }
         }
     }

@@ -21,8 +21,6 @@
 
   <ItemGroup>
     <PackageReference Include="Ixnas.AltchaNet" Version="1.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.20" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="8.0.20" />
     <PackageReference Include="NetMQ" Version="4.0.2.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Npgsql" Version="9.0.4" />
@@ -31,7 +29,7 @@
     <PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.9" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.18" />
   </ItemGroup>
 
   <ItemGroup>

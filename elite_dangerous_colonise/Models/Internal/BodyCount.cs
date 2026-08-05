@@ -1,29 +1,45 @@
 ﻿using elite_dangerous_colonise.Models.Database_Types;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Models.Internal
 {
-    /// <summary> Defines the BodyCount object. </summary>
+    /// <summary> Contains information about the number of different body types in a StarSystem. </summary>
     public class BodyCount
     {
         private const double INTERESTING_WEIGHT = 1.0;
         private const double MEH_WEIGHT = 0.5;
         private const double BORING_WEIGHT = 0.2;
 
+        /// <summary> The number of black holes in the system. </summary>
         public short BlackHoleCount { get; set; } = 0;
+        /// <summary> The number of neutron stars in the system. </summary>
         public short NeutronStarCount { get; set; } = 0;
+        /// <summary> The number of white dwarves in the system. </summary>
         public short WhiteDwarves { get; set; } = 0;
+        /// <summary> The number of other star types in the system. </summary>
         public short OtherStarCount { get; set; } = 0;
+        /// <summary> The number of Earth-like worlds in the system. </summary>
         public short EarthLikeCount { get; set; } = 0;
+        /// <summary> The number of water worlds in the system. </summary>
         public short WaterWorldCount { get; set; } = 0;
+        /// <summary> The number of ammonia world in the system. </summary>
         public short AmmoniaWorldCount { get; set; } = 0;
+        /// <summary> The number of gas giants in the system. </summary>
         public short GasGiantCount { get; set; } = 0;
+        /// <summary> The number of high metal content bodies in the system. </summary>
         public short HighMetalContentCount { get; set; } = 0;
+        /// <summary> The number of metal rich bodies in the system. </summary>
         public short MetalRichCount { get; set; } = 0;
+        /// <summary> The number of rocky icy bodies in the system. </summary>
         public short RockyIceBodyCount { get; set; } = 0;
+        /// <summary> The number of rocky bodies in the system. </summary>
         public short RockBodyCount { get; set; } = 0;
+        /// <summary> The number of icy bodies in the system. </summary>
         public short IcyBodyCount { get; set; } = 0;
+        /// <summary> The number of organics in the system. </summary>
         public short OrganicCount { get; set; } = 0;
+        /// <summary> The number of geologicals in the system. </summary>
         public short GeologicalsCount { get; set; } = 0;
+        /// <summary> The number of rings in the system. </summary>
         public short RingCount { get; set; } = 0;
 
         /// <summary> Increases the counter of the corresponding body type.</summary>
@@ -108,7 +124,7 @@ namespace elite_dangerous_colonise.Classes
                 RingCount * MEH_WEIGHT;
         }
 
-        /// <summary> Adds the BodyCount to the data lists. </summary>
+        /// <summary> Adds the BodyCount to the UncolonisedDetails data list. </summary>
         /// <param name="starSystem"> The system that has the BodyCount object. </param>
         public void AddToDataLists(DatabaseDataLists dataLists, UncolonisedStarSystem starSystem)
         {
@@ -119,7 +135,6 @@ namespace elite_dangerous_colonise.Classes
                     starSystem.ReserveLevel,
                     starSystem.LandableCount,
                     starSystem.WalkableCount,
-                    starSystem.DistanceToSol,
                     starSystem.TotalHotspots,
                     starSystem.SystemValue,
                     BlackHoleCount,

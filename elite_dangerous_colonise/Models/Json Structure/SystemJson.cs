@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
-using elite_dangerous_colonise.Classes;
 using elite_dangerous_colonise.Models.Database_Types;
+using elite_dangerous_colonise.Models.Internal;
 
 namespace elite_dangerous_colonise.Models.Json_Structure
 {
-    /// <summary> Defines the Json structure of a star system. </summary>
+    /// <summary> Represents the Json structure of a star system. </summary>
     public class SystemJson
     {
         readonly string[] COLONISED_STATION_TYPES = new string[]
@@ -34,7 +34,7 @@ namespace elite_dangerous_colonise.Models.Json_Structure
         };
 
         [JsonProperty("id64")]
-        public required long SystemID { get; set; }
+        public required ulong SystemID { get; set; }
         [JsonProperty("name")]
         public required string Name { get; set; }
         [JsonProperty("coords")]
@@ -54,7 +54,6 @@ namespace elite_dangerous_colonise.Models.Json_Structure
                 || (Stations != null && Stations.Any(station => COLONISED_STATION_TYPES.Contains(station.StationType)));
         }
 
-        /// <summary> Checks if the system has invlid signals. </summary>
         private bool HasInvalidSignals()
         {
             foreach (BodyJson body in Bodies)
@@ -74,7 +73,6 @@ namespace elite_dangerous_colonise.Models.Json_Structure
             return false;
         }
 
-        /// <summary> Merges the lists of StationJsons in Bodies into Stations. </summary>
         private void MergeSystemAndBodyStationLists()
         {
             foreach (BodyJson body in Bodies)

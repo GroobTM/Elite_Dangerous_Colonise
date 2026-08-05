@@ -1,38 +1,37 @@
 ﻿using Npgsql;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using elite_dangerous_colonise.Models.Json_Structure;
+using elite_dangerous_colonise.Models.Internal;
+using System.Numerics;
 
-namespace elite_dangerous_colonise.Classes
+namespace elite_dangerous_colonise.Services
 {
-    /// <summary>
-    /// Defines a DatabaseBulkWriter.
-    /// </summary>
+    /// <summary> Reads Json Star System entries in bulk and adds them to the database. </summary>
     public class DatabaseBulkWriter
     {
         private const int BULK_SIZE = 2000;
 
-        private readonly bool verboseReporting;
         private readonly NpgsqlDataSource dataSource;
+        private readonly AppLogger logger;
+        private readonly RegionStore regionStore;
+        private readonly bool verboseReporting;
+
         private int recordsRead = 0;
         private int recordsAddedOrUpdated = 0;
         private int recordsFailedToAdd = 0;
 
 
-        /// <summary>
-        /// Instantiates a DatabaseBulkWriter.
-        /// </summary>
-        /// <param name="dataSource"> The database datasource. </param>
-        public DatabaseBulkWriter(NpgsqlDataSource dataSource)
-        {
-            this.verboseReporting = true;
-            this.dataSource = dataSource;
-        }
-        /// <inheritdoc cref="DatabaseBulkWriter.DatabaseBulkWriter(NpgsqlDataSource)"/>
+        /// <summary> Instantiates a DatabaseBulkWriter. </summary>
+        /// <param name="dataSource"> The database datasource service. </param>
+        /// <param name="logger"> The logger service. </param>
+        /// <param name="regionStore"> The region store service. </param>
         /// <param name="verboseReporting"> If the database writer should report its reading progress. </param>
-        public DatabaseBulkWriter(NpgsqlDataSource dataSource, bool verboseReporting)
+        /// <remarks> Verbose Reporting is enabled by default. </remarks>
+        public DatabaseBulkWriter(NpgsqlDataSource dataSource, AppLogger logger, RegionStore regionStore, bool verboseReporting = true)
         {
             this.dataSource = dataSource;
+            this.logger = logger;
+            this.regionStore = regionStore;
             this.verboseReporting = verboseReporting;
         }
 
@@ -97,7 +96,7 @@ namespace elite_dangerous_colonise.Classes
             {
                 foreach (string name in insertedNames)
                 {
-                    Logger.LogInformation("Database Writer", 4, $"System {name} was added to the database.");
+                    logger.LogInformation("Database Writer", 4, $"System {name} was added to the database.");
                 }
             }
         }
@@ -128,7 +127,7 @@ namespace elite_dangerous_colonise.Classes
                     catch (NpgsqlException ex)
                     {
                         recordsFailedToAdd += dataLists.Count();
-                        Logger.LogError("Database Writer", 5, ex);
+                        logger.LogError("Database Writer", 5, ex);
 
                         try
                         {
@@ -136,7 +135,7 @@ namespace elite_dangerous_colonise.Classes
                         }
                         catch (InvalidOperationException rollbackEx)
                         {
-                            Logger.LogError("Database Writer", 6, rollbackEx);
+                            logger.LogError("Database Writer", 6, rollbackEx);
                         }
                         
                     }
@@ -152,7 +151,7 @@ namespace elite_dangerous_colonise.Classes
             {
                 while (!token.IsCancellationRequested)
                 {
-                    Logger.LogInformation("Database Writer", 100, $"Reading In Progress " +
+                    logger.LogInformation("Database Writer", 100, $"Reading In Progress " +
                         $"| Records Read: {recordsRead} " +
                         $"({recordsRead / Math.Max(1, DateTime.Now.Subtract(startTime).TotalMinutes)}/min) " +
                         $"| Records Added: {recordsAddedOrUpdated} " +
@@ -164,7 +163,7 @@ namespace elite_dangerous_colonise.Classes
             }
             catch (TaskCanceledException)
             {
-                Logger.LogInformation("Database Writer", 101, $"Reading Complete " +
+                logger.LogInformation("Database Writer", 101, $"Reading Complete " +
                     $"| Records Read: {recordsRead} " +
                     $"({recordsRead / Math.Max(1, DateTime.Now.Subtract(startTime).TotalMinutes)}/min) " +
                     $"| Records Added: {recordsAddedOrUpdated} " +
@@ -176,7 +175,6 @@ namespace elite_dangerous_colonise.Classes
 
         /// <summary> Reads a Json file and inserts its data into the database. </summary>
         /// <param name="filePath"> The file path of a Json file. </param>
-        /// <remarks> This method reports it's progress periodically. </remarks>
         public async Task InsertJsonIntoDatabase(string filePath)
         {
             try
@@ -187,21 +185,20 @@ namespace elite_dangerous_colonise.Classes
             }
             catch (JsonReaderException ex)
             {
-                Logger.LogError("Database Writer", 0, ex);
+                logger.LogError("Database Writer", 0, ex);
             }
             catch (UnauthorizedAccessException ex)
             {
-                Logger.LogError("Database Writer", 1, ex);
+                logger.LogError("Database Writer", 3, ex);
             }
             catch (Exception ex)
             {
-                Logger.LogError("Database Writer", 2, ex);
+                logger.LogError("Database Writer", 2, ex);
             }
         }
 
         /// <summary> Reads a streamed Json file and inserts its data into the database. </summary>
         /// <param name="inputStream"> The stream of a Json file. </param>
-        /// <remarks> This method reports it's progress periodically. </remarks>
         public async Task InsertJsonIntoDatabase(Stream inputStream)
         {
             try
@@ -212,20 +209,28 @@ namespace elite_dangerous_colonise.Classes
             }
             catch (JsonReaderException ex)
             {
-                Logger.LogError("Database Writer", 0, ex);
+                logger.LogError("Database Writer", 0, ex);
             }
             catch (IOException ex)
             {
-                Logger.LogError("Database Writer", 1, ex);
+                logger.LogError("Database Writer", 1, ex);
             }
             catch (Exception ex)
             {
-                Logger.LogError("Database Writer", 2, ex);
+                logger.LogError("Database Writer", 2, ex);
             }
         }
 
         private async Task InsertJsonIntoDatabase(StreamReader streamReader)
         {
+            IReadOnlyList<Region> regions = regionStore.GetRegions();
+
+            if (regions.Count == 0)
+            {
+                logger.LogWarning("Database Writer", 7, "No regions found in database.");
+                return;
+            }
+
             using (JsonTextReader jsonReader = new JsonTextReader(streamReader))
             {
                 jsonReader.CloseInput = false;
@@ -236,24 +241,33 @@ namespace elite_dangerous_colonise.Classes
 
                 DatabaseDataLists dataLists = new DatabaseDataLists();
 
+                
                 while (await jsonReader.ReadAsync())
                 {
                     if (jsonReader.TokenType == JsonToken.StartObject)
                     {
                         SystemJson? systemJson = serializer.Deserialize<SystemJson>(jsonReader);
 
-                        if (systemJson != null && SolDistanceChecker.InRangeOfSol(systemJson.Coordinates))
+                        if (systemJson != null)
                         {
-                            StarSystem? decodedSystem = systemJson.ConvertToStarSystem();
-                            if (decodedSystem != null)
+                            foreach (Region region in regions)
                             {
-                                decodedSystem.AddToDataLists(dataLists);
-                            }
+                                if (region.PointWithinRegion(systemJson.Coordinates))
+                                {
+                                    StarSystem? decodedSystem = systemJson.ConvertToStarSystem();
+                                    if (decodedSystem != null)
+                                    {
+                                        decodedSystem.AddToDataLists(dataLists);
+                                    }
 
-                            if (dataLists.Count() >= BULK_SIZE)
-                            {
-                                await BulkInsertIntoDatabase(dataLists);
-                                dataLists.ClearLists();
+                                    if (dataLists.Count() >= BULK_SIZE)
+                                    {
+                                        await BulkInsertIntoDatabase(dataLists);
+                                        dataLists.ClearLists();
+                                    }
+
+                                    break;
+                                }
                             }
                         }
                         recordsRead++;

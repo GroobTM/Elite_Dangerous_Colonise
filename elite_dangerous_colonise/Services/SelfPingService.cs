@@ -1,26 +1,22 @@
-﻿namespace elite_dangerous_colonise.Classes
+﻿namespace elite_dangerous_colonise.Services
 {
-    /// <summary>
-    /// Defines the SelfPingService background service.
-    /// </summary>
+    /// <summary> A service that pings the app to keep it awake. </summary>
     public class SelfPingService : BackgroundService
     {
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly AppLogger logger;
 
-        /// <summary>
-        /// Constructs a SelfPingService object.
-        /// </summary>
-        public SelfPingService(IHttpClientFactory httpClientFactory)
+        /// <summary> Instantiates a SelfPingService. </summary>
+        public SelfPingService(IHttpClientFactory httpClientFactory, AppLogger logger)
         {
             this.httpClientFactory = httpClientFactory;
+            this.logger = logger;
         }
 
-        /// <summary>
-        /// Pings https://edcolonise.net/ every 10 minutes to keep it awake.
-        /// </summary>
+        /// <summary> Pings https://edcolonise.net/ every 10 minutes to keep it awake. </summary>
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            Logger.LogInformation("Self Ping Service", 0, "Self Ping Service starting.");
+            logger.LogInformation("Self Ping Service", 0, "Self Ping Service starting.");
 
 
             while (!cancellationToken.IsCancellationRequested)
@@ -32,19 +28,19 @@
                         HttpResponseMessage response = await client.GetAsync("https://edcolonise.net/", cancellationToken);
                         if (response.IsSuccessStatusCode)
                         {
-                            Logger.LogInformation("Self Ping Service", 1, "Self ping was successful.");
+                            logger.LogInformation("Self Ping Service", 1, "Self ping was successful.");
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("Self Ping Service", 2, "Self ping failed and caused an error.", ex);
+                    logger.LogError("Self Ping Service", 2, "Self ping failed and caused an error.", ex);
                 }
 
                 await Task.Delay(TimeSpan.FromMinutes(10), cancellationToken);
             }
 
-            Logger.LogInformation("Self Ping Service", 3, "Self Ping Service stopping.");
+            logger.LogInformation("Self Ping Service", 3, "Self Ping Service stopping.");
         }
     }
 }
