@@ -554,7 +554,10 @@ function FormatResults(results) {
                 </div>
                 <h2 class="col-start-1 row-start-9 border-b border-gray-300 pt-5 text-center text-lg drop-shadow-xs lg:col-end-3 lg:row-start-7 lg:text-left xl:col-end-5 xl:row-start-5"></h2>
                 <div class="mt-5 flex flex-col justify-between gap-y-5 sm:flex-row lg:col-span-2 xl:col-span-4">
-                    <a href="https://spansh.co.uk/system/${system.systemID}" target="_blank" class="text-center text-blue-800 underline sm:text-left">View on Spansh</a>
+                    <div class="flex justify-center gap-x-3 text-center sm:text-left">
+                        <a href="https://spansh.co.uk/system/${system.systemID}" target="_blank" class="text-center text-blue-800 underline">View on Spansh</a>
+                        <a href="https://inara.cz/elite/starsystem/?search=${system.systemName}" target="_blank" class="text-center text-blue-800 underline">View on Inara</a>
+                    </div>
                     <div class="flex justify-center gap-x-3 text-center sm:text-left">
                         <a data-system-id="${system.systemID}" class="report-locked-btn text-blue-800 underline cursor-pointer">Report as Locked</a>
                         <a data-system-id="${system.systemID}" class="report-claimed-btn text-blue-800 underline cursor-pointer">Report as Claimed</a>

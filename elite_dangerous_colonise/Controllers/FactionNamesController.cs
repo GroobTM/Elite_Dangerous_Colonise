@@ -19,7 +19,7 @@ namespace elite_dangerous_colonise.Controllers
                 await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"SelectFactionNamesJson\"(@factionName, @regionName)", conn))
                 {
                     command.Parameters.AddWithValue("factionName", query);
-                    command.Parameters.AddWithValue("regionName", query);
+                    command.Parameters.AddWithValue("regionName", region);
 
                     await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                     {
