@@ -12,6 +12,8 @@ namespace elite_dangerous_colonise.Models.Internal
         public string Name { get; private set; }
         /// <summary> The system's colonisation status.</summary>
         public bool IsColonised { get; private set; }
+        /// <summary> The controlling faction of the system. </summary>
+        public string? ControllingFaction { get; private set; }
         /// <summary> The system's coordinates.</summary>
         public Vector3 Coordinates { get; private set; }
 
@@ -20,18 +22,19 @@ namespace elite_dangerous_colonise.Models.Internal
         /// <param name="name"> The name of the system. </param>
         /// <param name="isColonised"> If the system is colonised. </param>
         /// <param name="coordinates"> The system's coordinates. </param>
-        public StarSystem(ulong systemID, string name, bool isColonised, Vector3 coordinates)
+        public StarSystem(ulong systemID, string name, bool isColonised, string? controllingFaction, Vector3 coordinates)
         {
             SystemID = systemID;
             Name = name;
             IsColonised = isColonised;
+            ControllingFaction = controllingFaction;
             Coordinates = coordinates;
         }
 
         /// <summary> Adds the StarSystems to the StarSystems data list. </summary>
         protected void AddSystemToDataList(DatabaseDataLists dataLists)
         {
-            dataLists.StarSystems.Add(new StarSystemInsertType(SystemID, Name, IsColonised,
+            dataLists.StarSystems.Add(new StarSystemInsertType(SystemID, Name, IsColonised, ControllingFaction,
                 (decimal)Coordinates.X, (decimal)Coordinates.Y, (decimal)Coordinates.Z));
         }
 
@@ -48,8 +51,8 @@ namespace elite_dangerous_colonise.Models.Internal
         /// <summary> Instantiates a ColonisedStarSystem. </summary>
         /// <inheritdoc cref="StarSystem(ulong, string, bool, Vector3"/>
         /// <param name="stations"> A list of the stations in the system. </param>
-        public ColonisedStarSystem(ulong systemID, string name, Vector3 coordinates, List<Station> stations) :
-            base(systemID, name, true, coordinates)
+        public ColonisedStarSystem(ulong systemID, string name, Vector3 coordinates, string? controllingFaction, List<Station> stations) :
+            base(systemID, name, true, controllingFaction, coordinates)
         {
             Stations = stations;
         }
@@ -103,7 +106,7 @@ namespace elite_dangerous_colonise.Models.Internal
         /// <param name="bodyCounts"> The BodyCount for the system. </param>
         public UncolonisedStarSystem(ulong systemID, string name, Vector3 coordinates, DateTime lastUpdate, ReserveType reserveLevel,
             short landableCount, short walkableCount, List<Ring> rings, BodyCount bodyCounts)
-            : base(systemID, name, false, coordinates)
+            : base(systemID, name, false, null, coordinates)
         {
             LastUpdate = lastUpdate;
             ReserveLevel = reserveLevel;

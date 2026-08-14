@@ -1,9 +1,8 @@
--- Run first, then create "GetRegionCube" from DML
+BEGIN TRANSACTION;
+
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
--- Run third
-BEGIN TRANSACTION;
 
 CREATE TYPE "ResultOrderType" AS ENUM (
 	'SystemValue',
@@ -80,7 +79,9 @@ CREATE TABLE "StarSystems" (
 	"systemID" NUMERIC(20, 0) PRIMARY KEY,
 	"systemName" VARCHAR(75) NOT NULL,
 	"systemCoords" GEOMETRY(PointZ, 0) NOT NULL,
-	"isColonised" BOOLEAN NOT NULL
+	"isColonised" BOOLEAN NOT NULL,
+	"controllingFaction" INT DEFAULT NULL,
+	FOREIGN KEY ("controllingFaction") REFERENCES "Factions"("factionID")
 );
 
 CREATE TABLE "StarSystemsByRegion" (
@@ -141,6 +142,7 @@ CREATE TABLE "ColonyOverrideCounts" (
 	"organicCount" SMALLINT NOT NULL,
 	"geologicalsCount" SMALLINT NOT NULL,
 	"ringCount" SMALLINT NOT NULL,
+	"terraformableCount" SMALLINT NOT NULL,
 	FOREIGN KEY ("systemID") REFERENCES "UncolonisedStarSystems"("systemID") ON DELETE CASCADE
 );
 
@@ -207,6 +209,7 @@ SELECT
 	MAX(coc."organicCount") "organicCount",
 	MAX(coc."geologicalsCount") "geologicalsCount",
 	MAX(coc."ringCount") "ringCount"
+	MAX(coc."terraformableCount") "terraformableCount"
 FROM "DistinctUncolonisedStarSystems" duss
 INNER JOIN "StarSystemsByRegion" ssbr ON duss."uncolonisedSystemID" = ssbr."systemID"
 INNER JOIN "ColonyOverrideCounts" coc ON duss."uncolonisedSystemID" = coc."systemID"
@@ -235,6 +238,7 @@ INNER JOIN "Regions" reg ON ssbr."regionID" = reg."regionID";
 CREATE INDEX "idx_F_factionName" ON "Factions"("factionName");
 CREATE INDEX "idx_SS_systemName" ON "StarSystems"("systemName");
 CREATE INDEX "idx_SS_isColonised" ON "StarSystems"("isColonised");
+CREATE INDEX "idx_SS_controllingFaction" ON "StarSystems"("controllingFaction");
 CREATE INDEX "idx_SSBR_systemID" ON "StarSystemsByRegion"("systemID");
 CREATE INDEX "idx_SSBR_regionID" ON "StarSystemsByRegion"("regionID");
 CREATE INDEX "idx_SSBR_distanceToCentre" ON "StarSystemsByRegion"("distanceToCentre");
@@ -261,6 +265,7 @@ CREATE INDEX "idx_COC_icyBodyCount" ON "ColonyOverrideCounts"("icyBodyCount");
 CREATE INDEX "idx_COC_organicCount" ON "ColonyOverrideCounts"("organicCount");
 CREATE INDEX "idx_COC_geologicalsCount" ON "ColonyOverrideCounts"("geologicalsCount");
 CREATE INDEX "idx_COC_ringCount" ON "ColonyOverrideCounts"("ringCount");
+CREATE INDEX "idx_COC_terraformableCount" ON "ColonyOverrideCounts"("terraformableCount");
 CREATE INDEX "idx_R_systemID" ON "Rings"("systemID");
 CREATE INDEX "idx_H_ringID" ON "Hotspots"("ringID");
 CREATE INDEX "idx_CSS_colonisedSystemID" ON "ColonisableStarSystems"("colonisedSystemID");
@@ -287,6 +292,7 @@ CREATE TYPE "StarSystemInsertType" AS (
     "systemID" NUMERIC(20, 0),
     "systemName" VARCHAR(75),
     "isColonised" BOOLEAN,
+	"controllingFaction" VARCHAR(75),
     "coordinateX" NUMERIC(11, 5),
     "coordinateY" NUMERIC(11, 5),
     "coordinateZ" NUMERIC(11, 5)
@@ -322,7 +328,8 @@ CREATE TYPE "UncolonisedDetailsInsertType" AS (
 	"icyBodyCount" SMALLINT,
 	"organicCount" SMALLINT,
 	"geologicalsCount" SMALLINT,
-	"ringCount" SMALLINT
+	"ringCount" SMALLINT,
+	"terraformableCount" SMALLINT
 );
 
 CREATE TYPE "RingInsertType" AS (

@@ -41,6 +41,8 @@ namespace elite_dangerous_colonise.Models.Internal
         public short GeologicalsCount { get; set; } = 0;
         /// <summary> The number of rings in the system. </summary>
         public short RingCount { get; set; } = 0;
+        /// <summary> The number of terraformable bodies in the system. </summary>
+        public short TerraformableCount { get; set; } = 0;
 
         /// <summary> Increases the counter of the corresponding body type.</summary>
         public void BinBodyTypes(string bodyType)
@@ -105,7 +107,7 @@ namespace elite_dangerous_colonise.Models.Internal
         /// <summary> Calculates the system value based on the weighted sum of the body counts. </summary>
         public double CalculateCountValues()
         {
-            return 
+            return
                 BlackHoleCount * INTERESTING_WEIGHT +
                 NeutronStarCount * INTERESTING_WEIGHT +
                 WhiteDwarves * INTERESTING_WEIGHT +
@@ -121,7 +123,8 @@ namespace elite_dangerous_colonise.Models.Internal
                 IcyBodyCount * BORING_WEIGHT +
                 OrganicCount * INTERESTING_WEIGHT +
                 GeologicalsCount * INTERESTING_WEIGHT +
-                RingCount * MEH_WEIGHT;
+                RingCount * MEH_WEIGHT +
+                TerraformableCount * INTERESTING_WEIGHT;
         }
 
         /// <summary> Adds the BodyCount to the UncolonisedDetails data list. </summary>
@@ -152,7 +155,8 @@ namespace elite_dangerous_colonise.Models.Internal
                     IcyBodyCount,
                     OrganicCount,
                     GeologicalsCount,
-                    RingCount
+                    RingCount,
+                    TerraformableCount
                 )
             );
         }
@@ -176,7 +180,8 @@ namespace elite_dangerous_colonise.Models.Internal
                 && IcyBodyCount == 0
                 && OrganicCount == 0
                 && GeologicalsCount == 0
-                && RingCount == 0;
+                && RingCount == 0
+                && TerraformableCount == 0;
         }
     }
 }

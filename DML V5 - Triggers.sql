@@ -1,4 +1,3 @@
--- Run fifth after
 BEGIN TRANSACTION;
 
 CREATE OR REPLACE FUNCTION "TriggerAddNewSystemsToAvailabilityOnInsert"()

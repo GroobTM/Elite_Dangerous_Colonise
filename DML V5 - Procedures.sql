@@ -1,4 +1,5 @@
--- Run second, after creating extensions in DDL
+BEGIN TRANSACTION;
+
 CREATE OR REPLACE FUNCTION "GetRegionCube"("centre" PUBLIC.GEOMETRY, "range" SMALLINT)
 RETURNS PUBLIC.GEOMETRY AS $$
 	SELECT PUBLIC.ST_3DMakeBox(
@@ -14,9 +15,6 @@ RETURNS PUBLIC.GEOMETRY AS $$
 		)
 	)::PUBLIC.GEOMETRY
 $$ LANGUAGE sql IMMUTABLE PARALLEL SAFE;
-
--- Run fourth, after running rest of DDL
-BEGIN TRANSACTION;
 
 CREATE OR REPLACE FUNCTION "InsertRegion"(
 	"inputRegionName" VARCHAR(75),
@@ -58,24 +56,35 @@ $$ LANGUAGE sql;
 
 CREATE OR REPLACE FUNCTION "InsertStarSystemsBulk"("inputStarSystems" "StarSystemInsertType"[])
 RETURNS VOID AS $$
+	-- Insert Factions
+	INSERT INTO "Factions" ("factionName")
+	SELECT DISTINCT "controllingFaction"
+	FROM unnest("inputStarSystems") AS inss
+	WHERE "controllingFaction" IS NOT NULL
+	ON CONFLICT ("factionName") DO NOTHING;
+	
 	-- Insert Star Systems
 	INSERT INTO "StarSystems" (
 		"systemID",
 		"systemName",
 		"systemCoords",
-		"isColonised"
+		"isColonised",
+		"controllingFaction"
 	)
 	SELECT
-		"systemID",
-		"systemName",
-		ST_MakePoint("coordinateX", "coordinateY", "coordinateZ"),
-		"isColonised"
+		inss."systemID",
+		inss."systemName",
+		ST_MakePoint(inss."coordinateX", inss."coordinateY", inss."coordinateZ"),
+		inss."isColonised",
+		f."factionID"
 	FROM unnest("inputStarSystems") AS inss
+	LEFT JOIN "Factions" f ON inss."controllingFaction" = f."factionName"
 	ON CONFLICT ("systemID") DO UPDATE
 	SET
-		"isColonised" = EXCLUDED."isColonised"
-	WHERE "StarSystems"."isColonised" = FALSE
-	AND EXCLUDED."isColonised" = TRUE;
+		"isColonised" = EXCLUDED."isColonised",
+		"controllingFaction" = EXCLUDED."controllingFaction"
+	WHERE ("StarSystems"."isColonised" = FALSE AND EXCLUDED."isColonised" = TRUE)
+	OR "StarSystems"."controllingFaction" IS DISTINCT FROM EXCLUDED."controllingFaction";
 	
 	-- Insert Star System Region
 	INSERT INTO "StarSystemsByRegion" (
@@ -199,7 +208,8 @@ RETURNS VOID AS $$
 		"icyBodyCount",
 		"organicCount",
 		"geologicalsCount",
-		"ringCount"
+		"ringCount",
+		"terraformableCount"
 	)
 	SELECT
 		"systemID",
@@ -218,7 +228,8 @@ RETURNS VOID AS $$
 		"icyBodyCount",
 		"organicCount",
 		"geologicalsCount",
-		"ringCount"
+		"ringCount",
+		"terraformableCount"
 	FROM unnest("inputDetails") AS ind
 	ON CONFLICT ("systemID") DO UPDATE
 	SET
@@ -237,7 +248,8 @@ RETURNS VOID AS $$
 		"icyBodyCount" = EXCLUDED."icyBodyCount",
 		"organicCount" = EXCLUDED."organicCount",
 		"geologicalsCount" = EXCLUDED."geologicalsCount",
-		"ringCount" = EXCLUDED."ringCount"
+		"ringCount" = EXCLUDED."ringCount",
+		"terraformableCount" = EXCLUDED."terraformableCount"
 	WHERE (
 		"ColonyOverrideCounts"."blackHoleCount",
 		"ColonyOverrideCounts"."neutronStarCount",
@@ -254,7 +266,8 @@ RETURNS VOID AS $$
 		"ColonyOverrideCounts"."icyBodyCount",
 		"ColonyOverrideCounts"."organicCount",
 		"ColonyOverrideCounts"."geologicalsCount",
-		"ColonyOverrideCounts"."ringCount"
+		"ColonyOverrideCounts"."ringCount",
+		"ColonyOverrideCounts"."terraformableCount"
 	)
 	IS DISTINCT FROM (
 		EXCLUDED."blackHoleCount",
@@ -272,7 +285,8 @@ RETURNS VOID AS $$
 		EXCLUDED."icyBodyCount",
 		EXCLUDED."organicCount",
 		EXCLUDED."geologicalsCount",
-		EXCLUDED."ringCount"
+		EXCLUDED."ringCount",
+		EXCLUDED."terraformableCount"
 	);
 $$ LANGUAGE sql;
 

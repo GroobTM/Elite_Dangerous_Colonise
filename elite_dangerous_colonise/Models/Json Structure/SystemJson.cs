@@ -41,6 +41,8 @@ namespace elite_dangerous_colonise.Models.Json_Structure
         public required CoordinatesJson Coordinates { get; set; }
         [JsonProperty("government")]
         public string? Government { get; set; } = "None";
+        [JsonProperty("controllingFaction")]
+        public Dictionary<string, object>? ControllingFaction { get; set; }
         [JsonProperty("date")]
         public DateTimeOffset LastUpdate { get; set; }
         [JsonProperty("bodies")]
@@ -159,6 +161,7 @@ namespace elite_dangerous_colonise.Models.Json_Structure
                 bodyCount.OrganicCount += (body.SignalCategory?.SignalTypes.ContainsKey("$SAA_SignalType_Biological;") ?? false) ? (short)1 : (short)0;
                 bodyCount.GeologicalsCount += (body.SignalCategory?.SignalTypes.ContainsKey("$SAA_SignalType_Geological;") ?? false) ? (short)1 : (short)0;
                 bodyCount.RingCount += (short)(body.Rings?.Count() ?? 0);
+                bodyCount.TerraformableCount += (short)(body.TerraformingState == "Terraformable" ? 1 : 0);
             }
 
             return bodyCount;
@@ -172,7 +175,9 @@ namespace elite_dangerous_colonise.Models.Json_Structure
 
             if (IsColonised())
             {
-                return new ColonisedStarSystem(SystemID, Name, Coordinates.ConvertToVector(), StationJson.ConvertToStationList(Stations));
+                string? controllingFaction = ControllingFaction?.GetValueOrDefault("name")?.ToString();
+
+                return new ColonisedStarSystem(SystemID, Name, Coordinates.ConvertToVector(), controllingFaction, StationJson.ConvertToStationList(Stations));
             }
             else
             {
