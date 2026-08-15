@@ -381,6 +381,7 @@ CREATE OR REPLACE FUNCTION "SelectSearchResults" (
 	"pageNo" INT,
 	"resultsPerPage" SMALLINT,
 	"inputSystemName" VARCHAR(75),
+	"searchSystemFaction" BOOLEAN,
 	"inputFactionName" VARCHAR(75),
 	"inputMinBlackHoles" SMALLINT,
 	"inputMaxBlackHoles" SMALLINT,
@@ -418,6 +419,8 @@ CREATE OR REPLACE FUNCTION "SelectSearchResults" (
 	"inputMaxLandables" SMALLINT,
 	"inputMinWalkables" SMALLINT,
 	"inputMaxWalkables" SMALLINT,
+	"inputMinTerraformables" SMALLINT,
+	"inputMaxTerraformables" SMALLINT,
 	"inputMaxDistanceToRegionCentre" INT,
 	"inputHotspotTypes" "HotspotType"[],
 	"inputRemovedSystemIDs" NUMERIC(20, 0)[]
@@ -433,12 +436,20 @@ BEGIN
 	SELECT "regionID" INTO "savedRegionID" FROM "Regions" WHERE "regionName" = "inputRegionName";
 	
 	IF "inputSystemName" IS NOT NULL AND "inputFactionName" IS NOT NULL THEN
-		SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
-		FROM "ColonisableStarSystems" css
-		INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
-		INNER JOIN "Stations" s ON dcss."colonisedSystemID" = s."systemID"
-		INNER JOIN "Factions" f ON s."controllingFaction" = f."factionID"
-		WHERE dcss."systemName" = "inputSystemName" AND f."factionName" = "inputFactionName";
+		IF "searchSystemFaction" THEN
+			SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
+			FROM "ColonisableStarSystems" css
+			INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
+			INNER JOIN "Stations" s ON dcss."colonisedSystemID" = s."systemID"
+			INNER JOIN "Factions" f ON s."controllingFaction" = f."factionID"
+			WHERE dcss."systemName" = "inputSystemName" AND f."factionName" = "inputFactionName";
+			
+		ELSE
+			SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
+			FROM "ColonisableStarSystems" css
+			INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
+			WHERE dcss."systemName" = "inputSystemName" AND dcss."factionName" = "inputFactionName";
+		END IF;
 		
 	ELSIF "inputSystemName" IS NOT NULL THEN
 		SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
@@ -447,16 +458,23 @@ BEGIN
 		WHERE dcss."systemName" = "inputSystemName";
 		
 	ELSIF "inputFactionName" IS NOT NULL THEN
-		SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
-		FROM "ColonisableStarSystems" css
-		INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
-		INNER JOIN "Stations" s ON dcss."colonisedSystemID" = s."systemID"
-		INNER JOIN "Factions" f ON s."controllingFaction" = f."factionID"
-		WHERE f."factionName" = "inputFactionName";
+		IF "searchSystemFaction" THEN
+			SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
+			FROM "ColonisableStarSystems" css
+			INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
+			INNER JOIN "Stations" s ON dcss."colonisedSystemID" = s."systemID"
+			INNER JOIN "Factions" f ON s."controllingFaction" = f."factionID"
+			WHERE f."factionName" = "inputFactionName";
+		ELSE
+			SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
+			FROM "ColonisableStarSystems" css
+			INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
+			WHERE dcss."factionName" = "inputFactionName";
+		END IF;
 	END IF;
 	
 	IF ("inputSystemName" IS NOT NULL OR "inputFactionName" IS NOT NULL) AND "targetSystemIDs" IS NULL THEN
-		"targetSystemIDs" := ARRAY[-1]::NUMERIC(20, 0);
+		"targetSystemIDs" := ARRAY[-1]::NUMERIC(20, 0)[];
 	END IF;
 	
 	IF "inputHotspotTypes" IS NOT NULL AND CARDINALITY("inputHotspotTypes") > 0 THEN
@@ -477,7 +495,7 @@ BEGIN
 			END;
 		
 			IF "targetSystemIDs" IS NULL THEN
-				"targetSystemIDs" := ARRAY[-1]::NUMERIC(20, 0);
+				"targetSystemIDs" := ARRAY[-1]::NUMERIC(20, 0)[];
 			END IF;
 		END IF;
 	END IF;
@@ -525,7 +543,8 @@ BEGIN
 			coc."icyBodyCount",
 			coc."organicCount",
 			coc."geologicalsCount",
-			coc."ringCount"
+			coc."ringCount",
+			coc."terraformableCount"
 		FROM "DistinctUncolonisedStarSystems" duss
 		INNER JOIN "StarSystems" ss ON duss."uncolonisedSystemID" = ss."systemID"
 		INNER JOIN "StarSystemsByRegion" ssbr ON ss."systemID" = ssbr."systemID"
@@ -552,6 +571,7 @@ BEGIN
 			AND coc."organicCount" BETWEEN "inputMinOrganics" AND "inputMaxOrganics"
 			AND coc."geologicalsCount" BETWEEN "inputMinGeologicals" AND "inputMaxGeologicals"
 			AND coc."ringCount" BETWEEN "inputMinRings" AND "inputMaxRings"
+			AND coc."terraformableCount" BETWEEN "inputMinTerraformables" AND "inputMaxTerraformables"
 			AND uss."landableCount" BETWEEN "inputMinLandables" AND "inputMaxLandables"
 			AND uss."walkableCount" BETWEEN "inputMinWalkables" AND "inputMaxWalkables"
 			AND ("inputRemovedSystemIDs" IS NULL OR NOT (duss."uncolonisedSystemID" = ANY("inputRemovedSystemIDs")))
@@ -598,6 +618,7 @@ BEGIN
 					'organicCount', tr."organicCount",
 					'geologicalsCount', tr."geologicalsCount",
 					'ringCount', tr."ringCount",
+					'terraformableCount', tr."terraformableCount",
 					'totalHotspots', tr."totalHotspots"
 				),
 				'rings', (
@@ -624,7 +645,8 @@ BEGIN
 					SELECT jsonb_agg(
 						jsonb_build_object(
 							'colonisedSystemID', css."colonisedSystemID",
-							'systemName', ss."systemName",
+							'systemName', css."systemName",
+							'factionName', css."factionName",
 							'stations', (
 								SELECT jsonb_agg(
 									jsonb_build_object(
@@ -640,7 +662,6 @@ BEGIN
 						)
 					)
 					FROM "ColonisableStarSystems" css
-					INNER JOIN "StarSystems" ss ON css."colonisedSystemID" = ss."systemID"
 					WHERE css."uncolonisedSystemID" = tr."uncolonisedSystemID"
 				)
 			)

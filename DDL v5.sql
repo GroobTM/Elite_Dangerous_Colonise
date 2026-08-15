@@ -179,9 +179,11 @@ CREATE TABLE "StagedStarSystems" (
 CREATE MATERIALIZED VIEW "DistinctColonisedStarSystems" AS
 SELECT DISTINCT ON (css."colonisedSystemID")
 	css."colonisedSystemID",
-	ss."systemName"
+	ss."systemName",
+	f."factionName"
 FROM "ColonisableStarSystems" css
-INNER JOIN "StarSystems" ss ON css."colonisedSystemID" = ss."systemID";
+INNER JOIN "StarSystems" ss ON css."colonisedSystemID" = ss."systemID"
+LEFT JOIN "Factions" f ON ss."controllingFaction" = f."factionID";
 
 CREATE MATERIALIZED VIEW "DistinctUncolonisedStarSystems" AS
 SELECT DISTINCT "uncolonisedSystemID" FROM "ColonisableStarSystems";
@@ -208,7 +210,7 @@ SELECT
 	MAX(coc."icyBodyCount") "icyBodyCount",
 	MAX(coc."organicCount") "organicCount",
 	MAX(coc."geologicalsCount") "geologicalsCount",
-	MAX(coc."ringCount") "ringCount"
+	MAX(coc."ringCount") "ringCount",
 	MAX(coc."terraformableCount") "terraformableCount"
 FROM "DistinctUncolonisedStarSystems" duss
 INNER JOIN "StarSystemsByRegion" ssbr ON duss."uncolonisedSystemID" = ssbr."systemID"
@@ -271,6 +273,7 @@ CREATE INDEX "idx_H_ringID" ON "Hotspots"("ringID");
 CREATE INDEX "idx_CSS_colonisedSystemID" ON "ColonisableStarSystems"("colonisedSystemID");
 CREATE INDEX "idx_CSS_uncolonisedSystemID" ON "ColonisableStarSystems"("uncolonisedSystemID");
 CREATE INDEX "idx_DCSS_systemName" ON "DistinctColonisedStarSystems"("systemName");
+CREATE INDEX "idx_DCSS_factionName" ON "DistinctColonisedStarSystems"("factionName");
 CREATE INDEX "idx_SBR_regionName" ON "SystemsByRegion"("regionName");
 CREATE INDEX "idx_FBR_regionName" ON "FactionsByRegion"("regionName");
 
