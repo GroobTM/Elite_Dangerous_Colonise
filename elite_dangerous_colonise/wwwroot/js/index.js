@@ -555,7 +555,7 @@ function FormatResults(results) {
                     </ul>
                 </div>
                 <h2 class="col-start-1 row-start-7 border-b border-gray-300 pt-5 pb-3 text-center text-lg drop-shadow-xs lg:col-end-3 lg:row-start-5 lg:text-left xl:col-end-4 xl:row-start-3">Colony Influences</h2>
-                <div class="col-start-1 row-start-8 mt-3 grid grid-cols-2 gap-x-2 overflow-auto lg:col-end-3 lg:row-start-6 lg:grid-cols-3 xl:col-end-4 xl:row-start-4 2xl:grid-cols-9">
+                <div class="col-start-1 row-start-8 mt-3 grid grid-cols-2 gap-x-2 overflow-auto lg:col-end-3 lg:row-start-6 lg:grid-cols-4 xl:col-end-4 xl:row-start-4 2xl:grid-cols-6">
                     ${SYSTEM_COUNT_CONFIGS.map(config => `
                         <div class="mt-3 flex gap-3">
                             ${FormatInfluenceIcons(`${system.systemID}_${config.id}_tooltip`, ...config.colours)}
@@ -689,14 +689,6 @@ function FormatColonisedSystems(systemID, inputColonisedSystems) {
     return systemsList;
 }
 
-function FormatInfluenceIcons(toolipID, bottomLeft, bottomRight, topLeft, topRight) {
-    return `
-        <svg data-tooltip-target="${toolipID}" class="h-6 w-6" style="--icon-bl: ${bottomLeft}; --icon-br: ${bottomRight}; --icon-tl: ${topLeft}; --icon-tr: ${topRight};">
-            <use href="#influence_icon"></use>
-        </svg>
-    `;
-}
-
 function FormatStations(colonisedSystemID, inputStations) {
     var stationList = ``;
 
@@ -725,6 +717,14 @@ function FormatStations(colonisedSystemID, inputStations) {
     }
     
     return stationList;
+}
+
+function FormatInfluenceIcons(toolipID, bottomLeft, bottomRight, topLeft, topRight) {
+    return `
+        <svg data-tooltip-target="${toolipID}" class="h-6 w-6" style="--icon-bl: ${bottomLeft}; --icon-br: ${bottomRight}; --icon-tl: ${topLeft}; --icon-tr: ${topRight};">
+            <use href="#influence_icon"></use>
+        </svg>
+    `;
 }
 
 function FormatColonisedSystemTooltips(systemID, inputColonisedSystems) {
