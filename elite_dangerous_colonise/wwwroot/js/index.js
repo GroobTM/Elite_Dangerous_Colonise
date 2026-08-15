@@ -656,10 +656,26 @@ function FormatHotspots(inputHotspots) {
 
 function FormatColonisedSystems(systemID, inputColonisedSystems) {
     var systemsList = ``;
+    var factionName = formData.get("Faction");
+    var searchMode = formData.get("FactionSearchMode") === "true";
 
     inputColonisedSystems.sort((a, b) => a.systemName.localeCompare(b.systemName, undefined, { numeric: true }));
 
     inputColonisedSystems.forEach(system => {
+        if (factionName != null && factionName.trim() != "") {
+            if (searchMode && system.controllingFaction != factionName) {
+                return;
+            }
+
+            if (system.stations != null) {
+                system.stations = system.stations.filter(station => station.controllingFaction == factionName);
+
+                if (system.stations.length == 0) {
+                    return;
+                }
+            }
+        }
+
         systemsList += `
         <li class="list-inside list-disc font-bold">
             <span data-tooltip-target="${systemID}_${system.colonisedSystemID}_tooltip" class="cursor-copy" onclick="CopyToClipboard(this);">${system.systemName}&nbsp;-&nbsp;${system.controllingFaction}</span>
