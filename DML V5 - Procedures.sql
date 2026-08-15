@@ -381,7 +381,7 @@ CREATE OR REPLACE FUNCTION "SelectSearchResults" (
 	"pageNo" INT,
 	"resultsPerPage" SMALLINT,
 	"inputSystemName" VARCHAR(75),
-	"searchSystemFaction" BOOLEAN,
+	"factionSearchMode" BOOLEAN,
 	"inputFactionName" VARCHAR(75),
 	"inputMinBlackHoles" SMALLINT,
 	"inputMaxBlackHoles" SMALLINT,
@@ -436,7 +436,7 @@ BEGIN
 	SELECT "regionID" INTO "savedRegionID" FROM "Regions" WHERE "regionName" = "inputRegionName";
 	
 	IF "inputSystemName" IS NOT NULL AND "inputFactionName" IS NOT NULL THEN
-		IF "searchSystemFaction" THEN
+		IF NOT "factionSearchMode" THEN
 			SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
 			FROM "ColonisableStarSystems" css
 			INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
@@ -458,7 +458,7 @@ BEGIN
 		WHERE dcss."systemName" = "inputSystemName";
 		
 	ELSIF "inputFactionName" IS NOT NULL THEN
-		IF "searchSystemFaction" THEN
+		IF NOT "factionSearchMode" THEN
 			SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
 			FROM "ColonisableStarSystems" css
 			INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
@@ -510,7 +510,7 @@ BEGIN
 		WHERE NOT ("pruned" = ANY("inputRemovedSystemIDs"));
 		
 		IF "targetSystemIDs" IS NULL THEN
-			"targetSystemIDs" := ARRAY[-1]::NUMERIC(20, 0);
+			"targetSystemIDs" := ARRAY[-1]::NUMERIC(20, 0)[];
 		END IF;
 		
 		"inputRemovedSystemIDs" := '{}'::NUMERIC(20, 0)[];
@@ -645,8 +645,8 @@ BEGIN
 					SELECT jsonb_agg(
 						jsonb_build_object(
 							'colonisedSystemID', css."colonisedSystemID",
-							'systemName', css."systemName",
-							'factionName', css."factionName",
+							'systemName', ss."systemName",
+							'controllingFaction', f_sys."factionName",
 							'stations', (
 								SELECT jsonb_agg(
 									jsonb_build_object(
@@ -662,6 +662,8 @@ BEGIN
 						)
 					)
 					FROM "ColonisableStarSystems" css
+					INNER JOIN "StarSystems" ss ON css."colonisedSystemID" = ss."systemID"
+					LEFT JOIN "Factions" f_sys ON ss."controllingFaction" = f_sys."factionID"
 					WHERE css."uncolonisedSystemID" = tr."uncolonisedSystemID"
 				)
 			)

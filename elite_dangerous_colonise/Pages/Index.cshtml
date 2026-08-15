@@ -85,7 +85,18 @@
                 <div class="absolute z-50 !mt-0 max-h-55 w-full overflow-y-auto rounded-lg border-1 border-[#BCBCBC] bg-white shadow-lg" style="display: none;" role="listbox" data-hs-combo-box-output=""></div>
             </div>
 
-            <div class="z-10 mr-2 ml-2 flex min-h-13 flex-col justify-around">
+            <div class="relative flex-1">
+                <select asp-for="FactionSearchMode" id="faction_search_mode" class="block w-full cursor-pointer appearance-none rounded-lg border-1 border-[#0F0F0F] bg-white px-2.5 pt-4 pb-2.5 pl-4 text-[#0F0F0F] shadow-sm focus:border-[#F07B05] focus:ring-0 focus:outline-none">
+                    <option value="false">Search for station controller</option>
+                    <option value="true">Search for system controller</option>
+                </select>
+                <label for="faction_search_mode" class="pointer-events-none absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 rounded-3xl bg-white px-2 text-[#0F0F0F]">Toggle Faction Search Mode</label>
+                <svg class="pointer-events-none absolute top-4 right-3 z-10 h-5 w-4 shrink-0 rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"></path>
+                </svg>
+            </div>
+
+            <div class="z-10 mr-2 ml-2 flex min-h-13 flex-col justify-around lg:col-span-2">
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Max Distance From Sol</span>
                     <span id="distance_from_region_centre_value" class="absolute right-1">@Model.MaxValues.DistanceToRegionCentre ly</span>
@@ -109,6 +120,7 @@
                     }
                 }'></div>
             </div>
+
             <div class="z-11 mr-2 ml-2 flex min-h-13 flex-col justify-around">
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Landable Bodies</span>
@@ -684,6 +696,39 @@
                 }'></div>
                 <div id="organics_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: Agriculture and Terraforming
+                </div>
+            </div>
+            <div class="z-10 mr-2 ml-2 flex min-h-13 flex-col justify-around">
+                <div class="relative -top-2 w-full">
+                    <span class="absolute left-1">Terraformable Bodies</span>
+                    <div class="absolute right-1">
+                        <svg data-tooltip-target="terraformables_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #80FF00; --icon-br: #80FF00; --icon-tl: #80FF00; --icon-tr: #80FF00;">
+                            <use href="#influence_icon"></use>
+                        </svg>
+                        <span id="terraformables_value">0 - @Model.MaxValues.TerraformablesCount</span>
+                    </div>
+                </div>
+                <div id="terraformables_slider" class="--prevent-on-load-init" data-hs-range-slider='{
+                    "start": [0, @Model.MaxValues.TerraformablesCount],
+                    "range": {
+                        "min": 0,
+                        "max": @Model.MaxValues.TerraformablesCount
+                    },
+                    "step": 1,
+                    "connect": true,
+                    "cssClasses": {
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "base": "size-full relative z-1",
+                        "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "connects": "relative z-0 size-full rounded-full overflow-hidden",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "touchArea": "absolute -inset-1"
+                    }
+                }'></div>
+                <div id="terraformables_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                    Colony Boost: Agriculture
                 </div>
             </div>
             <span class="m-0 h-1 rounded-full bg-gray-300 lg:col-start-1 lg:col-end-3"></span>

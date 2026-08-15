@@ -96,6 +96,7 @@ namespace elite_dangerous_colonise.Controllers
                                     "@pageNo, " +
                                     "@resultsPerPage, " +
                                     "@systemName, " +
+                                    "@factionSearchMode," +
                                     "@factionName, " +
                                     "@minBlackHoles, " +
                                     "@maxBlackHoles, " +
@@ -133,6 +134,8 @@ namespace elite_dangerous_colonise.Controllers
                                     "@maxLandables, " +
                                     "@minWalkables, " +
                                     "@maxWalkables, " +
+                                    "@minTerraformables," +
+                                    "@maxTerraformables," +
                                     "@maxDistanceToSol, " +
                                     "@hotspotTypes," +
                                     "@removedSystemIDs" +
@@ -143,6 +146,7 @@ namespace elite_dangerous_colonise.Controllers
                                     command.Parameters.AddWithValue("pageNo", Math.Max(1, searchQuery.PageNo));
                                     command.Parameters.AddWithValue("resultsPerPage", Math.Min((short)50, searchQuery.ResultsPerPage));
                                     command.Parameters.AddWithValue("systemName", NpgsqlDbType.Varchar, (object?)searchQuery.SystemName ?? DBNull.Value);
+                                    command.Parameters.AddWithValue("factionSearchMode", searchQuery.FactionSearchMode);
                                     command.Parameters.AddWithValue("factionName", NpgsqlDbType.Varchar, (object?)searchQuery.FactionName ?? DBNull.Value);
                                     command.Parameters.AddWithValue("minBlackHoles", searchQuery.MinBlackHoles);
                                     command.Parameters.AddWithValue("maxBlackHoles", searchQuery.MaxBlackHoles);
@@ -180,6 +184,8 @@ namespace elite_dangerous_colonise.Controllers
                                     command.Parameters.AddWithValue("maxLandables", searchQuery.MaxLandables);
                                     command.Parameters.AddWithValue("minWalkables", searchQuery.MinWalkables);
                                     command.Parameters.AddWithValue("maxWalkables", searchQuery.MaxWalkables);
+                                    command.Parameters.AddWithValue("minTerraformables", searchQuery.MinTerraformables);
+                                    command.Parameters.AddWithValue("maxTerraformables", searchQuery.MaxTerraformables);
                                     command.Parameters.AddWithValue("maxDistanceToSol", searchQuery.MaxDistanceToRegionCentre);
                                     command.Parameters.AddWithValue("hotspotTypes", (object?)ParseHotspotTypes(searchQuery.HotspotTypes) ?? DBNull.Value);
                                     command.Parameters.AddWithValue("removedSystemIDs", ParseSessionReportedStarSystems());
@@ -261,6 +267,7 @@ namespace elite_dangerous_colonise.Controllers
             public short ResultsPerPage { get; set; }
             public string? SystemName { get; set; }
             public string? FactionName { get; set; }
+            public bool FactionSearchMode { get; set; }
             public short MinBlackHoles { get; set; }
             public short MaxBlackHoles { get; set; }
             public short MinNeutronStars { get; set; }
@@ -297,6 +304,8 @@ namespace elite_dangerous_colonise.Controllers
             public short MaxLandables { get; set; }
             public short MinWalkables { get; set; }
             public short MaxWalkables { get; set; }
+            public short MinTerraformables { get; set; }
+            public short MaxTerraformables { get; set; }
             public int MaxDistanceToRegionCentre { get; set; }
             public string? HotspotTypes { get; set; }
         }

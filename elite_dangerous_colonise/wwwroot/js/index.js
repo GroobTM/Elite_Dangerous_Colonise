@@ -14,7 +14,8 @@ const SYSTEM_COUNT_CONFIGS = [
     { prop: "icyBodyCount", id: "icy_bodies", label: "Icy Bodies", tooltip: "Industrial", colours: ["#FFFF00", "#FFFF00", "#FFFF00", "#FFFF00"] },
     { prop: "ringCount", id: "rings", label: "Rings", tooltip: "Extraction", colours: ["#FF0000", "#FF0000", "#FF0000", "#FF0000"] },
     { prop: "geologicalsCount", id: "geologicals", label: "Geologicals", tooltip: "Extraction and Industrial", colours: ["#FF0000", "#FFFF00", "#FF0000", "#FFFF00"] },
-    { prop: "organicCount", id: "organics", label: "Organics", tooltip: "Agriculture and Terraforming", colours: ["#80FF00", "#009900", "#80FF00", "#009900"] }
+    { prop: "organicCount", id: "organics", label: "Organics", tooltip: "Agriculture and Terraforming", colours: ["#80FF00", "#009900", "#80FF00", "#009900"] },
+    { prop: "terraformableCount", id: "terraformables", label: "Terraformable Bodies", tooltip: "Agriculture", colours: ["#80FF00", "#80FF00", "#80FF00", "#80FF00"]  }
 ]
 
 var formData;
@@ -221,6 +222,7 @@ $(window).on("load", function () {
     SetupGenericSlider("rings_slider", "rings_value");
     SetupGenericSlider("geologicals_slider", "geologicals_value");
     SetupGenericSlider("organics_slider", "organics_value");
+    SetupGenericSlider("terraformables_slider", "terraformables_value");
 });
 
 $("#more_options_button").on("click", function () {
@@ -244,6 +246,7 @@ function UpdateFormFromParams(searchParams) {
     $("#colonised_system").val(searchParams.systemName);
     $("#sort_order").val(searchParams.sortOrder);
     $("#faction").val(searchParams.factionName);
+    $("#faction_search_mode").val(searchParams.factionSearchMode);
 
     document.querySelector("#distance_from_region_centre_slider").noUiSlider.set(searchParams.maxDistanceToRegionCentre);
     document.querySelector("#landable_bodies_slider").noUiSlider.set([searchParams.minLandables, searchParams.maxLandables]);
@@ -264,6 +267,7 @@ function UpdateFormFromParams(searchParams) {
     document.querySelector("#rings_slider").noUiSlider.set([searchParams.minRings, searchParams.maxRings]);
     document.querySelector("#geologicals_slider").noUiSlider.set([searchParams.minGeologicals, searchParams.maxGeologicals]);
     document.querySelector("#organics_slider").noUiSlider.set([searchParams.minOrganics, searchParams.maxOrganics]);
+    document.querySelector("#terraformables_slider").noUiSlider.set([searchParams.minTerraformables, searchParams.maxTerraformables]);
 
     const hotspotSelect = document.querySelector("#hotspot_select");
 
@@ -297,7 +301,7 @@ $(window).on("load", function () {
         try {
             const initialParams = new URLSearchParams(atob(encodedParams));
 
-            if (initialParams.has("sortOrder") && initialParams.has("pageNo") && initialParams.has("resultsPerPage") && initialParams.has("systemName")
+            if (initialParams.has("sortOrder") && initialParams.has("pageNo") && initialParams.has("resultsPerPage") && initialParams.has("systemName") && initialParams.has("factionSearchMode")
                 && initialParams.has("factionName") && initialParams.has("minBlackHoles") && initialParams.has("maxBlackHoles") && initialParams.has("minNeutronStars")
                 && initialParams.has("maxNeutronStars") && initialParams.has("minWhiteDwarves") && initialParams.has("maxWhiteDwarves")
                 && initialParams.has("minOtherStars") && initialParams.has("maxOtherStars") && initialParams.has("minEarthLikes") && initialParams.has("maxEarthLikes")
@@ -308,7 +312,7 @@ $(window).on("load", function () {
                 && initialParams.has("minIces") && initialParams.has("maxIces") && initialParams.has("minOrganics") && initialParams.has("maxOrganics")
                 && initialParams.has("minGeologicals") && initialParams.has("maxGeologicals") && initialParams.has("minRings") && initialParams.has("maxRings")
                 && initialParams.has("minLandables") && initialParams.has("maxLandables") && initialParams.has("minWalkables") && initialParams.has("maxWalkables")
-                && initialParams.has("maxDistanceToRegionCentre") && initialParams.has("hotspotTypes")) {
+                && initialParams.has("maxDistanceToRegionCentre") && initialParams.has("hotspotTypes") && initialParams.has("minTerraformables") && initialParams.has("maxTerraformables")) {
 
                 UpdateFormFromParams(Object.fromEntries(initialParams));
 
@@ -405,6 +409,7 @@ function SetFormData() {
     AddSliderDataToForm("rings_slider", "Rings");
     AddSliderDataToForm("geologicals_slider", "Geologicals");
     AddSliderDataToForm("organics_slider", "Organics");
+    AddSliderDataToForm("terraformables_slider", "Terraformables");
 
     const hotspotTypes = document.querySelector("#hotspot_select");
     formData.append(
@@ -424,6 +429,7 @@ async function LoadResults(updateUrl = true) {
         resultsPerPage: resultsPerPage,
         systemName: formData.get("ColonisedSystem"),
         factionName: formData.get("Faction"),
+        factionSearchMode: formData.get("FactionSearchMode") === "true",
         minBlackHoles: parseInt(formData.get("MinBlackHoles")),
         maxBlackHoles: parseInt(formData.get("MaxBlackHoles")),
         minNeutronStars: parseInt(formData.get("MinNeutronStars")),
@@ -460,6 +466,8 @@ async function LoadResults(updateUrl = true) {
         maxLandables: parseInt(formData.get("MaxLandables")),
         minWalkables: parseInt(formData.get("MinWalkables")),
         maxWalkables: parseInt(formData.get("MaxWalkables")),
+        minTerraformables: parseInt(formData.get("MinTerraformables")),
+        maxTerraformables: parseInt(formData.get("MaxTerraformables")),
         maxDistanceToRegionCentre: parseInt(formData.get("MaxDistanceFromRegionCentre")),
         hotspotTypes: formData.get("HotspotTypes")
     });
@@ -647,7 +655,7 @@ function FormatColonisedSystems(systemID, inputColonisedSystems) {
     inputColonisedSystems.forEach(system => {
         systemsList += `
         <li class="list-inside list-disc font-bold">
-            <span data-tooltip-target="${systemID}_${system.colonisedSystemID}_tooltip" class="cursor-copy" onclick="CopyToClipboard(this);">${system.systemName}</span>
+            <span data-tooltip-target="${systemID}_${system.colonisedSystemID}_tooltip" class="cursor-copy" onclick="CopyToClipboard(this);">${system.systemName}&nbsp;-&nbsp;${system.controllingFaction}</span>
             <ul class="items-center ps-7 font-normal">
                 ${FormatStations(system.colonisedSystemID, system.stations)}
             </ul>

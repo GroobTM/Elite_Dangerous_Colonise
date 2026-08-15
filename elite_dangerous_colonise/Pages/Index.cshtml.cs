@@ -28,6 +28,8 @@ public class IndexModel : PageModel
     [BindProperty]
     public string SortOrder { get; set; }
 
+    [BindProperty]
+    public bool FactionSearchMode { get; set; }
 
     public IndexModel(NpgsqlDataSource dataSource, AppLogger logger)
     {
@@ -109,7 +111,8 @@ public class IndexModel : PageModel
                                     reader.GetInt32(17),
                                     reader.GetInt32(18),
                                     reader.GetInt32(19),
-                                    reader.GetInt32(20)
+                                    reader.GetInt32(20),
+                                    reader.GetInt32(21)
                                     );
                             }
                         }
