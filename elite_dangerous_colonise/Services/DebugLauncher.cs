@@ -70,7 +70,7 @@ namespace elite_dangerous_colonise.Services
 
             while (!(filePath != null && File.Exists(filePath)))
             {
-                Console.Write("Enter Json file path: ");
+                Console.Write("Enter file path: ");
                 filePath = Console.ReadLine()?.Trim().Trim('"');
             }
 

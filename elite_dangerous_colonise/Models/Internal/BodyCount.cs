@@ -43,6 +43,8 @@ namespace elite_dangerous_colonise.Models.Internal
         public short RingCount { get; set; } = 0;
         /// <summary> The number of terraformable bodies in the system. </summary>
         public short TerraformableCount { get; set; } = 0;
+        /// <summary> The number of bodies with volcanism. </summary>
+        public short VolcanismCount { get; set; } = 0;
 
         /// <summary> Increases the counter of the corresponding body type.</summary>
         public void BinBodyTypes(string bodyType)
@@ -124,7 +126,8 @@ namespace elite_dangerous_colonise.Models.Internal
                 OrganicCount * INTERESTING_WEIGHT +
                 GeologicalsCount * INTERESTING_WEIGHT +
                 RingCount * MEH_WEIGHT +
-                TerraformableCount * INTERESTING_WEIGHT;
+                TerraformableCount * INTERESTING_WEIGHT +
+                VolcanismCount * MEH_WEIGHT;
         }
 
         /// <summary> Adds the BodyCount to the UncolonisedDetails data list. </summary>
@@ -156,7 +159,8 @@ namespace elite_dangerous_colonise.Models.Internal
                     OrganicCount,
                     GeologicalsCount,
                     RingCount,
-                    TerraformableCount
+                    TerraformableCount,
+                    VolcanismCount
                 )
             );
         }
@@ -181,7 +185,8 @@ namespace elite_dangerous_colonise.Models.Internal
                 && OrganicCount == 0
                 && GeologicalsCount == 0
                 && RingCount == 0
-                && TerraformableCount == 0;
+                && TerraformableCount == 0
+                && VolcanismCount == 0;
         }
     }
 }

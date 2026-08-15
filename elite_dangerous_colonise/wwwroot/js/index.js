@@ -15,7 +15,8 @@ const SYSTEM_COUNT_CONFIGS = [
     { prop: "ringCount", id: "rings", label: "Rings", tooltip: "Extraction", colours: ["#FF0000", "#FF0000", "#FF0000", "#FF0000"] },
     { prop: "geologicalsCount", id: "geologicals", label: "Geologicals", tooltip: "Extraction and Industrial", colours: ["#FF0000", "#FFFF00", "#FF0000", "#FFFF00"] },
     { prop: "organicCount", id: "organics", label: "Organics", tooltip: "Agriculture and Terraforming", colours: ["#80FF00", "#009900", "#80FF00", "#009900"] },
-    { prop: "terraformableCount", id: "terraformables", label: "Terraformable Bodies", tooltip: "Agriculture", colours: ["#80FF00", "#80FF00", "#80FF00", "#80FF00"]  }
+    { prop: "terraformableCount", id: "terraformables", label: "Terraformable Bodies", tooltip: "Agriculture", colours: ["#80FF00", "#80FF00", "#80FF00", "#80FF00"]  },
+    { prop: "volcanicsCount", id: "volcanics", label: "Volcanic Bodies", tooltip: "Extraction", colours: ["#FF0000", "#FF0000", "#FF0000", "#FF0000"]  }
 ]
 
 var formData;
@@ -223,6 +224,7 @@ $(window).on("load", function () {
     SetupGenericSlider("geologicals_slider", "geologicals_value");
     SetupGenericSlider("organics_slider", "organics_value");
     SetupGenericSlider("terraformables_slider", "terraformables_value");
+    SetupGenericSlider("volcanics_slider", "volcanics_value");
 });
 
 $("#more_options_button").on("click", function () {
@@ -268,6 +270,7 @@ function UpdateFormFromParams(searchParams) {
     document.querySelector("#geologicals_slider").noUiSlider.set([searchParams.minGeologicals, searchParams.maxGeologicals]);
     document.querySelector("#organics_slider").noUiSlider.set([searchParams.minOrganics, searchParams.maxOrganics]);
     document.querySelector("#terraformables_slider").noUiSlider.set([searchParams.minTerraformables, searchParams.maxTerraformables]);
+    document.querySelector("#volcanics_slider").noUiSlider.set([searchParams.minVolcanics, searchParams.maxVolcanics]);
 
     const hotspotSelect = document.querySelector("#hotspot_select");
 
@@ -312,7 +315,8 @@ $(window).on("load", function () {
                 && initialParams.has("minIces") && initialParams.has("maxIces") && initialParams.has("minOrganics") && initialParams.has("maxOrganics")
                 && initialParams.has("minGeologicals") && initialParams.has("maxGeologicals") && initialParams.has("minRings") && initialParams.has("maxRings")
                 && initialParams.has("minLandables") && initialParams.has("maxLandables") && initialParams.has("minWalkables") && initialParams.has("maxWalkables")
-                && initialParams.has("maxDistanceToRegionCentre") && initialParams.has("hotspotTypes") && initialParams.has("minTerraformables") && initialParams.has("maxTerraformables")) {
+                && initialParams.has("maxDistanceToRegionCentre") && initialParams.has("hotspotTypes") && initialParams.has("minTerraformables") && initialParams.has("maxTerraformables")
+                && initialParams.has("minVolcanics") && initialParams.has("maxVolcanics")) {
 
                 UpdateFormFromParams(Object.fromEntries(initialParams));
 
@@ -410,6 +414,7 @@ function SetFormData() {
     AddSliderDataToForm("geologicals_slider", "Geologicals");
     AddSliderDataToForm("organics_slider", "Organics");
     AddSliderDataToForm("terraformables_slider", "Terraformables");
+    AddSliderDataToForm("volcanics_slider", "Volcanics");
 
     const hotspotTypes = document.querySelector("#hotspot_select");
     formData.append(
@@ -468,6 +473,8 @@ async function LoadResults(updateUrl = true) {
         maxWalkables: parseInt(formData.get("MaxWalkables")),
         minTerraformables: parseInt(formData.get("MinTerraformables")),
         maxTerraformables: parseInt(formData.get("MaxTerraformables")),
+        minVolcanics: parseInt(formData.get("MinVolcanics")),
+        maxVolcanics: parseInt(formData.get("MaxVolcanics")),
         maxDistanceToRegionCentre: parseInt(formData.get("MaxDistanceFromRegionCentre")),
         hotspotTypes: formData.get("HotspotTypes")
     });
@@ -548,7 +555,7 @@ function FormatResults(results) {
                     </ul>
                 </div>
                 <h2 class="col-start-1 row-start-7 border-b border-gray-300 pt-5 pb-3 text-center text-lg drop-shadow-xs lg:col-end-3 lg:row-start-5 lg:text-left xl:col-end-4 xl:row-start-3">Colony Influences</h2>
-                <div class="col-start-1 row-start-8 mt-3 grid grid-cols-2 gap-x-2 overflow-auto lg:col-end-3 lg:row-start-6 lg:grid-cols-4 xl:col-end-4 xl:row-start-4 2xl:grid-cols-8">
+                <div class="col-start-1 row-start-8 mt-3 grid grid-cols-2 gap-x-2 overflow-auto lg:col-end-3 lg:row-start-6 lg:grid-cols-3 xl:col-end-4 xl:row-start-4 2xl:grid-cols-9">
                     ${SYSTEM_COUNT_CONFIGS.map(config => `
                         <div class="mt-3 flex gap-3">
                             ${FormatInfluenceIcons(`${system.systemID}_${config.id}_tooltip`, ...config.colours)}

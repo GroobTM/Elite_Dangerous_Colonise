@@ -731,6 +731,39 @@
                     Colony Boost: Agriculture
                 </div>
             </div>
+            <div class="z-10 mr-2 ml-2 flex min-h-13 flex-col justify-around">
+                <div class="relative -top-2 w-full">
+                    <span class="absolute left-1">Volcanic Bodies</span>
+                    <div class="absolute right-1">
+                        <svg data-tooltip-target="volcanics_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #FF0000; --icon-br: #FF0000; --icon-tl: #FF0000; --icon-tr: #FF0000;">
+                            <use href="#influence_icon"></use>
+                        </svg>
+                        <span id="volcanics_value">0 - @Model.MaxValues.VolcanicsCount</span>
+                    </div>
+                </div>
+                <div id="volcanics_slider" class="--prevent-on-load-init" data-hs-range-slider='{
+                    "start": [0, @Model.MaxValues.VolcanicsCount],
+                    "range": {
+                        "min": 0,
+                        "max": @Model.MaxValues.VolcanicsCount
+                    },
+                    "step": 1,
+                    "connect": true,
+                    "cssClasses": {
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "base": "size-full relative z-1",
+                        "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "connects": "relative z-0 size-full rounded-full overflow-hidden",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "touchArea": "absolute -inset-1"
+                    }
+                }'></div>
+                <div id="volcanics_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                    Colony Boost: Extraction
+                </div>
+            </div>
             <span class="m-0 h-1 rounded-full bg-gray-300 lg:col-start-1 lg:col-end-3"></span>
             <div class="relative lg:col-span-2">
                 <span class="relative p-3">Available Hotspots</span>

@@ -39,7 +39,7 @@ namespace elite_dangerous_colonise.Controllers
             }
         }
 
-        private List<HotspotType>? ParseHotspotTypes(string inputHotspots)
+        private List<HotspotType>? ParseHotspotTypes(string? inputHotspots)
         {
             List<HotspotType> hotspotTypes = new List<HotspotType>();
 
@@ -136,6 +136,8 @@ namespace elite_dangerous_colonise.Controllers
                                     "@maxWalkables, " +
                                     "@minTerraformables," +
                                     "@maxTerraformables," +
+                                    "@minVolcanics," +
+                                    "@maxVolcanics," +
                                     "@maxDistanceToSol, " +
                                     "@hotspotTypes," +
                                     "@removedSystemIDs" +
@@ -186,6 +188,8 @@ namespace elite_dangerous_colonise.Controllers
                                     command.Parameters.AddWithValue("maxWalkables", searchQuery.MaxWalkables);
                                     command.Parameters.AddWithValue("minTerraformables", searchQuery.MinTerraformables);
                                     command.Parameters.AddWithValue("maxTerraformables", searchQuery.MaxTerraformables);
+                                    command.Parameters.AddWithValue("minVolcanics", searchQuery.MinVolcanics);
+                                    command.Parameters.AddWithValue("maxVolcanics", searchQuery.MaxVolcanics);
                                     command.Parameters.AddWithValue("maxDistanceToSol", searchQuery.MaxDistanceToRegionCentre);
                                     command.Parameters.AddWithValue("hotspotTypes", (object?)ParseHotspotTypes(searchQuery.HotspotTypes) ?? DBNull.Value);
                                     command.Parameters.AddWithValue("removedSystemIDs", ParseSessionReportedStarSystems());
@@ -306,6 +310,8 @@ namespace elite_dangerous_colonise.Controllers
             public short MaxWalkables { get; set; }
             public short MinTerraformables { get; set; }
             public short MaxTerraformables { get; set; }
+            public short MinVolcanics { get; set; }
+            public short MaxVolcanics { get; set; }
             public int MaxDistanceToRegionCentre { get; set; }
             public string? HotspotTypes { get; set; }
         }

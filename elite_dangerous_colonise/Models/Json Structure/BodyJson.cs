@@ -16,6 +16,8 @@ namespace elite_dangerous_colonise.Models.Json_Structure
         public string? ReserveLevel { get; set; }
         [JsonProperty("terraformingState")]
         public string? TerraformingState { get; set; }
+        [JsonProperty("volcanismType")]
+        public string? VolcanismType { get; set; }
         [JsonProperty("gravity")]
         public float? Gravity { get; set; }
         [JsonProperty("surfaceTemperature")]

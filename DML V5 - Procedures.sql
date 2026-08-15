@@ -209,7 +209,8 @@ RETURNS VOID AS $$
 		"organicCount",
 		"geologicalsCount",
 		"ringCount",
-		"terraformableCount"
+		"terraformableCount",
+		"volcanicsCount"
 	)
 	SELECT
 		"systemID",
@@ -229,7 +230,8 @@ RETURNS VOID AS $$
 		"organicCount",
 		"geologicalsCount",
 		"ringCount",
-		"terraformableCount"
+		"terraformableCount",
+		"volcanicsCount"
 	FROM unnest("inputDetails") AS ind
 	ON CONFLICT ("systemID") DO UPDATE
 	SET
@@ -249,7 +251,8 @@ RETURNS VOID AS $$
 		"organicCount" = EXCLUDED."organicCount",
 		"geologicalsCount" = EXCLUDED."geologicalsCount",
 		"ringCount" = EXCLUDED."ringCount",
-		"terraformableCount" = EXCLUDED."terraformableCount"
+		"terraformableCount" = EXCLUDED."terraformableCount",
+		"volcanicsCount" = EXCLUDED."volcanicsCount"
 	WHERE (
 		"ColonyOverrideCounts"."blackHoleCount",
 		"ColonyOverrideCounts"."neutronStarCount",
@@ -267,7 +270,8 @@ RETURNS VOID AS $$
 		"ColonyOverrideCounts"."organicCount",
 		"ColonyOverrideCounts"."geologicalsCount",
 		"ColonyOverrideCounts"."ringCount",
-		"ColonyOverrideCounts"."terraformableCount"
+		"ColonyOverrideCounts"."terraformableCount",
+		"ColonyOverrideCounts"."volcanicsCount"
 	)
 	IS DISTINCT FROM (
 		EXCLUDED."blackHoleCount",
@@ -286,7 +290,8 @@ RETURNS VOID AS $$
 		EXCLUDED."organicCount",
 		EXCLUDED."geologicalsCount",
 		EXCLUDED."ringCount",
-		EXCLUDED."terraformableCount"
+		EXCLUDED."terraformableCount",
+		EXCLUDED."volcanicsCount"
 	);
 $$ LANGUAGE sql;
 
@@ -421,6 +426,8 @@ CREATE OR REPLACE FUNCTION "SelectSearchResults" (
 	"inputMaxWalkables" SMALLINT,
 	"inputMinTerraformables" SMALLINT,
 	"inputMaxTerraformables" SMALLINT,
+	"inputMinVolcanics" SMALLINT,
+	"inputMaxVolcanics" SMALLINT,
 	"inputMaxDistanceToRegionCentre" INT,
 	"inputHotspotTypes" "HotspotType"[],
 	"inputRemovedSystemIDs" NUMERIC(20, 0)[]
@@ -544,7 +551,8 @@ BEGIN
 			coc."organicCount",
 			coc."geologicalsCount",
 			coc."ringCount",
-			coc."terraformableCount"
+			coc."terraformableCount",
+			coc."volcanicsCount"
 		FROM "DistinctUncolonisedStarSystems" duss
 		INNER JOIN "StarSystems" ss ON duss."uncolonisedSystemID" = ss."systemID"
 		INNER JOIN "StarSystemsByRegion" ssbr ON ss."systemID" = ssbr."systemID"
@@ -572,6 +580,7 @@ BEGIN
 			AND coc."geologicalsCount" BETWEEN "inputMinGeologicals" AND "inputMaxGeologicals"
 			AND coc."ringCount" BETWEEN "inputMinRings" AND "inputMaxRings"
 			AND coc."terraformableCount" BETWEEN "inputMinTerraformables" AND "inputMaxTerraformables"
+			AND coc."volcanicsCount" BETWEEN "inputMinVolcanics" AND "inputMaxVolcanics"
 			AND uss."landableCount" BETWEEN "inputMinLandables" AND "inputMaxLandables"
 			AND uss."walkableCount" BETWEEN "inputMinWalkables" AND "inputMaxWalkables"
 			AND ("inputRemovedSystemIDs" IS NULL OR NOT (duss."uncolonisedSystemID" = ANY("inputRemovedSystemIDs")))
@@ -619,6 +628,7 @@ BEGIN
 					'geologicalsCount', tr."geologicalsCount",
 					'ringCount', tr."ringCount",
 					'terraformableCount', tr."terraformableCount",
+					'volcanicsCount', tr."volcanicsCount",
 					'totalHotspots', tr."totalHotspots"
 				),
 				'rings', (
@@ -646,24 +656,24 @@ BEGIN
 						jsonb_build_object(
 							'colonisedSystemID', css."colonisedSystemID",
 							'systemName', ss."systemName",
-							'controllingFaction', f_sys."factionName",
+							'controllingFaction', f1."factionName",
 							'stations', (
 								SELECT jsonb_agg(
 									jsonb_build_object(
 										'stationID', s."stationID",
 										'stationName', s."stationName",
-										'controllingFaction', f."factionName"
+										'controllingFaction', f2."factionName"
 									)
 								)
 								FROM "Stations" s
-								INNER JOIN "Factions" f ON s."controllingFaction" = f."factionID"
+								INNER JOIN "Factions" f2 ON s."controllingFaction" = f2."factionID"
 								WHERE s."systemID" = css."colonisedSystemID"
 							)
 						)
 					)
 					FROM "ColonisableStarSystems" css
 					INNER JOIN "StarSystems" ss ON css."colonisedSystemID" = ss."systemID"
-					LEFT JOIN "Factions" f_sys ON ss."controllingFaction" = f_sys."factionID"
+					LEFT JOIN "Factions" f1 ON ss."controllingFaction" = f1."factionID"
 					WHERE css."uncolonisedSystemID" = tr."uncolonisedSystemID"
 				)
 			)

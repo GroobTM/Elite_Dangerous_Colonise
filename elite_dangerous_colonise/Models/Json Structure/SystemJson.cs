@@ -162,6 +162,7 @@ namespace elite_dangerous_colonise.Models.Json_Structure
                 bodyCount.GeologicalsCount += (body.SignalCategory?.SignalTypes.ContainsKey("$SAA_SignalType_Geological;") ?? false) ? (short)1 : (short)0;
                 bodyCount.RingCount += (short)(body.Rings?.Count() ?? 0);
                 bodyCount.TerraformableCount += (short)(body.TerraformingState == "Terraformable" ? 1 : 0);
+                bodyCount.VolcanismCount += (short)(body.VolcanismType != null && body.VolcanismType != "No volcanism" ? 1 : 0);
             }
 
             return bodyCount;

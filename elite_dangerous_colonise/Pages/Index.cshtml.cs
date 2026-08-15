@@ -112,7 +112,8 @@ public class IndexModel : PageModel
                                     reader.GetInt32(18),
                                     reader.GetInt32(19),
                                     reader.GetInt32(20),
-                                    reader.GetInt32(21)
+                                    reader.GetInt32(21),
+                                    reader.GetInt32(22)
                                     );
                             }
                         }
