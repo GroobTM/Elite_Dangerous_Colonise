@@ -8,7 +8,8 @@ CREATE TYPE "ResultOrderType" AS ENUM (
 	'SystemValue',
 	'MostWalkables',
 	'DistanceToRegionCentre',
-	'MostHotspots'
+	'MostHotspots',
+	'DistanceToReferenceSystem'
 );
 
 CREATE TYPE "ReserveType" AS ENUM (

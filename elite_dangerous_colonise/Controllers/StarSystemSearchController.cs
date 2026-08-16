@@ -96,6 +96,7 @@ namespace elite_dangerous_colonise.Controllers
                                     "@pageNo, " +
                                     "@resultsPerPage, " +
                                     "@systemName, " +
+                                    "@systemNameRange," +
                                     "@factionSearchMode," +
                                     "@factionName, " +
                                     "@minBlackHoles, " +
@@ -148,6 +149,7 @@ namespace elite_dangerous_colonise.Controllers
                                     command.Parameters.AddWithValue("pageNo", Math.Max(1, searchQuery.PageNo));
                                     command.Parameters.AddWithValue("resultsPerPage", Math.Min((short)50, searchQuery.ResultsPerPage));
                                     command.Parameters.AddWithValue("systemName", NpgsqlDbType.Varchar, (object?)searchQuery.SystemName ?? DBNull.Value);
+                                    command.Parameters.AddWithValue("systemNameRange", Math.Min(Math.Max((short)0, searchQuery.MaxDistanceToReferenceSystem), (short)100));
                                     command.Parameters.AddWithValue("factionSearchMode", searchQuery.FactionSearchMode);
                                     command.Parameters.AddWithValue("factionName", NpgsqlDbType.Varchar, (object?)searchQuery.FactionName ?? DBNull.Value);
                                     command.Parameters.AddWithValue("minBlackHoles", searchQuery.MinBlackHoles);
@@ -270,6 +272,7 @@ namespace elite_dangerous_colonise.Controllers
             public int PageNo { get; set; }
             public short ResultsPerPage { get; set; }
             public string? SystemName { get; set; }
+            public short MaxDistanceToReferenceSystem { get; set; }
             public string? FactionName { get; set; }
             public bool FactionSearchMode { get; set; }
             public short MinBlackHoles { get; set; }

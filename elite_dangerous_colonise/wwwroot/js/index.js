@@ -149,23 +149,23 @@ function SetupSearchInput(id, api) {
     });
 }
 
-function SetupMaxDistanceFromRegionCentreSlider() {
-    const distanceFromRegionCentreSlider = document.querySelector("#distance_from_region_centre_slider");
-    const distanceFromRegionCentreValue = document.querySelector("#distance_from_region_centre_value");
-    const distanceFromRegionCentreSliderInstance = new HSRangeSlider(distanceFromRegionCentreSlider);
+function SetupMaxDistanceFromLocationSlider(location) {
+    const distanceFromLocationSlider = document.querySelector(`#distance_from_${location}_slider`);
+    const distanceFromLocationValue = document.querySelector(`#distance_from_${location}_value`);
+    const distanceFromLocationSliderInstance = new HSRangeSlider(distanceFromLocationSlider);
 
-    distanceFromRegionCentreSlider.noUiSlider.on("update", function (values) {
-        distanceFromRegionCentreValue.textContent = Math.trunc(values[0]) + " ly";
+    distanceFromLocationSlider.noUiSlider.on("update", function (values) {
+        distanceFromLocationValue.textContent = `${Math.trunc(values[0])} ly`;
     });
 }
 
-function SetupGenericSlider(sliderID, valueID) {
-    const slider = document.querySelector("#" + sliderID);
-    const value = document.querySelector("#" + valueID);
+function SetupGenericSlider(IDRoot) {
+    const slider = document.querySelector(`#${IDRoot}_slider`);
+    const value = document.querySelector(`#${IDRoot}_value`);
     const sliderInstance = new HSRangeSlider(slider);
 
     slider.noUiSlider.on("update", function (values) {
-        value.textContent = Math.trunc(values[0]) + " - " + Math.trunc(values[1]);
+        value.textContent = `${Math.trunc(values[0])} - ${Math.trunc(values[1])}`;
     });
 }
 
@@ -204,27 +204,28 @@ $(window).on("load", function () {
 
     SetupSearchInput("colonised_system_search", "/api/ColonisedSystemNames");
     SetupSearchInput("faction_search", "/api/FactionNames");
-    SetupMaxDistanceFromRegionCentreSlider();
-    SetupGenericSlider("landable_bodies_slider", "landable_bodies_value");
-    SetupGenericSlider("walkable_bodies_slider", "walkable_bodies_value");
-    SetupGenericSlider("black_holes_slider", "black_holes_value");
-    SetupGenericSlider("neutron_stars_slider", "neutron_stars_value");
-    SetupGenericSlider("white_dwarves_slider", "white_dwarves_value");
-    SetupGenericSlider("other_stars_slider", "other_stars_value");
-    SetupGenericSlider("earth_likes_slider", "earth_likes_value");
-    SetupGenericSlider("water_worlds_slider", "water_worlds_value");
-    SetupGenericSlider("ammonia_worlds_slider", "ammonia_worlds_value");
-    SetupGenericSlider("gas_giants_slider", "gas_giants_value");
-    SetupGenericSlider("high_metal_content_slider", "high_metal_content_value");
-    SetupGenericSlider("metal_rich_slider", "metal_rich_value");
-    SetupGenericSlider("rocky_ice_world_slider", "rocky_ice_world_value");
-    SetupGenericSlider("rocky_bodies_slider", "rocky_bodies_value");
-    SetupGenericSlider("icy_bodies_slider", "icy_bodies_value");
-    SetupGenericSlider("rings_slider", "rings_value");
-    SetupGenericSlider("geologicals_slider", "geologicals_value");
-    SetupGenericSlider("organics_slider", "organics_value");
-    SetupGenericSlider("terraformables_slider", "terraformables_value");
-    SetupGenericSlider("volcanics_slider", "volcanics_value");
+    SetupMaxDistanceFromLocationSlider("reference_system");
+    SetupMaxDistanceFromLocationSlider("region_centre");
+    SetupGenericSlider("landable_bodies");
+    SetupGenericSlider("walkable_bodies");
+    SetupGenericSlider("black_holes");
+    SetupGenericSlider("neutron_stars");
+    SetupGenericSlider("white_dwarves");
+    SetupGenericSlider("other_stars");
+    SetupGenericSlider("earth_likes");
+    SetupGenericSlider("water_worlds");
+    SetupGenericSlider("ammonia_worlds");
+    SetupGenericSlider("gas_giants");
+    SetupGenericSlider("high_metal_content");
+    SetupGenericSlider("metal_rich");
+    SetupGenericSlider("rocky_ice_world");
+    SetupGenericSlider("rocky_bodies");
+    SetupGenericSlider("icy_bodies");
+    SetupGenericSlider("rings");
+    SetupGenericSlider("geologicals");
+    SetupGenericSlider("organics");
+    SetupGenericSlider("terraformables");
+    SetupGenericSlider("volcanics");
 });
 
 $("#more_options_button").on("click", function () {
@@ -250,6 +251,7 @@ function UpdateFormFromParams(searchParams) {
     $("#faction").val(searchParams.factionName);
     $("#faction_search_mode").val(searchParams.factionSearchMode);
 
+    document.querySelector("#distance_from_reference_system_slider").noUiSlider.set(searchParams.maxDistanceToReferenceSystem);
     document.querySelector("#distance_from_region_centre_slider").noUiSlider.set(searchParams.maxDistanceToRegionCentre);
     document.querySelector("#landable_bodies_slider").noUiSlider.set([searchParams.minLandables, searchParams.maxLandables]);
     document.querySelector("#walkable_bodies_slider").noUiSlider.set([searchParams.minWalkables, searchParams.maxWalkables]);
@@ -316,7 +318,7 @@ $(window).on("load", function () {
                 && initialParams.has("minGeologicals") && initialParams.has("maxGeologicals") && initialParams.has("minRings") && initialParams.has("maxRings")
                 && initialParams.has("minLandables") && initialParams.has("maxLandables") && initialParams.has("minWalkables") && initialParams.has("maxWalkables")
                 && initialParams.has("maxDistanceToRegionCentre") && initialParams.has("hotspotTypes") && initialParams.has("minTerraformables") && initialParams.has("maxTerraformables")
-                && initialParams.has("minVolcanics") && initialParams.has("maxVolcanics")) {
+                && initialParams.has("minVolcanics") && initialParams.has("maxVolcanics") && initialParams.has("maxDistanceToReferenceSystem")) {
 
                 UpdateFormFromParams(Object.fromEntries(initialParams));
 
@@ -392,6 +394,9 @@ function AddSliderDataToForm(sliderID, sliderName) {
 function SetFormData() {
     formData = new FormData(document.getElementById("systems_search"));
 
+    const distanceFromReferenceSystem = document.querySelector("#distance_from_reference_system_slider").noUiSlider.get();
+    formData.append("MaxDistanceToReferenceSystem", distanceFromReferenceSystem);
+
     const distanceFromRegionCentre = document.querySelector("#distance_from_region_centre_slider").noUiSlider.get();
     formData.append("MaxDistanceFromRegionCentre", distanceFromRegionCentre);
 
@@ -433,6 +438,7 @@ async function LoadResults(updateUrl = true) {
         pageNo: currentPage,
         resultsPerPage: resultsPerPage,
         systemName: formData.get("ColonisedSystem"),
+        maxDistanceToReferenceSystem: parseInt(formData.get("MaxDistanceToReferenceSystem")),
         factionName: formData.get("Faction"),
         factionSearchMode: formData.get("FactionSearchMode") === "true",
         minBlackHoles: parseInt(formData.get("MinBlackHoles")),
@@ -534,6 +540,7 @@ function FormatResults(results) {
                         <p class="mt-3">${FormatDate(system.lastUpdate)}</p>
                         <h3 class="mt-3 font-bold">Distance to Sol:</h3>
                         <p class="mt-3">${system.distanceToRegionCentre} ly</p>
+                        ${FormatDistanceToReference(system.distanceToReferenceSystem)}
                         <h3 class="mt-3 font-bold">System Reserve:</h3>
                         <p class="mt-3">${system.reserveLevel}</p>
                         <h3 class="mt-3 font-bold">Landable Bodies:</h3>
@@ -613,6 +620,17 @@ function FormatCoordinates(inputCoords) {
 function FormatDate(inputDate) {
     const date = new Date(inputDate);
     return date.toISOString().slice(0, 10).replace(/-/g, '/');
+}
+
+function FormatDistanceToReference(inputDistance) {
+    if (inputDistance != null) {
+        return `
+            <h3 class="mt-3 font-bold">Distance to Reference System:</h3>
+            <p class="mt-3">${inputDistance.toFixed(2) } ly</p>
+        `;
+    }
+
+    return ``;
 }
 
 function FormatRings(inputRings) {
