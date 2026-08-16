@@ -678,7 +678,7 @@ function FormatColonisedSystems(systemID, inputColonisedSystems) {
 
         systemsList += `
         <li class="list-inside list-disc font-bold">
-            <span data-tooltip-target="${systemID}_${system.colonisedSystemID}_tooltip" class="cursor-copy" onclick="CopyToClipboard(this);">${system.systemName}&nbsp;-&nbsp;${system.controllingFaction}</span>
+            <span><span data-tooltip-target="${systemID}_${system.colonisedSystemID}_tooltip" class="cursor-copy" onclick="CopyToClipboard(this);">${system.systemName}</span>&nbsp;-&nbsp;${system.controllingFaction}</span>
             <ul class="items-center ps-7 font-normal">
                 ${FormatStations(system.colonisedSystemID, system.stations)}
             </ul>
