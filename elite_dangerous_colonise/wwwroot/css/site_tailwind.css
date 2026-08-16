@@ -1715,15 +1715,6 @@
     .\32 xl\:grid-cols-6 {
       grid-template-columns: repeat(6, minmax(0, 1fr));
     }
-    .\32 xl\:grid-cols-8 {
-      grid-template-columns: repeat(8, minmax(0, 1fr));
-    }
-    .\32 xl\:grid-cols-10 {
-      grid-template-columns: repeat(10, minmax(0, 1fr));
-    }
-    .\32 xl\:grid-cols-12 {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-    }
   }
   .rtl\:text-right:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
     text-align: right;

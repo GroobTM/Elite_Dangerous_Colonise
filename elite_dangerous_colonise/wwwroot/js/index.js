@@ -663,7 +663,7 @@ function FormatColonisedSystems(systemID, inputColonisedSystems) {
 
     inputColonisedSystems.forEach(system => {
         if (factionName != null && factionName.trim() != "") {
-            if (searchMode && system.controllingFaction != factionName) {
+            if ((searchMode || system.stations == null) && system.controllingFaction != factionName) {
                 return;
             }
 
