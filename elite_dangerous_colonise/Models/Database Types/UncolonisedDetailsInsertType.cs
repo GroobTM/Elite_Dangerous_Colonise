@@ -51,13 +51,18 @@ namespace elite_dangerous_colonise.Models.Database_Types
         public short GeologicalsCount { get; set; }
         [PgName("ringCount")]
         public short RingCount { get; set; }
+        [PgName("terraformableCount")]
+        public short TerraformableCount { get; set; }
+        [PgName("volcanicsCount")]
+        public short VolcanismCount { get; set; }
 
         public UncolonisedDetailsInsertType() { }
         public UncolonisedDetailsInsertType(
             ulong systemID, DateTime lastUpdate, ReserveType reserveLevel, short landableCount, short walkableCount,
             short totalHotspots, double systemValue, short blackHoleCount, short neutronStarCount, short whiteDwarves, short otherStarCount,
             short earthLikeCount, short waterWorldCount, short ammoniaWorldCount, short gasGiantCount, short highMetalContentCount, short metalRichCount,
-            short rockyIceBodyCount, short rockBodyCount, short icyBodyCount, short organicCount, short geologicalsCount, short ringCount
+            short rockyIceBodyCount, short rockBodyCount, short icyBodyCount, short organicCount, short geologicalsCount, short ringCount, short terraformableCount,
+            short volcanismCount
         )
         {
             SystemID = systemID;
@@ -83,6 +88,8 @@ namespace elite_dangerous_colonise.Models.Database_Types
             OrganicCount = organicCount;
             GeologicalsCount = geologicalsCount;
             RingCount = ringCount;
+            TerraformableCount = terraformableCount;
+            VolcanismCount = volcanismCount;
         }
     }
 }

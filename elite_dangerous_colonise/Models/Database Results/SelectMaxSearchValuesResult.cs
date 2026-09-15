@@ -22,11 +22,13 @@
         public int OrganicCount { get; private set; }
         public int GeologicalsCount { get; private set; }
         public int RingCount { get; private set; }
+        public int TerraformablesCount { get; private set; }
+        public int VolcanicsCount { get; private set; }
 
         public SelectMaxSearchValuesResult(int landableCount, int walkableCount, int distanceToRegionCentre, int totalHotspots, int blackHoleCount,
             int neutronStarCount, int whiteDwarves, int otherStarCount, int earthLikeCount, int waterWorldCount, int ammoniaWorldCount,
             int gasGiantCount, int highMetalContentCount, int metalRichCount, int rockyIceBodyCount, int rockBodyCount, int icyBodyCount,
-            int organicCount, int geologicalsCount, int ringCount)
+            int organicCount, int geologicalsCount, int ringCount, int terraformablesCount, int volcanicsCount)
         {
             LandableCount = landableCount;
             WalkableCount = walkableCount;
@@ -48,6 +50,8 @@
             OrganicCount = organicCount;
             GeologicalsCount = geologicalsCount;
             RingCount = ringCount;
+            TerraformablesCount = terraformablesCount;
+            VolcanicsCount = volcanicsCount;
         }
     }
 }

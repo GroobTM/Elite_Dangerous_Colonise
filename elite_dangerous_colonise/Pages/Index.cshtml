@@ -39,7 +39,7 @@
             <div id="colonised_system_search" class="relative flex-1">
                 <div class="relative">
                     <input asp-for="ColonisedSystem" type="text" role="combobox" id="colonised_system" class="peer block w-full appearance-none rounded-lg border-1 border-[#0F0F0F] bg-white px-2.5 pt-4 pb-2.5 pl-4 text-[#0F0F0F] shadow-sm focus:border-[#F07B05] focus:ring-0 focus:outline-none" placeholder=" " maxlength="75" data-hs-combo-box-input="" />
-                    <label for="colonised_system" class="absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 text-[#0F0F0F] duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4">Colonised System (Optional)</label>
+                    <label for="colonised_system" class="absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 text-[#0F0F0F] duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4">Colonised Reference System (Optional)</label>
                     <label for="colonised_system" id="clear_button" class="absolute top-1 right-2 z-10 cursor-pointer text-3xl hover:text-[#F07B05]">&times;</label>
                 </div>
                 <div class="absolute z-50 !mt-0 max-h-55 w-full overflow-y-auto rounded-lg border-1 border-[#BCBCBC] bg-white shadow-lg" style="display: none;" role="listbox" data-hs-combo-box-output=""></div>
@@ -50,6 +50,7 @@
                     <option value="MostWalkables">Most Walkable Bodies</option>
                     <option value="MostHotspots">Most Hotspots</option>
                     <option value="DistanceToRegionCentre">Distance to Sol</option>
+                    <option value="DistanceToReferenceSystem">Distance to Reference System</option>
                 </select>
                 <label for="sort_order" class="pointer-events-none absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 rounded-3xl bg-white px-2 text-[#0F0F0F]">Sort Order</label>
                 <svg class="pointer-events-none absolute top-4 right-3 z-10 h-5 w-4 shrink-0 rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
@@ -85,6 +86,42 @@
                 <div class="absolute z-50 !mt-0 max-h-55 w-full overflow-y-auto rounded-lg border-1 border-[#BCBCBC] bg-white shadow-lg" style="display: none;" role="listbox" data-hs-combo-box-output=""></div>
             </div>
 
+            <div class="relative flex-1">
+                <select asp-for="FactionSearchMode" id="faction_search_mode" class="block w-full cursor-pointer appearance-none rounded-lg border-1 border-[#0F0F0F] bg-white px-2.5 pt-4 pb-2.5 pl-4 text-[#0F0F0F] shadow-sm focus:border-[#F07B05] focus:ring-0 focus:outline-none">
+                    <option value="false">Search for station controller</option>
+                    <option value="true">Search for system controller</option>
+                </select>
+                <label for="faction_search_mode" class="pointer-events-none absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 rounded-3xl bg-white px-2 text-[#0F0F0F]">Toggle Faction Search Mode</label>
+                <svg class="pointer-events-none absolute top-4 right-3 z-10 h-5 w-4 shrink-0 rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"></path>
+                </svg>
+            </div>
+
+            <div class="z-10 mr-2 ml-2 flex min-h-13 flex-col justify-around">
+                <div class="relative -top-2 w-full">
+                    <span class="absolute left-1">Max Distance From Reference System</span>
+                    <span id="distance_from_reference_system_value" class="absolute right-1">100 ly</span>
+                </div>
+                <div id="distance_from_reference_system_slider" class="--prevent-on-load-init" data-hs-range-slider='{
+                    "start": 15,
+                    "range": {
+                        "min": 0,
+                        "max": 100
+                    },
+                    "step": 1,
+                    "connect": "lower",
+                    "cssClasses": {
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "base": "size-full relative z-1",
+                        "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "connects": "relative z-0 size-full rounded-full overflow-hidden",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "touchArea": "absolute -inset-1"
+                    }
+                }'></div>
+            </div>
+
             <div class="z-10 mr-2 ml-2 flex min-h-13 flex-col justify-around">
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Max Distance From Sol</span>
@@ -109,6 +146,7 @@
                     }
                 }'></div>
             </div>
+
             <div class="z-11 mr-2 ml-2 flex min-h-13 flex-col justify-around">
                 <div class="relative -top-2 w-full">
                     <span class="absolute left-1">Landable Bodies</span>
@@ -684,6 +722,72 @@
                 }'></div>
                 <div id="organics_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
                     Colony Influence: Agriculture and Terraforming
+                </div>
+            </div>
+            <div class="z-10 mr-2 ml-2 flex min-h-13 flex-col justify-around">
+                <div class="relative -top-2 w-full">
+                    <span class="absolute left-1">Terraformable Bodies</span>
+                    <div class="absolute right-1">
+                        <svg data-tooltip-target="terraformables_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #80FF00; --icon-br: #80FF00; --icon-tl: #80FF00; --icon-tr: #80FF00;">
+                            <use href="#influence_icon"></use>
+                        </svg>
+                        <span id="terraformables_value">0 - @Model.MaxValues.TerraformablesCount</span>
+                    </div>
+                </div>
+                <div id="terraformables_slider" class="--prevent-on-load-init" data-hs-range-slider='{
+                    "start": [0, @Model.MaxValues.TerraformablesCount],
+                    "range": {
+                        "min": 0,
+                        "max": @Model.MaxValues.TerraformablesCount
+                    },
+                    "step": 1,
+                    "connect": true,
+                    "cssClasses": {
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "base": "size-full relative z-1",
+                        "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "connects": "relative z-0 size-full rounded-full overflow-hidden",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "touchArea": "absolute -inset-1"
+                    }
+                }'></div>
+                <div id="terraformables_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                    Influence Booster: Agriculture
+                </div>
+            </div>
+            <div class="z-10 mr-2 ml-2 flex min-h-13 flex-col justify-around">
+                <div class="relative -top-2 w-full">
+                    <span class="absolute left-1">Volcanic Bodies</span>
+                    <div class="absolute right-1">
+                        <svg data-tooltip-target="volcanics_slider_tooltip" class="absolute right-20 h-6 w-6"
+                             style="--icon-bl: #FF0000; --icon-br: #FF0000; --icon-tl: #FF0000; --icon-tr: #FF0000;">
+                            <use href="#influence_icon"></use>
+                        </svg>
+                        <span id="volcanics_value">0 - @Model.MaxValues.VolcanicsCount</span>
+                    </div>
+                </div>
+                <div id="volcanics_slider" class="--prevent-on-load-init" data-hs-range-slider='{
+                    "start": [0, @Model.MaxValues.VolcanicsCount],
+                    "range": {
+                        "min": 0,
+                        "max": @Model.MaxValues.VolcanicsCount
+                    },
+                    "step": 1,
+                    "connect": true,
+                    "cssClasses": {
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "base": "size-full relative z-1",
+                        "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "connects": "relative z-0 size-full rounded-full overflow-hidden",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "touchArea": "absolute -inset-1"
+                    }
+                }'></div>
+                <div id="volcanics_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                    Influence Booster: Extraction
                 </div>
             </div>
             <span class="m-0 h-1 rounded-full bg-gray-300 lg:col-start-1 lg:col-end-3"></span>

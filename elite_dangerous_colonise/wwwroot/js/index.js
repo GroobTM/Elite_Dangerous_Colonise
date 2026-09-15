@@ -14,7 +14,9 @@ const SYSTEM_COUNT_CONFIGS = [
     { prop: "icyBodyCount", id: "icy_bodies", label: "Icy Bodies", tooltip: "Industrial", colours: ["#FFFF00", "#FFFF00", "#FFFF00", "#FFFF00"] },
     { prop: "ringCount", id: "rings", label: "Rings", tooltip: "Extraction", colours: ["#FF0000", "#FF0000", "#FF0000", "#FF0000"] },
     { prop: "geologicalsCount", id: "geologicals", label: "Geologicals", tooltip: "Extraction and Industrial", colours: ["#FF0000", "#FFFF00", "#FF0000", "#FFFF00"] },
-    { prop: "organicCount", id: "organics", label: "Organics", tooltip: "Agriculture and Terraforming", colours: ["#80FF00", "#009900", "#80FF00", "#009900"] }
+    { prop: "organicCount", id: "organics", label: "Organics", tooltip: "Agriculture and Terraforming", colours: ["#80FF00", "#009900", "#80FF00", "#009900"] },
+    { prop: "terraformableCount", id: "terraformables", label: "Terraformable Bodies", tooltip: "Agriculture", colours: ["#80FF00", "#80FF00", "#80FF00", "#80FF00"]  },
+    { prop: "volcanicsCount", id: "volcanics", label: "Volcanic Bodies", tooltip: "Extraction", colours: ["#FF0000", "#FF0000", "#FF0000", "#FF0000"]  }
 ]
 
 var formData;
@@ -147,23 +149,23 @@ function SetupSearchInput(id, api) {
     });
 }
 
-function SetupMaxDistanceFromRegionCentreSlider() {
-    const distanceFromRegionCentreSlider = document.querySelector("#distance_from_region_centre_slider");
-    const distanceFromRegionCentreValue = document.querySelector("#distance_from_region_centre_value");
-    const distanceFromRegionCentreSliderInstance = new HSRangeSlider(distanceFromRegionCentreSlider);
+function SetupMaxDistanceFromLocationSlider(location) {
+    const distanceFromLocationSlider = document.querySelector(`#distance_from_${location}_slider`);
+    const distanceFromLocationValue = document.querySelector(`#distance_from_${location}_value`);
+    const distanceFromLocationSliderInstance = new HSRangeSlider(distanceFromLocationSlider);
 
-    distanceFromRegionCentreSlider.noUiSlider.on("update", function (values) {
-        distanceFromRegionCentreValue.textContent = Math.trunc(values[0]) + " ly";
+    distanceFromLocationSlider.noUiSlider.on("update", function (values) {
+        distanceFromLocationValue.textContent = `${Math.trunc(values[0])} ly`;
     });
 }
 
-function SetupGenericSlider(sliderID, valueID) {
-    const slider = document.querySelector("#" + sliderID);
-    const value = document.querySelector("#" + valueID);
+function SetupGenericSlider(IDRoot) {
+    const slider = document.querySelector(`#${IDRoot}_slider`);
+    const value = document.querySelector(`#${IDRoot}_value`);
     const sliderInstance = new HSRangeSlider(slider);
 
     slider.noUiSlider.on("update", function (values) {
-        value.textContent = Math.trunc(values[0]) + " - " + Math.trunc(values[1]);
+        value.textContent = `${Math.trunc(values[0])} - ${Math.trunc(values[1])}`;
     });
 }
 
@@ -202,25 +204,28 @@ $(window).on("load", function () {
 
     SetupSearchInput("colonised_system_search", "/api/ColonisedSystemNames");
     SetupSearchInput("faction_search", "/api/FactionNames");
-    SetupMaxDistanceFromRegionCentreSlider();
-    SetupGenericSlider("landable_bodies_slider", "landable_bodies_value");
-    SetupGenericSlider("walkable_bodies_slider", "walkable_bodies_value");
-    SetupGenericSlider("black_holes_slider", "black_holes_value");
-    SetupGenericSlider("neutron_stars_slider", "neutron_stars_value");
-    SetupGenericSlider("white_dwarves_slider", "white_dwarves_value");
-    SetupGenericSlider("other_stars_slider", "other_stars_value");
-    SetupGenericSlider("earth_likes_slider", "earth_likes_value");
-    SetupGenericSlider("water_worlds_slider", "water_worlds_value");
-    SetupGenericSlider("ammonia_worlds_slider", "ammonia_worlds_value");
-    SetupGenericSlider("gas_giants_slider", "gas_giants_value");
-    SetupGenericSlider("high_metal_content_slider", "high_metal_content_value");
-    SetupGenericSlider("metal_rich_slider", "metal_rich_value");
-    SetupGenericSlider("rocky_ice_world_slider", "rocky_ice_world_value");
-    SetupGenericSlider("rocky_bodies_slider", "rocky_bodies_value");
-    SetupGenericSlider("icy_bodies_slider", "icy_bodies_value");
-    SetupGenericSlider("rings_slider", "rings_value");
-    SetupGenericSlider("geologicals_slider", "geologicals_value");
-    SetupGenericSlider("organics_slider", "organics_value");
+    SetupMaxDistanceFromLocationSlider("reference_system");
+    SetupMaxDistanceFromLocationSlider("region_centre");
+    SetupGenericSlider("landable_bodies");
+    SetupGenericSlider("walkable_bodies");
+    SetupGenericSlider("black_holes");
+    SetupGenericSlider("neutron_stars");
+    SetupGenericSlider("white_dwarves");
+    SetupGenericSlider("other_stars");
+    SetupGenericSlider("earth_likes");
+    SetupGenericSlider("water_worlds");
+    SetupGenericSlider("ammonia_worlds");
+    SetupGenericSlider("gas_giants");
+    SetupGenericSlider("high_metal_content");
+    SetupGenericSlider("metal_rich");
+    SetupGenericSlider("rocky_ice_world");
+    SetupGenericSlider("rocky_bodies");
+    SetupGenericSlider("icy_bodies");
+    SetupGenericSlider("rings");
+    SetupGenericSlider("geologicals");
+    SetupGenericSlider("organics");
+    SetupGenericSlider("terraformables");
+    SetupGenericSlider("volcanics");
 });
 
 $("#more_options_button").on("click", function () {
@@ -244,7 +249,9 @@ function UpdateFormFromParams(searchParams) {
     $("#colonised_system").val(searchParams.systemName);
     $("#sort_order").val(searchParams.sortOrder);
     $("#faction").val(searchParams.factionName);
+    $("#faction_search_mode").val(searchParams.factionSearchMode);
 
+    document.querySelector("#distance_from_reference_system_slider").noUiSlider.set(searchParams.maxDistanceToReferenceSystem);
     document.querySelector("#distance_from_region_centre_slider").noUiSlider.set(searchParams.maxDistanceToRegionCentre);
     document.querySelector("#landable_bodies_slider").noUiSlider.set([searchParams.minLandables, searchParams.maxLandables]);
     document.querySelector("#walkable_bodies_slider").noUiSlider.set([searchParams.minWalkables, searchParams.maxWalkables]);
@@ -264,6 +271,8 @@ function UpdateFormFromParams(searchParams) {
     document.querySelector("#rings_slider").noUiSlider.set([searchParams.minRings, searchParams.maxRings]);
     document.querySelector("#geologicals_slider").noUiSlider.set([searchParams.minGeologicals, searchParams.maxGeologicals]);
     document.querySelector("#organics_slider").noUiSlider.set([searchParams.minOrganics, searchParams.maxOrganics]);
+    document.querySelector("#terraformables_slider").noUiSlider.set([searchParams.minTerraformables, searchParams.maxTerraformables]);
+    document.querySelector("#volcanics_slider").noUiSlider.set([searchParams.minVolcanics, searchParams.maxVolcanics]);
 
     const hotspotSelect = document.querySelector("#hotspot_select");
 
@@ -297,7 +306,7 @@ $(window).on("load", function () {
         try {
             const initialParams = new URLSearchParams(atob(encodedParams));
 
-            if (initialParams.has("sortOrder") && initialParams.has("pageNo") && initialParams.has("resultsPerPage") && initialParams.has("systemName")
+            if (initialParams.has("sortOrder") && initialParams.has("pageNo") && initialParams.has("resultsPerPage") && initialParams.has("systemName") && initialParams.has("factionSearchMode")
                 && initialParams.has("factionName") && initialParams.has("minBlackHoles") && initialParams.has("maxBlackHoles") && initialParams.has("minNeutronStars")
                 && initialParams.has("maxNeutronStars") && initialParams.has("minWhiteDwarves") && initialParams.has("maxWhiteDwarves")
                 && initialParams.has("minOtherStars") && initialParams.has("maxOtherStars") && initialParams.has("minEarthLikes") && initialParams.has("maxEarthLikes")
@@ -308,7 +317,8 @@ $(window).on("load", function () {
                 && initialParams.has("minIces") && initialParams.has("maxIces") && initialParams.has("minOrganics") && initialParams.has("maxOrganics")
                 && initialParams.has("minGeologicals") && initialParams.has("maxGeologicals") && initialParams.has("minRings") && initialParams.has("maxRings")
                 && initialParams.has("minLandables") && initialParams.has("maxLandables") && initialParams.has("minWalkables") && initialParams.has("maxWalkables")
-                && initialParams.has("maxDistanceToRegionCentre") && initialParams.has("hotspotTypes")) {
+                && initialParams.has("maxDistanceToRegionCentre") && initialParams.has("hotspotTypes") && initialParams.has("minTerraformables") && initialParams.has("maxTerraformables")
+                && initialParams.has("minVolcanics") && initialParams.has("maxVolcanics") && initialParams.has("maxDistanceToReferenceSystem")) {
 
                 UpdateFormFromParams(Object.fromEntries(initialParams));
 
@@ -384,6 +394,9 @@ function AddSliderDataToForm(sliderID, sliderName) {
 function SetFormData() {
     formData = new FormData(document.getElementById("systems_search"));
 
+    const distanceFromReferenceSystem = document.querySelector("#distance_from_reference_system_slider").noUiSlider.get();
+    formData.append("MaxDistanceToReferenceSystem", distanceFromReferenceSystem);
+
     const distanceFromRegionCentre = document.querySelector("#distance_from_region_centre_slider").noUiSlider.get();
     formData.append("MaxDistanceFromRegionCentre", distanceFromRegionCentre);
 
@@ -405,6 +418,8 @@ function SetFormData() {
     AddSliderDataToForm("rings_slider", "Rings");
     AddSliderDataToForm("geologicals_slider", "Geologicals");
     AddSliderDataToForm("organics_slider", "Organics");
+    AddSliderDataToForm("terraformables_slider", "Terraformables");
+    AddSliderDataToForm("volcanics_slider", "Volcanics");
 
     const hotspotTypes = document.querySelector("#hotspot_select");
     formData.append(
@@ -423,7 +438,9 @@ async function LoadResults(updateUrl = true) {
         pageNo: currentPage,
         resultsPerPage: resultsPerPage,
         systemName: formData.get("ColonisedSystem"),
+        maxDistanceToReferenceSystem: parseInt(formData.get("MaxDistanceToReferenceSystem")),
         factionName: formData.get("Faction"),
+        factionSearchMode: formData.get("FactionSearchMode") === "true",
         minBlackHoles: parseInt(formData.get("MinBlackHoles")),
         maxBlackHoles: parseInt(formData.get("MaxBlackHoles")),
         minNeutronStars: parseInt(formData.get("MinNeutronStars")),
@@ -460,6 +477,10 @@ async function LoadResults(updateUrl = true) {
         maxLandables: parseInt(formData.get("MaxLandables")),
         minWalkables: parseInt(formData.get("MinWalkables")),
         maxWalkables: parseInt(formData.get("MaxWalkables")),
+        minTerraformables: parseInt(formData.get("MinTerraformables")),
+        maxTerraformables: parseInt(formData.get("MaxTerraformables")),
+        minVolcanics: parseInt(formData.get("MinVolcanics")),
+        maxVolcanics: parseInt(formData.get("MaxVolcanics")),
         maxDistanceToRegionCentre: parseInt(formData.get("MaxDistanceFromRegionCentre")),
         hotspotTypes: formData.get("HotspotTypes")
     });
@@ -519,6 +540,7 @@ function FormatResults(results) {
                         <p class="mt-3">${FormatDate(system.lastUpdate)}</p>
                         <h3 class="mt-3 font-bold">Distance to Sol:</h3>
                         <p class="mt-3">${system.distanceToRegionCentre} ly</p>
+                        ${FormatDistanceToReference(system.distanceToReferenceSystem)}
                         <h3 class="mt-3 font-bold">System Reserve:</h3>
                         <p class="mt-3">${system.reserveLevel}</p>
                         <h3 class="mt-3 font-bold">Landable Bodies:</h3>
@@ -540,7 +562,7 @@ function FormatResults(results) {
                     </ul>
                 </div>
                 <h2 class="col-start-1 row-start-7 border-b border-gray-300 pt-5 pb-3 text-center text-lg drop-shadow-xs lg:col-end-3 lg:row-start-5 lg:text-left xl:col-end-4 xl:row-start-3">Colony Influences</h2>
-                <div class="col-start-1 row-start-8 mt-3 grid grid-cols-2 gap-x-2 overflow-auto lg:col-end-3 lg:row-start-6 lg:grid-cols-4 xl:col-end-4 xl:row-start-4 2xl:grid-cols-8">
+                <div class="col-start-1 row-start-8 mt-3 grid grid-cols-2 gap-x-2 overflow-auto lg:col-end-3 lg:row-start-6 lg:grid-cols-4 xl:col-end-4 xl:row-start-4 2xl:grid-cols-6">
                     ${SYSTEM_COUNT_CONFIGS.map(config => `
                         <div class="mt-3 flex gap-3">
                             ${FormatInfluenceIcons(`${system.systemID}_${config.id}_tooltip`, ...config.colours)}
@@ -600,6 +622,17 @@ function FormatDate(inputDate) {
     return date.toISOString().slice(0, 10).replace(/-/g, '/');
 }
 
+function FormatDistanceToReference(inputDistance) {
+    if (inputDistance != null) {
+        return `
+            <h3 class="mt-3 font-bold">Distance to Reference System:</h3>
+            <p class="mt-3">${inputDistance.toFixed(2) } ly</p>
+        `;
+    }
+
+    return ``;
+}
+
 function FormatRings(inputRings) {
     var ringList = ``;
 
@@ -641,13 +674,29 @@ function FormatHotspots(inputHotspots) {
 
 function FormatColonisedSystems(systemID, inputColonisedSystems) {
     var systemsList = ``;
+    var factionName = formData.get("Faction");
+    var searchMode = formData.get("FactionSearchMode") === "true";
 
     inputColonisedSystems.sort((a, b) => a.systemName.localeCompare(b.systemName, undefined, { numeric: true }));
 
     inputColonisedSystems.forEach(system => {
+        if (factionName != null && factionName.trim() != "") {
+            if ((searchMode || system.stations == null) && system.controllingFaction != factionName) {
+                return;
+            }
+
+            if (system.stations != null) {
+                system.stations = system.stations.filter(station => station.controllingFaction == factionName);
+
+                if (system.stations.length == 0) {
+                    return;
+                }
+            }
+        }
+
         systemsList += `
         <li class="list-inside list-disc font-bold">
-            <span data-tooltip-target="${systemID}_${system.colonisedSystemID}_tooltip" class="cursor-copy" onclick="CopyToClipboard(this);">${system.systemName}</span>
+            <span><span data-tooltip-target="${systemID}_${system.colonisedSystemID}_tooltip" class="cursor-copy" onclick="CopyToClipboard(this);">${system.systemName}</span>&nbsp;-&nbsp;${system.controllingFaction}</span>
             <ul class="items-center ps-7 font-normal">
                 ${FormatStations(system.colonisedSystemID, system.stations)}
             </ul>
@@ -656,14 +705,6 @@ function FormatColonisedSystems(systemID, inputColonisedSystems) {
     });
 
     return systemsList;
-}
-
-function FormatInfluenceIcons(toolipID, bottomLeft, bottomRight, topLeft, topRight) {
-    return `
-        <svg data-tooltip-target="${toolipID}" class="h-6 w-6" style="--icon-bl: ${bottomLeft}; --icon-br: ${bottomRight}; --icon-tl: ${topLeft}; --icon-tr: ${topRight};">
-            <use href="#influence_icon"></use>
-        </svg>
-    `;
 }
 
 function FormatStations(colonisedSystemID, inputStations) {
@@ -694,6 +735,14 @@ function FormatStations(colonisedSystemID, inputStations) {
     }
     
     return stationList;
+}
+
+function FormatInfluenceIcons(toolipID, bottomLeft, bottomRight, topLeft, topRight) {
+    return `
+        <svg data-tooltip-target="${toolipID}" class="h-6 w-6" style="--icon-bl: ${bottomLeft}; --icon-br: ${bottomRight}; --icon-tl: ${topLeft}; --icon-tr: ${topRight};">
+            <use href="#influence_icon"></use>
+        </svg>
+    `;
 }
 
 function FormatColonisedSystemTooltips(systemID, inputColonisedSystems) {

@@ -1,4 +1,5 @@
--- Run second, after creating extensions in DDL
+BEGIN TRANSACTION;
+
 CREATE OR REPLACE FUNCTION "GetRegionCube"("centre" PUBLIC.GEOMETRY, "range" SMALLINT)
 RETURNS PUBLIC.GEOMETRY AS $$
 	SELECT PUBLIC.ST_3DMakeBox(
@@ -14,9 +15,6 @@ RETURNS PUBLIC.GEOMETRY AS $$
 		)
 	)::PUBLIC.GEOMETRY
 $$ LANGUAGE sql IMMUTABLE PARALLEL SAFE;
-
--- Run fourth, after running rest of DDL
-BEGIN TRANSACTION;
 
 CREATE OR REPLACE FUNCTION "InsertRegion"(
 	"inputRegionName" VARCHAR(75),
@@ -58,24 +56,35 @@ $$ LANGUAGE sql;
 
 CREATE OR REPLACE FUNCTION "InsertStarSystemsBulk"("inputStarSystems" "StarSystemInsertType"[])
 RETURNS VOID AS $$
+	-- Insert Factions
+	INSERT INTO "Factions" ("factionName")
+	SELECT DISTINCT "controllingFaction"
+	FROM unnest("inputStarSystems") AS inss
+	WHERE "controllingFaction" IS NOT NULL
+	ON CONFLICT ("factionName") DO NOTHING;
+	
 	-- Insert Star Systems
 	INSERT INTO "StarSystems" (
 		"systemID",
 		"systemName",
 		"systemCoords",
-		"isColonised"
+		"isColonised",
+		"controllingFaction"
 	)
 	SELECT
-		"systemID",
-		"systemName",
-		ST_MakePoint("coordinateX", "coordinateY", "coordinateZ"),
-		"isColonised"
+		inss."systemID",
+		inss."systemName",
+		ST_MakePoint(inss."coordinateX", inss."coordinateY", inss."coordinateZ"),
+		inss."isColonised",
+		f."factionID"
 	FROM unnest("inputStarSystems") AS inss
+	LEFT JOIN "Factions" f ON inss."controllingFaction" = f."factionName"
 	ON CONFLICT ("systemID") DO UPDATE
 	SET
-		"isColonised" = EXCLUDED."isColonised"
-	WHERE "StarSystems"."isColonised" = FALSE
-	AND EXCLUDED."isColonised" = TRUE;
+		"isColonised" = EXCLUDED."isColonised",
+		"controllingFaction" = EXCLUDED."controllingFaction"
+	WHERE ("StarSystems"."isColonised" = FALSE AND EXCLUDED."isColonised" = TRUE)
+	OR "StarSystems"."controllingFaction" IS DISTINCT FROM EXCLUDED."controllingFaction";
 	
 	-- Insert Star System Region
 	INSERT INTO "StarSystemsByRegion" (
@@ -199,7 +208,9 @@ RETURNS VOID AS $$
 		"icyBodyCount",
 		"organicCount",
 		"geologicalsCount",
-		"ringCount"
+		"ringCount",
+		"terraformableCount",
+		"volcanicsCount"
 	)
 	SELECT
 		"systemID",
@@ -218,7 +229,9 @@ RETURNS VOID AS $$
 		"icyBodyCount",
 		"organicCount",
 		"geologicalsCount",
-		"ringCount"
+		"ringCount",
+		"terraformableCount",
+		"volcanicsCount"
 	FROM unnest("inputDetails") AS ind
 	ON CONFLICT ("systemID") DO UPDATE
 	SET
@@ -237,7 +250,9 @@ RETURNS VOID AS $$
 		"icyBodyCount" = EXCLUDED."icyBodyCount",
 		"organicCount" = EXCLUDED."organicCount",
 		"geologicalsCount" = EXCLUDED."geologicalsCount",
-		"ringCount" = EXCLUDED."ringCount"
+		"ringCount" = EXCLUDED."ringCount",
+		"terraformableCount" = EXCLUDED."terraformableCount",
+		"volcanicsCount" = EXCLUDED."volcanicsCount"
 	WHERE (
 		"ColonyOverrideCounts"."blackHoleCount",
 		"ColonyOverrideCounts"."neutronStarCount",
@@ -254,7 +269,9 @@ RETURNS VOID AS $$
 		"ColonyOverrideCounts"."icyBodyCount",
 		"ColonyOverrideCounts"."organicCount",
 		"ColonyOverrideCounts"."geologicalsCount",
-		"ColonyOverrideCounts"."ringCount"
+		"ColonyOverrideCounts"."ringCount",
+		"ColonyOverrideCounts"."terraformableCount",
+		"ColonyOverrideCounts"."volcanicsCount"
 	)
 	IS DISTINCT FROM (
 		EXCLUDED."blackHoleCount",
@@ -272,7 +289,9 @@ RETURNS VOID AS $$
 		EXCLUDED."icyBodyCount",
 		EXCLUDED."organicCount",
 		EXCLUDED."geologicalsCount",
-		EXCLUDED."ringCount"
+		EXCLUDED."ringCount",
+		EXCLUDED."terraformableCount",
+		EXCLUDED."volcanicsCount"
 	);
 $$ LANGUAGE sql;
 
@@ -367,6 +386,7 @@ CREATE OR REPLACE FUNCTION "SelectSearchResults" (
 	"pageNo" INT,
 	"resultsPerPage" SMALLINT,
 	"inputSystemName" VARCHAR(75),
+	"factionSearchMode" BOOLEAN,
 	"inputFactionName" VARCHAR(75),
 	"inputMinBlackHoles" SMALLINT,
 	"inputMaxBlackHoles" SMALLINT,
@@ -404,6 +424,10 @@ CREATE OR REPLACE FUNCTION "SelectSearchResults" (
 	"inputMaxLandables" SMALLINT,
 	"inputMinWalkables" SMALLINT,
 	"inputMaxWalkables" SMALLINT,
+	"inputMinTerraformables" SMALLINT,
+	"inputMaxTerraformables" SMALLINT,
+	"inputMinVolcanics" SMALLINT,
+	"inputMaxVolcanics" SMALLINT,
 	"inputMaxDistanceToRegionCentre" INT,
 	"inputHotspotTypes" "HotspotType"[],
 	"inputRemovedSystemIDs" NUMERIC(20, 0)[]
@@ -419,12 +443,20 @@ BEGIN
 	SELECT "regionID" INTO "savedRegionID" FROM "Regions" WHERE "regionName" = "inputRegionName";
 	
 	IF "inputSystemName" IS NOT NULL AND "inputFactionName" IS NOT NULL THEN
-		SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
-		FROM "ColonisableStarSystems" css
-		INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
-		INNER JOIN "Stations" s ON dcss."colonisedSystemID" = s."systemID"
-		INNER JOIN "Factions" f ON s."controllingFaction" = f."factionID"
-		WHERE dcss."systemName" = "inputSystemName" AND f."factionName" = "inputFactionName";
+		IF NOT "factionSearchMode" THEN
+			SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
+			FROM "ColonisableStarSystems" css
+			INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
+			INNER JOIN "Stations" s ON dcss."colonisedSystemID" = s."systemID"
+			INNER JOIN "Factions" f ON s."controllingFaction" = f."factionID"
+			WHERE dcss."systemName" = "inputSystemName" AND f."factionName" = "inputFactionName";
+			
+		ELSE
+			SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
+			FROM "ColonisableStarSystems" css
+			INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
+			WHERE dcss."systemName" = "inputSystemName" AND dcss."factionName" = "inputFactionName";
+		END IF;
 		
 	ELSIF "inputSystemName" IS NOT NULL THEN
 		SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
@@ -433,16 +465,23 @@ BEGIN
 		WHERE dcss."systemName" = "inputSystemName";
 		
 	ELSIF "inputFactionName" IS NOT NULL THEN
-		SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
-		FROM "ColonisableStarSystems" css
-		INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
-		INNER JOIN "Stations" s ON dcss."colonisedSystemID" = s."systemID"
-		INNER JOIN "Factions" f ON s."controllingFaction" = f."factionID"
-		WHERE f."factionName" = "inputFactionName";
+		IF NOT "factionSearchMode" THEN
+			SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
+			FROM "ColonisableStarSystems" css
+			INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
+			INNER JOIN "Stations" s ON dcss."colonisedSystemID" = s."systemID"
+			INNER JOIN "Factions" f ON s."controllingFaction" = f."factionID"
+			WHERE f."factionName" = "inputFactionName";
+		ELSE
+			SELECT array_agg(DISTINCT css."uncolonisedSystemID") INTO "targetSystemIDs"
+			FROM "ColonisableStarSystems" css
+			INNER JOIN "DistinctColonisedStarSystems" dcss ON css."colonisedSystemID" = dcss."colonisedSystemID"
+			WHERE dcss."factionName" = "inputFactionName";
+		END IF;
 	END IF;
 	
 	IF ("inputSystemName" IS NOT NULL OR "inputFactionName" IS NOT NULL) AND "targetSystemIDs" IS NULL THEN
-		"targetSystemIDs" := ARRAY[-1]::NUMERIC(20, 0);
+		"targetSystemIDs" := ARRAY[-1]::NUMERIC(20, 0)[];
 	END IF;
 	
 	IF "inputHotspotTypes" IS NOT NULL AND CARDINALITY("inputHotspotTypes") > 0 THEN
@@ -463,7 +502,7 @@ BEGIN
 			END;
 		
 			IF "targetSystemIDs" IS NULL THEN
-				"targetSystemIDs" := ARRAY[-1]::NUMERIC(20, 0);
+				"targetSystemIDs" := ARRAY[-1]::NUMERIC(20, 0)[];
 			END IF;
 		END IF;
 	END IF;
@@ -478,7 +517,7 @@ BEGIN
 		WHERE NOT ("pruned" = ANY("inputRemovedSystemIDs"));
 		
 		IF "targetSystemIDs" IS NULL THEN
-			"targetSystemIDs" := ARRAY[-1]::NUMERIC(20, 0);
+			"targetSystemIDs" := ARRAY[-1]::NUMERIC(20, 0)[];
 		END IF;
 		
 		"inputRemovedSystemIDs" := '{}'::NUMERIC(20, 0)[];
@@ -511,7 +550,9 @@ BEGIN
 			coc."icyBodyCount",
 			coc."organicCount",
 			coc."geologicalsCount",
-			coc."ringCount"
+			coc."ringCount",
+			coc."terraformableCount",
+			coc."volcanicsCount"
 		FROM "DistinctUncolonisedStarSystems" duss
 		INNER JOIN "StarSystems" ss ON duss."uncolonisedSystemID" = ss."systemID"
 		INNER JOIN "StarSystemsByRegion" ssbr ON ss."systemID" = ssbr."systemID"
@@ -538,6 +579,8 @@ BEGIN
 			AND coc."organicCount" BETWEEN "inputMinOrganics" AND "inputMaxOrganics"
 			AND coc."geologicalsCount" BETWEEN "inputMinGeologicals" AND "inputMaxGeologicals"
 			AND coc."ringCount" BETWEEN "inputMinRings" AND "inputMaxRings"
+			AND coc."terraformableCount" BETWEEN "inputMinTerraformables" AND "inputMaxTerraformables"
+			AND coc."volcanicsCount" BETWEEN "inputMinVolcanics" AND "inputMaxVolcanics"
 			AND uss."landableCount" BETWEEN "inputMinLandables" AND "inputMaxLandables"
 			AND uss."walkableCount" BETWEEN "inputMinWalkables" AND "inputMaxWalkables"
 			AND ("inputRemovedSystemIDs" IS NULL OR NOT (duss."uncolonisedSystemID" = ANY("inputRemovedSystemIDs")))
@@ -584,6 +627,8 @@ BEGIN
 					'organicCount', tr."organicCount",
 					'geologicalsCount', tr."geologicalsCount",
 					'ringCount', tr."ringCount",
+					'terraformableCount', tr."terraformableCount",
+					'volcanicsCount', tr."volcanicsCount",
 					'totalHotspots', tr."totalHotspots"
 				),
 				'rings', (
@@ -611,22 +656,24 @@ BEGIN
 						jsonb_build_object(
 							'colonisedSystemID', css."colonisedSystemID",
 							'systemName', ss."systemName",
+							'controllingFaction', f1."factionName",
 							'stations', (
 								SELECT jsonb_agg(
 									jsonb_build_object(
 										'stationID', s."stationID",
 										'stationName', s."stationName",
-										'controllingFaction', f."factionName"
+										'controllingFaction', f2."factionName"
 									)
 								)
 								FROM "Stations" s
-								INNER JOIN "Factions" f ON s."controllingFaction" = f."factionID"
+								INNER JOIN "Factions" f2 ON s."controllingFaction" = f2."factionID"
 								WHERE s."systemID" = css."colonisedSystemID"
 							)
 						)
 					)
 					FROM "ColonisableStarSystems" css
 					INNER JOIN "StarSystems" ss ON css."colonisedSystemID" = ss."systemID"
+					LEFT JOIN "Factions" f1 ON ss."controllingFaction" = f1."factionID"
 					WHERE css."uncolonisedSystemID" = tr."uncolonisedSystemID"
 				)
 			)

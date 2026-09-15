@@ -12,6 +12,8 @@ namespace elite_dangerous_colonise.Models.Database_Types
         [PgName("DistanceToRegionCentre")]
         DistanceToRegionCentre,
         [PgName("MostHotspots")]
-        MostHotspots
+        MostHotspots,
+        [PgName("DistanceToReferenceSystem")]
+        DistanceToReferenceSystem
     }
 }

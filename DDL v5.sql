@@ -1,15 +1,15 @@
--- Run first, then create "GetRegionCube" from DML
+BEGIN TRANSACTION;
+
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
--- Run third
-BEGIN TRANSACTION;
 
 CREATE TYPE "ResultOrderType" AS ENUM (
 	'SystemValue',
 	'MostWalkables',
 	'DistanceToRegionCentre',
-	'MostHotspots'
+	'MostHotspots',
+	'DistanceToReferenceSystem'
 );
 
 CREATE TYPE "ReserveType" AS ENUM (
@@ -80,7 +80,9 @@ CREATE TABLE "StarSystems" (
 	"systemID" NUMERIC(20, 0) PRIMARY KEY,
 	"systemName" VARCHAR(75) NOT NULL,
 	"systemCoords" GEOMETRY(PointZ, 0) NOT NULL,
-	"isColonised" BOOLEAN NOT NULL
+	"isColonised" BOOLEAN NOT NULL,
+	"controllingFaction" INT DEFAULT NULL,
+	FOREIGN KEY ("controllingFaction") REFERENCES "Factions"("factionID")
 );
 
 CREATE TABLE "StarSystemsByRegion" (
@@ -141,6 +143,8 @@ CREATE TABLE "ColonyOverrideCounts" (
 	"organicCount" SMALLINT NOT NULL,
 	"geologicalsCount" SMALLINT NOT NULL,
 	"ringCount" SMALLINT NOT NULL,
+	"terraformableCount" SMALLINT NOT NULL,
+	"volcanicsCount" SMALLINT NOT NULL,
 	FOREIGN KEY ("systemID") REFERENCES "UncolonisedStarSystems"("systemID") ON DELETE CASCADE
 );
 
@@ -177,9 +181,11 @@ CREATE TABLE "StagedStarSystems" (
 CREATE MATERIALIZED VIEW "DistinctColonisedStarSystems" AS
 SELECT DISTINCT ON (css."colonisedSystemID")
 	css."colonisedSystemID",
-	ss."systemName"
+	ss."systemName",
+	f."factionName"
 FROM "ColonisableStarSystems" css
-INNER JOIN "StarSystems" ss ON css."colonisedSystemID" = ss."systemID";
+INNER JOIN "StarSystems" ss ON css."colonisedSystemID" = ss."systemID"
+LEFT JOIN "Factions" f ON ss."controllingFaction" = f."factionID";
 
 CREATE MATERIALIZED VIEW "DistinctUncolonisedStarSystems" AS
 SELECT DISTINCT "uncolonisedSystemID" FROM "ColonisableStarSystems";
@@ -206,7 +212,9 @@ SELECT
 	MAX(coc."icyBodyCount") "icyBodyCount",
 	MAX(coc."organicCount") "organicCount",
 	MAX(coc."geologicalsCount") "geologicalsCount",
-	MAX(coc."ringCount") "ringCount"
+	MAX(coc."ringCount") "ringCount",
+	MAX(coc."terraformableCount") "terraformableCount",
+	MAX(coc."volcanicsCount") "volcanicsCount"
 FROM "DistinctUncolonisedStarSystems" duss
 INNER JOIN "StarSystemsByRegion" ssbr ON duss."uncolonisedSystemID" = ssbr."systemID"
 INNER JOIN "ColonyOverrideCounts" coc ON duss."uncolonisedSystemID" = coc."systemID"
@@ -232,61 +240,66 @@ INNER JOIN "StarSystems" ss ON s."systemID" = ss."systemID"
 INNER JOIN "StarSystemsByRegion" ssbr ON ss."systemID" = ssbr."systemID"
 INNER JOIN "Regions" reg ON ssbr."regionID" = reg."regionID";
 
-CREATE INDEX "idx_F_factionName" ON "Factions"("factionName");
-CREATE INDEX "idx_SS_systemName" ON "StarSystems"("systemName");
-CREATE INDEX "idx_SS_isColonised" ON "StarSystems"("isColonised");
-CREATE INDEX "idx_SSBR_systemID" ON "StarSystemsByRegion"("systemID");
-CREATE INDEX "idx_SSBR_regionID" ON "StarSystemsByRegion"("regionID");
-CREATE INDEX "idx_SSBR_distanceToCentre" ON "StarSystemsByRegion"("distanceToCentre");
-CREATE INDEX "idx_S_systemID" ON "Stations"("systemID");
-CREATE INDEX "idx_S_controllingFaction" ON "Stations"("controllingFaction");
-CREATE INDEX "idx_USS_lastUpdated" ON "UncolonisedStarSystems"("lastUpdated");
-CREATE INDEX "idx_USS_landableCount" ON "UncolonisedStarSystems"("landableCount");
-CREATE INDEX "idx_USS_walkableCount" ON "UncolonisedStarSystems"("walkableCount");
-CREATE INDEX "idx_USS_totalHotspots" ON "UncolonisedStarSystems"("totalHotspots");
-CREATE INDEX "idx_USS_systemValue" ON "UncolonisedStarSystems"("systemValue");
-CREATE INDEX "idx_COC_blackHoleCount" ON "ColonyOverrideCounts"("blackHoleCount");
-CREATE INDEX "idx_COC_neutronStarCount" ON "ColonyOverrideCounts"("neutronStarCount");
-CREATE INDEX "idx_COC_whiteDwarves" ON "ColonyOverrideCounts"("whiteDwarves");
-CREATE INDEX "idx_COC_otherStarCount" ON "ColonyOverrideCounts"("otherStarCount");
-CREATE INDEX "idx_COC_earthLikeCount" ON "ColonyOverrideCounts"("earthLikeCount");
-CREATE INDEX "idx_COC_waterWorldCount" ON "ColonyOverrideCounts"("waterWorldCount");
-CREATE INDEX "idx_COC_ammoniaWorldCount" ON "ColonyOverrideCounts"("ammoniaWorldCount");
-CREATE INDEX "idx_COC_gasGiantCount" ON "ColonyOverrideCounts"("gasGiantCount");
-CREATE INDEX "idx_COC_highMetalContentCount" ON "ColonyOverrideCounts"("highMetalContentCount");
-CREATE INDEX "idx_COC_metalRichCount" ON "ColonyOverrideCounts"("metalRichCount");
-CREATE INDEX "idx_COC_rockyIceBodyCount" ON "ColonyOverrideCounts"("rockyIceBodyCount");
-CREATE INDEX "idx_COC_rockBodyCount" ON "ColonyOverrideCounts"("rockBodyCount");
-CREATE INDEX "idx_COC_icyBodyCount" ON "ColonyOverrideCounts"("icyBodyCount");
-CREATE INDEX "idx_COC_organicCount" ON "ColonyOverrideCounts"("organicCount");
-CREATE INDEX "idx_COC_geologicalsCount" ON "ColonyOverrideCounts"("geologicalsCount");
-CREATE INDEX "idx_COC_ringCount" ON "ColonyOverrideCounts"("ringCount");
-CREATE INDEX "idx_R_systemID" ON "Rings"("systemID");
-CREATE INDEX "idx_H_ringID" ON "Hotspots"("ringID");
-CREATE INDEX "idx_CSS_colonisedSystemID" ON "ColonisableStarSystems"("colonisedSystemID");
-CREATE INDEX "idx_CSS_uncolonisedSystemID" ON "ColonisableStarSystems"("uncolonisedSystemID");
-CREATE INDEX "idx_DCSS_systemName" ON "DistinctColonisedStarSystems"("systemName");
-CREATE INDEX "idx_SBR_regionName" ON "SystemsByRegion"("regionName");
-CREATE INDEX "idx_FBR_regionName" ON "FactionsByRegion"("regionName");
+CREATE INDEX IF NOT EXISTS "idx_F_factionName" ON "Factions"("factionName");
+CREATE INDEX IF NOT EXISTS "idx_SS_systemName" ON "StarSystems"("systemName");
+CREATE INDEX IF NOT EXISTS "idx_SS_isColonised" ON "StarSystems"("isColonised");
+CREATE INDEX IF NOT EXISTS "idx_SS_controllingFaction" ON "StarSystems"("controllingFaction");
+CREATE INDEX IF NOT EXISTS "idx_SSBR_systemID" ON "StarSystemsByRegion"("systemID");
+CREATE INDEX IF NOT EXISTS "idx_SSBR_regionID" ON "StarSystemsByRegion"("regionID");
+CREATE INDEX IF NOT EXISTS "idx_SSBR_distanceToCentre" ON "StarSystemsByRegion"("distanceToCentre");
+CREATE INDEX IF NOT EXISTS "idx_S_systemID" ON "Stations"("systemID");
+CREATE INDEX IF NOT EXISTS "idx_S_controllingFaction" ON "Stations"("controllingFaction");
+CREATE INDEX IF NOT EXISTS "idx_USS_lastUpdated" ON "UncolonisedStarSystems"("lastUpdated");
+CREATE INDEX IF NOT EXISTS "idx_USS_landableCount" ON "UncolonisedStarSystems"("landableCount");
+CREATE INDEX IF NOT EXISTS "idx_USS_walkableCount" ON "UncolonisedStarSystems"("walkableCount");
+CREATE INDEX IF NOT EXISTS "idx_USS_totalHotspots" ON "UncolonisedStarSystems"("totalHotspots");
+CREATE INDEX IF NOT EXISTS "idx_USS_systemValue" ON "UncolonisedStarSystems"("systemValue");
+CREATE INDEX IF NOT EXISTS "idx_COC_blackHoleCount" ON "ColonyOverrideCounts"("blackHoleCount");
+CREATE INDEX IF NOT EXISTS "idx_COC_neutronStarCount" ON "ColonyOverrideCounts"("neutronStarCount");
+CREATE INDEX IF NOT EXISTS "idx_COC_whiteDwarves" ON "ColonyOverrideCounts"("whiteDwarves");
+CREATE INDEX IF NOT EXISTS "idx_COC_otherStarCount" ON "ColonyOverrideCounts"("otherStarCount");
+CREATE INDEX IF NOT EXISTS "idx_COC_earthLikeCount" ON "ColonyOverrideCounts"("earthLikeCount");
+CREATE INDEX IF NOT EXISTS "idx_COC_waterWorldCount" ON "ColonyOverrideCounts"("waterWorldCount");
+CREATE INDEX IF NOT EXISTS "idx_COC_ammoniaWorldCount" ON "ColonyOverrideCounts"("ammoniaWorldCount");
+CREATE INDEX IF NOT EXISTS "idx_COC_gasGiantCount" ON "ColonyOverrideCounts"("gasGiantCount");
+CREATE INDEX IF NOT EXISTS "idx_COC_highMetalContentCount" ON "ColonyOverrideCounts"("highMetalContentCount");
+CREATE INDEX IF NOT EXISTS "idx_COC_metalRichCount" ON "ColonyOverrideCounts"("metalRichCount");
+CREATE INDEX IF NOT EXISTS "idx_COC_rockyIceBodyCount" ON "ColonyOverrideCounts"("rockyIceBodyCount");
+CREATE INDEX IF NOT EXISTS "idx_COC_rockBodyCount" ON "ColonyOverrideCounts"("rockBodyCount");
+CREATE INDEX IF NOT EXISTS "idx_COC_icyBodyCount" ON "ColonyOverrideCounts"("icyBodyCount");
+CREATE INDEX IF NOT EXISTS "idx_COC_organicCount" ON "ColonyOverrideCounts"("organicCount");
+CREATE INDEX IF NOT EXISTS "idx_COC_geologicalsCount" ON "ColonyOverrideCounts"("geologicalsCount");
+CREATE INDEX IF NOT EXISTS "idx_COC_ringCount" ON "ColonyOverrideCounts"("ringCount");
+CREATE INDEX IF NOT EXISTS "idx_COC_terraformableCount" ON "ColonyOverrideCounts"("terraformableCount");
+CREATE INDEX IF NOT EXISTS "idx_COC_volcanicsCount" ON "ColonyOverrideCounts"("volcanicsCount");
+CREATE INDEX IF NOT EXISTS "idx_R_systemID" ON "Rings"("systemID");
+CREATE INDEX IF NOT EXISTS "idx_H_ringID" ON "Hotspots"("ringID");
+CREATE INDEX IF NOT EXISTS "idx_CSS_colonisedSystemID" ON "ColonisableStarSystems"("colonisedSystemID");
+CREATE INDEX IF NOT EXISTS "idx_CSS_uncolonisedSystemID" ON "ColonisableStarSystems"("uncolonisedSystemID");
+CREATE INDEX IF NOT EXISTS "idx_DCSS_systemName" ON "DistinctColonisedStarSystems"("systemName");
+CREATE INDEX IF NOT EXISTS "idx_DCSS_factionName" ON "DistinctColonisedStarSystems"("factionName");
+CREATE INDEX IF NOT EXISTS "idx_SBR_regionName" ON "SystemsByRegion"("regionName");
+CREATE INDEX IF NOT EXISTS "idx_FBR_regionName" ON "FactionsByRegion"("regionName");
 
-CREATE INDEX "idx_USSA_isLocked_isClaimed" ON "UncolonisedStarSystemsAvailability"("isLocked", "isClaimed");
-CREATE INDEX "idx_SSBR_regionID_systemID" ON "StarSystemsByRegion" ("regionID", "systemID");
-CREATE INDEX "idx_SSBR_regionID_distance" ON "StarSystemsByRegion"("regionID", "distanceToCentre");
+CREATE INDEX IF NOT EXISTS "idx_USSA_isLocked_isClaimed" ON "UncolonisedStarSystemsAvailability"("isLocked", "isClaimed");
+CREATE INDEX IF NOT EXISTS "idx_SSBR_regionID_systemID" ON "StarSystemsByRegion" ("regionID", "systemID");
+CREATE INDEX IF NOT EXISTS "idx_SSBR_regionID_distance" ON "StarSystemsByRegion"("regionID", "distanceToCentre");
 
-CREATE INDEX "idx_SS_systemCoords" ON "StarSystems" USING GIST("systemCoords" gist_geometry_ops_nd);
+CREATE INDEX IF NOT EXISTS "idx_SS_systemCoords" ON "StarSystems" USING GIST("systemCoords" gist_geometry_ops_nd);
 
-CREATE INDEX "idx_SBR_systemName" ON "SystemsByRegion" USING GIN("systemName" gin_trgm_ops);
-CREATE INDEX "idx_FBR_factionName" ON "FactionsByRegion" USING GIN("factionName" gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS "idx_SBR_systemName" ON "SystemsByRegion" USING GIN("systemName" gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS "idx_FBR_factionName" ON "FactionsByRegion" USING GIN("factionName" gin_trgm_ops);
 
-CREATE UNIQUE INDEX "idx_DCSS_colonisedSystemID" ON "DistinctColonisedStarSystems"("colonisedSystemID");
-CREATE UNIQUE INDEX "idx_DUSS_uncolonisedSystemID" ON "DistinctUncolonisedStarSystems"("uncolonisedSystemID");
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_DCSS_colonisedSystemID" ON "DistinctColonisedStarSystems"("colonisedSystemID");
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_DUSS_uncolonisedSystemID" ON "DistinctUncolonisedStarSystems"("uncolonisedSystemID");
 
-CREATE STATISTICS "stats_SSBR_region_dist" ON "regionID", "distanceToCentre" FROM "StarSystemsByRegion";
+CREATE STATISTICS IF NOT EXISTS "stats_SSBR_region_dist" ON "regionID", "distanceToCentre" FROM "StarSystemsByRegion";
 
 CREATE TYPE "StarSystemInsertType" AS (
     "systemID" NUMERIC(20, 0),
     "systemName" VARCHAR(75),
     "isColonised" BOOLEAN,
+	"controllingFaction" VARCHAR(75),
     "coordinateX" NUMERIC(11, 5),
     "coordinateY" NUMERIC(11, 5),
     "coordinateZ" NUMERIC(11, 5)
@@ -322,7 +335,9 @@ CREATE TYPE "UncolonisedDetailsInsertType" AS (
 	"icyBodyCount" SMALLINT,
 	"organicCount" SMALLINT,
 	"geologicalsCount" SMALLINT,
-	"ringCount" SMALLINT
+	"ringCount" SMALLINT,
+	"terraformableCount" SMALLINT,
+	"volcanicsCount" SMALLINT,
 );
 
 CREATE TYPE "RingInsertType" AS (
