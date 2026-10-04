@@ -15,7 +15,7 @@
     <meta name="twitter:title" content="@ViewData["Title"] - ED Colonise" />
     <meta name="twitter:description" content="@ViewData["Description"]" />
     <meta name="twitter:image" content="https://edcolonise.net/images/Expanding.svg" />
-    <meta name="keywords" content="Elite Dangerous, colonisation, ED Colonise, EDC" />
+    <meta name="keywords" content="Elite Dangerous, colonisation, ED Colonise, EDColonise" />
     <title>@ViewData["Title"] - ED Colonise</title>
     <link rel="stylesheet" href="~/css/site_tailwind.css" asp-append-version="true"/>
     @await Html.PartialAsync("_Favicons")
@@ -36,25 +36,36 @@
     </script>
 </head>
 <body class="flex min-h-screen flex-col bg-[#0F0F0F]">
-    <header class="border-b-2 border-[#F0F0F0] bg-[#F07B05] lg:pr-10 lg:pl-10">
-        <nav class="pt-2.5 text-5xl font-[EUROCAPS] text-[#F0F0F0] sm:text-6xl lg:px-6 lg:py-2.5">
-            <div class="flex flex-col flex-wrap items-center justify-between lg:flex-row">
-                <a asp-page="index" class="flex flex-col items-center pb-3 sm:flex-row lg:pb-0">
-                    <img src="~/images/Expanding.svg" class="mr-5 h-15 sm:h-25" />
+    <header class="border-b-2 border-[#F0F0F0] bg-[#F07B05] 2xl:pr-10 2xl:pl-10">
+        <nav class="pt-2.5 text-5xl font-[EUROCAPS] text-[#F0F0F0] md:text-6xl 2xl:px-6 2xl:py-2.5">
+            <div class="flex flex-col flex-wrap items-center justify-between 2xl:flex-row">
+                <a href="~/" class="mb-3 flex flex-col items-center md:flex-row 2xl:pb-0">
+                    <img src="~/images/Expanding.svg" class="mr-5 h-15 md:h-25" />
                     <span class="self-center whitespace-nowrap">ED Colonise</span>
                 </a>
-                <div class="w-full items-center justify-between border-t-2 border-[#F0F0F0] pt-3 pb-3 lg:w-auto lg:border-t-0 lg:pt-0 lg:pb-0">
-                    <ul class="mt-0 flex flex-row text-4xl sm:text-5xl">
-                        <li class="border-[#F0F0F0] lg:border-r-1"></li>
-                        <li class="w-1/2 text-center lg:w-42">
-                            <a asp-page="index" class="block py-2 pr-4 pl-3 first-letter:tracking-[0.01em] lg:leading-20">Tool</a>
-                        </li>
-                        <li class="border-r-1 border-[#F0F0F0]"></li>
-                        <li class="w-1/2 text-center lg:w-42">
-                            <a asp-page="about" class="block py-2 pr-4 pl-3 lg:leading-20">About</a>
-                        </li>
-                        <li class="border-[#F0F0F0] lg:border-r-1"></li>
-                    </ul>
+                <button id="navbar_toggle" type="button" class="w-full cursor-pointer p-4 md:hidden" aria-controls="navbar" aria-expanded="false">
+                    <svg id="navbar_icon" class="relative m-auto h-5 w-5 shrink-0 rotate-180 transition-transform duration-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
+                    </svg>
+                </button>
+                <div class="hidden w-full border-t-2 border-[#F0F0F0] md:block md:pt-3 md:pb-3 2xl:w-auto 2xl:border-t-0 2xl:pt-0 2xl:pb-0" id="navbar">
+                    <div class="mt-0 grid grid-cols-1 text-4xl md:grid-cols-5">
+                        <span class="w-full text-center 2xl:w-42">
+                            <a href="~/" class="mr-3 ml-3 block border-b-1 border-[#F0F0F0] py-2 md:mr-0 md:ml-0 md:border-r-1 md:border-b-0 2xl:border-l-1 2xl:leading-20">Sol</a>
+                        </span>
+                        <span class="w-full text-center 2xl:w-42">
+                            <a href="~/Colonia" class="mr-3 ml-3 block border-b-1 border-[#F0F0F0] py-2 md:mr-0 md:ml-0 md:border-r-1 md:border-b-0 2xl:leading-20">Colonia</a>
+                        </span>
+                        <span class="w-full text-center 2xl:w-42">
+                            <a href="~/Sagittarius A*" class="mr-3 ml-3 block border-b-1 border-[#F0F0F0] py-2 whitespace-nowrap md:mr-0 md:ml-0 md:border-r-1 md:border-b-0 2xl:leading-20">Sgr A*</a>
+                        </span>
+                        <span class="w-full text-center 2xl:w-42">
+                            <a href="~/Regions" class="mr-3 ml-3 block border-b-1 border-[#F0F0F0] py-2 md:mr-0 md:ml-0 md:border-r-1 md:border-b-0 2xl:leading-20">Regions</a>
+                        </span>
+                        <span class="w-full text-center 2xl:w-42">
+                            <a asp-page="/About" class="mr-3 ml-3 block border-[#F0F0F0] py-2 md:mr-0 md:ml-0 md:border-r-1 2xl:leading-20">About</a>
+                        </span>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -98,5 +109,11 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        $("#navbar_toggle").on("click", function () {
+            $("#navbar_icon").toggleClass("rotate-180");
+            $("#navbar").toggleClass("hidden");
+        });
+    </script>
 </body>
 </html>

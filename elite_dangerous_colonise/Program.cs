@@ -28,7 +28,7 @@ builder.Services.Configure<UpdateTimeOptions>(builder.Configuration.GetSection("
 builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AddPageRoute("/Index", "{regionName:regex(^(Sol|Colonia|Sagittarius A(\\*|%2A))$)}");
-    options.Conventions.AddPageRoute("/Index", "Region/{regionName}");
+    options.Conventions.AddPageRoute("/Index", "Regions/{regionName}");
 });
 
 // Adds the Controllers service.
