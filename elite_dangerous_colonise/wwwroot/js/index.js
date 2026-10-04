@@ -23,7 +23,7 @@ var formData;
 var resultsPerPage = 10;
 var currentPage = 1;
 var maxPages = 1;
-var regionName = "Sol";
+var regionName = window.serverRegionName || "Sol";
 
 var updateHour = 5;
 var updateMinute = 0;

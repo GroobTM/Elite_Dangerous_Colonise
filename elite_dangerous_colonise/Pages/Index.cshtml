@@ -1,9 +1,24 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = Model.RegionName;
     ViewData["Description"] = "ED Colonise is a colonisation helper for the game Elite Dangerous.";
-    ViewData["url"] = "https://edcolonise.net/";
+
+    switch (Model.RegionName)
+    {
+        case "Sol":
+            ViewData["url"] = "https://edcolonise.net/";
+            break;
+        case "Colonia":
+            ViewData["url"] = "https://edcolonise.net/Colonia";
+            break;
+        case "Sagittarius A*":
+            ViewData["url"] = "https://edcolonise.net/Sagittarius A*";
+            break;
+        default:
+            ViewData["url"] = $"https://edcolonise.net/Region/{Model.RegionName}";
+            break;
+    }
 }
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
@@ -11,6 +26,9 @@
     <script src="https://cdn.jsdelivr.net/npm/preline@3.2.3/dist/preline.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@@preline/range-slider@3.2.3/index.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.js"></script>
+    <script>
+        window.serverRegionName = @Json.Serialize(Model.RegionName);
+    </script>
     <script src="~/js/index.js" asp-append-version="true"></script>
 }
 
@@ -38,18 +56,18 @@
         <div class="flex flex-col justify-between gap-3 lg:flex-row lg:gap-5">
             <div id="colonised_system_search" class="relative flex-1">
                 <div class="relative">
-                    <input asp-for="ColonisedSystem" type="text" role="combobox" id="colonised_system" class="peer block w-full appearance-none rounded-lg border-1 border-[#0F0F0F] bg-white px-2.5 pt-4 pb-2.5 pl-4 text-[#0F0F0F] shadow-sm focus:border-[#F07B05] focus:ring-0 focus:outline-none" placeholder=" " maxlength="75" data-hs-combo-box-input="" />
+                    <input name="ColonisedSystem" type="text" role="combobox" id="colonised_system" class="peer block w-full appearance-none rounded-lg border-1 border-[#0F0F0F] bg-white px-2.5 pt-4 pb-2.5 pl-4 text-[#0F0F0F] shadow-sm focus:border-[#F07B05] focus:ring-0 focus:outline-none" placeholder=" " maxlength="75" data-hs-combo-box-input="" />
                     <label for="colonised_system" class="absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 text-[#0F0F0F] duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4">Colonised Reference System (Optional)</label>
                     <label for="colonised_system" id="clear_button" class="absolute top-1 right-2 z-10 cursor-pointer text-3xl hover:text-[#F07B05]">&times;</label>
                 </div>
                 <div class="absolute z-50 !mt-0 max-h-55 w-full overflow-y-auto rounded-lg border-1 border-[#BCBCBC] bg-white shadow-lg" style="display: none;" role="listbox" data-hs-combo-box-output=""></div>
             </div>
             <div class="relative flex-1">
-                <select asp-for="SortOrder" id="sort_order" class="block w-full cursor-pointer appearance-none rounded-lg border-1 border-[#0F0F0F] bg-white px-2.5 pt-4 pb-2.5 pl-4 text-[#0F0F0F] shadow-sm focus:border-[#F07B05] focus:ring-0 focus:outline-none">
+                <select name="SortOrder" id="sort_order" class="block w-full cursor-pointer appearance-none rounded-lg border-1 border-[#0F0F0F] bg-white px-2.5 pt-4 pb-2.5 pl-4 text-[#0F0F0F] shadow-sm focus:border-[#F07B05] focus:ring-0 focus:outline-none">
                     <option value="SystemValue">System Value</option>
                     <option value="MostWalkables">Most Walkable Bodies</option>
                     <option value="MostHotspots">Most Hotspots</option>
-                    <option value="DistanceToRegionCentre">Distance to Sol</option>
+                    <option value="DistanceToRegionCentre">Distance to @Model.RegionName</option>
                     <option value="DistanceToReferenceSystem">Distance to Reference System</option>
                 </select>
                 <label for="sort_order" class="pointer-events-none absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 rounded-3xl bg-white px-2 text-[#0F0F0F]">Sort Order</label>
@@ -79,7 +97,7 @@
         <div id="more_options" class="mt-3 hidden grid-cols-1 gap-y-5 lg:grid-cols-2 lg:gap-x-5">
             <div id="faction_search" class="relative flex-1">
                 <div class="relative">
-                    <input asp-for="Faction" type="text" role="combobox" id="faction" class="peer block w-full appearance-none rounded-lg border-1 border-[#0F0F0F] bg-white px-2.5 pt-4 pb-2.5 pl-4 text-[#0F0F0F] shadow-sm focus:border-[#F07B05] focus:ring-0 focus:outline-none" placeholder=" " maxlength="75" data-hs-combo-box-input="" />
+                    <input name="Faction" type="text" role="combobox" id="faction" class="peer block w-full appearance-none rounded-lg border-1 border-[#0F0F0F] bg-white px-2.5 pt-4 pb-2.5 pl-4 text-[#0F0F0F] shadow-sm focus:border-[#F07B05] focus:ring-0 focus:outline-none" placeholder=" " maxlength="75" data-hs-combo-box-input="" />
                     <label for="faction" class="absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 text-[#0F0F0F] duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4">Faction (Optional)</label>
                     <label for="faction" id="clear_button" class="absolute top-1 right-2 z-10 cursor-pointer text-3xl hover:text-[#F07B05]">&times;</label>
                 </div>
@@ -87,7 +105,7 @@
             </div>
 
             <div class="relative flex-1">
-                <select asp-for="FactionSearchMode" id="faction_search_mode" class="block w-full cursor-pointer appearance-none rounded-lg border-1 border-[#0F0F0F] bg-white px-2.5 pt-4 pb-2.5 pl-4 text-[#0F0F0F] shadow-sm focus:border-[#F07B05] focus:ring-0 focus:outline-none">
+                <select name="FactionSearchMode" id="faction_search_mode" class="block w-full cursor-pointer appearance-none rounded-lg border-1 border-[#0F0F0F] bg-white px-2.5 pt-4 pb-2.5 pl-4 text-[#0F0F0F] shadow-sm focus:border-[#F07B05] focus:ring-0 focus:outline-none">
                     <option value="false">Search for station controller</option>
                     <option value="true">Search for system controller</option>
                 </select>
@@ -124,7 +142,7 @@
 
             <div class="z-10 mr-2 ml-2 flex min-h-13 flex-col justify-around">
                 <div class="relative -top-2 w-full">
-                    <span class="absolute left-1">Max Distance From Sol</span>
+                    <span class="absolute left-1">Max Distance From @Model.RegionName</span>
                     <span id="distance_from_region_centre_value" class="absolute right-1">@Model.MaxValues.DistanceToRegionCentre ly</span>
                 </div>
                 <div id="distance_from_region_centre_slider" class="--prevent-on-load-init" data-hs-range-slider='{

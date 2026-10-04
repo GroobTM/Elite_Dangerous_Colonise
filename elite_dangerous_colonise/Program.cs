@@ -24,7 +24,12 @@ bool verboseReporting = builder.Configuration.GetValue<bool>("VerboseReporting",
 builder.Services.Configure<UpdateTimeOptions>(builder.Configuration.GetSection("UpdateTime"));
 
 // Adds the RazorPages service.
-builder.Services.AddRazorPages();
+//builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AddPageRoute("/Index", "{regionName:regex(^(Sol|Colonia|Sagittarius A(\\*|%2A))$)}");
+    options.Conventions.AddPageRoute("/Index", "Region/{regionName}");
+});
 
 // Adds the Controllers service.
 builder.Services.AddControllers();
