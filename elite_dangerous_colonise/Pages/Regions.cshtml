@@ -1,0 +1,31 @@
+﻿@page
+@model elite_dangerous_colonise.Pages.RegionsModel
+@{
+	ViewData["Title"] = "Regions";
+	ViewData["Description"] = "This page displays all search regions in the galaxy.";
+	ViewData["url"] = "https://edcolonise.net/Regions";
+	ViewData["Theme"] = "None";
+}
+
+@section Scripts {
+    <script src="~/lib/three.js/three.min.js"></script>
+    <script src="~/lib/ed3d/js/ed3dmap.min.js"></script>
+    <script>
+        window.serverRegions = @Json.Serialize(Model.Regions)
+    </script>
+    <script src="~/js/regions.js"></script>
+}
+
+<div id="json_data"> [ { "name": "Sol", "coords": { "x": 0, "y": 0, "z": 0 } } ] </div>
+
+<link rel="stylesheet" href="~/lib/ed3d/css/ed3d.css" />
+
+<style>
+    #edmap {
+        width: 100vw;
+        height: 100vh;
+    }
+</style>
+
+<div id="edmap"></div>
+
