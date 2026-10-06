@@ -1,0 +1,27 @@
+/**
+ * Failed to minify the file using clean-css v5.3.3. Serving the original version.
+ * Original file: /npm/preline@3.2.3/src/plugins/datatable/variants.css
+ *
+ * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+ */
+@custom-variant hs-datatable-ordering-asc {
+
+  &.dt-ordering-asc {
+    @slot;
+  }
+
+  .dt-ordering-asc & {
+    @slot;
+  }
+}
+
+@custom-variant hs-datatable-ordering-desc {
+
+  &.dt-ordering-desc {
+    @slot;
+  }
+
+  .dt-ordering-desc & {
+    @slot;
+  }
+}

@@ -23,11 +23,11 @@
     }
 }
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/preline@3.2.3/dist/preline.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@@preline/range-slider@3.2.3/index.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.js"></script>
+    <script src="~/lib/microsoft-signalr/signalr.min.js"></script>
+    <script src="~/lib/flowbite/flowbite.min.js"></script>
+    <script src="~/lib/preline/dist/preline.min.js"></script>
+    <script src="~/lib/preline/dist/range-slider.min.js"></script>
+    <script src="~/lib/noUiSlider/nouislider.min.js"></script>
     <script>
         window.serverRegionName = @Json.Serialize(Model.RegionName);
     </script>

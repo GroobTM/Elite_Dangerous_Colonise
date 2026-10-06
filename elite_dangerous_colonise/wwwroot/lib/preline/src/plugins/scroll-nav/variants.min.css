@@ -1,0 +1,23 @@
+/**
+ * Failed to minify the file using clean-css v5.3.3. Serving the original version.
+ * Original file: /npm/preline@3.2.3/src/plugins/scroll-nav/variants.css
+ *
+ * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+ */
+@custom-variant hs-scroll-nav-active {
+
+  &.active {
+    @slot;
+  }
+}
+
+@custom-variant hs-scroll-nav-disabled {
+
+  &.disabled {
+    @slot;
+  }
+
+  .disabled & {
+    @slot;
+  }
+}

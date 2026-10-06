@@ -1,0 +1,39 @@
+/**
+ * Failed to minify the file using clean-css v5.3.3. Serving the original version.
+ * Original file: /npm/preline@3.2.3/src/plugins/dropdown/variants.css
+ *
+ * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+ */
+@custom-variant hs-dropdown-open {
+  &.hs-dropdown-menu.open {
+    @slot;
+  }
+
+  .hs-dropdown.open>& {
+    @slot;
+  }
+
+  .hs-dropdown.open>.hs-dropdown-toggle & {
+    @slot;
+  }
+
+  .hs-dropdown.open>.hs-dropdown-menu>& {
+    @slot;
+  }
+}
+
+@custom-variant hs-dropdown-item-disabled {
+  .hs-dropdown.open>.hs-dropdown-menu &.disabled {
+    @slot;
+  }
+}
+
+@custom-variant hs-dropdown-item-checked {
+  .hs-dropdown.open .hs-dropdown-menu [aria-checked='true'] & {
+    @slot;
+  }
+
+  .hs-dropdown.open .hs-dropdown-menu &[aria-checked='true'] {
+    @slot;
+  }
+}

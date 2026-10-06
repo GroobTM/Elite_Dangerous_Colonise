@@ -1,0 +1,57 @@
+/**
+ * Failed to minify the file using clean-css v5.3.3. Serving the original version.
+ * Original file: /npm/preline@3.2.3/src/plugins/accordion/variants.css
+ *
+ * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+ */
+@custom-variant hs-accordion-active {
+  &.hs-accordion.active {
+    @slot;
+  }
+
+  .hs-accordion.active>& {
+    @slot;
+  }
+
+  .hs-accordion.active>.hs-accordion-toggle & {
+    @slot;
+  }
+
+  .hs-accordion.active>.hs-accordion-heading>.hs-accordion-toggle & {
+    @slot;
+  }
+
+  &.hs-accordion-toggle {
+
+    .hs-accordion.active>& {
+      @slot;
+    }
+  }
+
+  &.hs-accordion-toggle {
+
+    .hs-accordion.active>.hs-accordion-heading>& {
+      @slot;
+    }
+  }
+
+  &.hs-accordion-force-active {
+    .hs-accordion.active & {
+      @slot;
+    }
+  }
+}
+
+@custom-variant hs-accordion-selected {
+  &.selected {
+    .hs-accordion & {
+      @slot;
+    }
+  }
+}
+
+@custom-variant hs-accordion-outside-active {
+  &.active {
+    @slot;
+  }
+}

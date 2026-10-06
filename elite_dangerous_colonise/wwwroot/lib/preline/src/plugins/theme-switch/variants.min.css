@@ -1,0 +1,41 @@
+/**
+ * Failed to minify the file using clean-css v5.3.3. Serving the original version.
+ * Original file: /npm/preline@3.2.3/src/plugins/theme-switch/variants.css
+ *
+ * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+ */
+@custom-variant hs-default-mode-active {
+  .default & {
+    @slot;
+  }
+}
+
+@custom-variant hs-light-mode-active {
+  .light:not(.auto) & {
+    @slot;
+  }
+}
+
+@custom-variant hs-dark-mode-active {
+  .dark:not(.auto) & {
+    @slot;
+  }
+}
+
+@custom-variant hs-auto-mode-active {
+  .auto & {
+    @slot;
+  }
+}
+
+@custom-variant hs-auto-dark-mode-active {
+  .auto.dark & {
+    @slot;
+  }
+}
+
+@custom-variant hs-auto-light-mode-active {
+  .auto.light & {
+    @slot;
+  }
+}

@@ -1,0 +1,27 @@
+/**
+ * Failed to minify the file using clean-css v5.3.3. Serving the original version.
+ * Original file: /npm/preline@3.2.3/src/plugins/tree-view/variants.css
+ *
+ * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+ */
+@custom-variant hs-tree-view-selected {
+
+  &[data-hs-tree-view-item].selected {
+    @slot;
+  }
+
+  [data-hs-tree-view-item].selected>& {
+    @slot;
+  }
+}
+
+@custom-variant hs-tree-view-disabled {
+
+  &[data-hs-tree-view-item].disabled {
+    @slot;
+  }
+
+  [data-hs-tree-view-item].disabled>& {
+    @slot;
+  }
+}
