@@ -28,7 +28,7 @@ builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AddPageRoute("/Index", "{regionName:regex(^(Sol|Colonia|Sagittarius A(\\*|%2A))$)}");
     options.Conventions.AddPageRoute("/Index", "Regions/{regionName}");
-});
+}).AddNewtonsoftJson();
 
 // Adds the Controllers service.
 builder.Services.AddControllers();
