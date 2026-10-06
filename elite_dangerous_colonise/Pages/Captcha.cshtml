@@ -5,17 +5,18 @@
     ViewData["Title"] = "Captcha";
     ViewData["Description"] = "ED Colonise is a colonisation helper for the game Elite Dangerous.";
     ViewData["url"] = "https://edcolonise.net/";
+    ViewData["Theme"] = "None";
 }
 @section Scripts {
     <script type="module" src="https://cdn.jsdelivr.net/npm/altcha/dist/altcha.min.js" async defer></script>
 }
 
 <section class="flex min-h-150 w-full">
-    <form class="m-auto flex w-fit flex-col items-center gap-5 rounded-md bg-[#F0F0F0] p-10" method="post">
-        <h1 class="mb-5 text-center text-xl text-[#0F0F0F]">Before you proceed, I need to ask: Are you a robot?</h1>
+    <form class="bg-web-white m-auto flex w-fit flex-col items-center gap-5 rounded-md p-10" method="post">
+        <h1 class="text-web-black mb-5 text-center text-xl">Before you proceed, I need to ask: Are you a robot?</h1>
         <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
         <altcha-widget class="w-60 rounded-lg bg-white" challengeurl="/Captcha?handler=Challenge"></altcha-widget>
-        <button type="submit" class="block w-60 cursor-pointer rounded-lg border-1 border-[#0F0F0F] bg-[#0F0F0F] px-2.5 pt-3 pb-3 text-[#F0F0F0] shadow-sm hover:border-[#F07B05] hover:bg-[#F07B05]">Continue</button>
+        <button type="submit" class="text-web-white border-web-black bg-web-black block w-60 cursor-pointer rounded-lg border-1 px-2.5 pt-3 pb-3 shadow-sm hover:border-accent hover:bg-accent">Continue</button>
         @if (!ModelState.IsValid)
         {
             @foreach (ModelError error in ModelState.Values.SelectMany(ValueTask => ValueTask.Errors))

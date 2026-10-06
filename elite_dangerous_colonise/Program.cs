@@ -24,7 +24,6 @@ bool verboseReporting = builder.Configuration.GetValue<bool>("VerboseReporting",
 builder.Services.Configure<UpdateTimeOptions>(builder.Configuration.GetSection("UpdateTime"));
 
 // Adds the RazorPages service.
-//builder.Services.AddRazorPages();
 builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AddPageRoute("/Index", "{regionName:regex(^(Sol|Colonia|Sagittarius A(\\*|%2A))$)}");
@@ -138,9 +137,10 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
     app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
 
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
 
 app.UseHttpsRedirection();
 

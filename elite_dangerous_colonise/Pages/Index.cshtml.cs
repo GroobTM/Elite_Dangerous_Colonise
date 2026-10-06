@@ -17,7 +17,7 @@ namespace elite_dangerous_colonise.Pages
         private readonly AppLogger logger;
 
         public string RegionName { get; private set; }
-        public SelectMaxSearchValuesResult MaxValues { get; private set; }
+        public SelectMaxSearchValuesResult? MaxValues { get; private set; }
         public List<string> HotspotTypes { get; private set; }
 
         public IndexModel(NpgsqlDataSource dataSource, AppLogger logger)
@@ -44,11 +44,24 @@ namespace elite_dangerous_colonise.Pages
                 RegionName = regionName.Replace("%2A", "*", StringComparison.OrdinalIgnoreCase);
             }
 
-
             try
             {
-                MaxValues = await SelectMaxSearchValues() ?? throw new Exception("MaxValues is null");
+                MaxValues = await SelectMaxSearchValues();
+
+                if (MaxValues == null)
+                {
+                    if (RegionName == "Sol")
+                    {
+                        throw new Exception("MaxValues is null in Sol Region");
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                }
+
                 HotspotTypes = await SelectHotspotTypes() ?? throw new Exception("HotspotTypes is null");
+
 
                 return Page();
             }
@@ -56,14 +69,14 @@ namespace elite_dangerous_colonise.Pages
             {
                 logger.LogError("Index Page", 0, "A database error occurred.", ex);
 
-                return RedirectToPage("/Error", new { statusCode = 500 });
+                return StatusCode(500);
             }
 
             catch (Exception ex)
             {
                 logger.LogError("Index Page", 1, ex);
 
-                return RedirectToPage("/Error", new { statusCode = 500 });
+                return StatusCode(500);
             }
         }
 
@@ -88,6 +101,10 @@ namespace elite_dangerous_colonise.Pages
                             {
                                 if (await reader.ReadAsync())
                                 {
+                                    if (reader.IsDBNull(1))
+                                    {
+                                        return null;
+                                    }
 
                                     return new SelectMaxSearchValuesResult(
                                         reader.GetInt32(1),

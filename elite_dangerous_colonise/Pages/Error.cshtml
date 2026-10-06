@@ -3,10 +3,11 @@
 @{
 	ViewData["Title"] = "Error";
 	ViewData["Description"] = "Being on this page means something has gone wrong.";
-	ViewData["url"] = "https://edcolonise.net/Error";
+	ViewData["url"] = "https://edcolonise.net/";
+	ViewData["Theme"] = "None";
 }
 
-<section class="w-full pt-4 text-center text-[#F0F0F0]">
+<section class="text-web-white w-full pt-4 text-center">
 	<h1 class="text-4xl">Error - @Model.StatusCode</h1>
 
 	@if (Model.StatusCode == 401 || Model.StatusCode == 403)
@@ -23,13 +24,7 @@
 		<br />
 		<p>
 			Please post on the <a href="https://forums.frontier.co.uk/threads/introducing-edcolonise-net-a-colonisation-candidate-finder.635882/" target="_blank" class="text-blue-800 underline">Fontier Forum</a> and include details on what you were doing when
-			the error occured and the Request ID below.
+			the error occured.
 		</p>
-
-		@if (Model.ShowRequestID)
-		{
-			<br />
-			<p>Request ID: @Model.RequestID</p>
-		}
 	}
 </section>

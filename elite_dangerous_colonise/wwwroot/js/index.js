@@ -129,7 +129,7 @@ function SetupSearchInput(id, api) {
             apiSearchQuery: "query",
             apiQuery: `region=${regionName}`,
             outputItemTemplate: `
-                <div class="w-full cursor-pointer px-4 py-2 text-[#0F0F0F] hover:bg-[#E1E1E1]" data-hs-combo-box-output-item>
+                <div class="w-full cursor-pointer px-4 py-2 text-web-black hover:bg-[#E1E1E1]" data-hs-combo-box-output-item>
                     <div class="flex justify-between items-center w-full">
                         <div>
                             <div data-hs-combo-box-output-item-field="name" data-hs-combo-box-search-text data-hs-combo-box-value></div>
@@ -176,18 +176,18 @@ $(window).on("load", function () {
         new HSSelect(this, {
             placeholder: "Select (Optional)",
             dropdownClasses: "!mt-0 z-50 w-full max-h-55 p-1 space-y-0.5 bg-white border-1 border-[#BCBCBC] rounded-lg overflow-hidden overflow-y-auto shadow-lg",
-            optionClasses: "py-2 px-4 w-full text-[#0F0F0F] cursor-pointer hover:bg-[#E1E1E1] rounded-lg focus:outline-hidden focus:bg-gray-100 hs-select-disabled:pointer-events-none hs-select-disabled:opacity-50",
+            optionClasses: "py-2 px-4 w-full text-web-black cursor-pointer hover:bg-[#E1E1E1] rounded-lg focus:outline-hidden focus:bg-gray-100 hs-select-disabled:pointer-events-none hs-select-disabled:opacity-50",
             mode: "tags",
-            wrapperClasses: "relative ps-0.5 pe-9 min-h-20 flex items-center flex-wrap text-nowrap w-full border border-[#0F0F0F] rounded-lg text-start focus:border-[#F07B05] focus:ring-[#F07B05] bg-white shadow-sm mt-2",
+            wrapperClasses: "relative ps-0.5 pe-9 min-h-20 flex items-center flex-wrap text-nowrap w-full border border-web-black rounded-lg text-start focus:border-accent focus:ring-accent bg-white shadow-sm mt-2",
             tagsItemTemplate: `
-            <div class="flex flex-nowrap items-center relative z-10 bg-[#F0F0F0] border border-[#0F0F0F] rounded-full p-3 m-1">
-                <div class="whitespace-nowrap text-[#0F0F0F]" data-title></div>
-                <div class="inline-flex shrink-0 justify-center items-center size-5 ms-2 rounded-full text-[#0F0F0F] text-2xl -translate-y-0.5 hover:text-[#F07B05] cursor-pointer" data-remove>&times;</div>
+            <div class="flex flex-nowrap items-center relative z-10 bg-web-white border border-web-black rounded-full p-3 m-1">
+                <div class="whitespace-nowrap text-web-black" data-title></div>
+                <div class="inline-flex shrink-0 justify-center items-center size-5 ms-2 rounded-full text-web-black text-2xl -translate-y-0.5 hover:text-accent cursor-pointer" data-remove>&times;</div>
             </div>`,
             tagsInputId: "hs-tags-input",
             tagsInputClasses: "py-2.5 px-2 min-w-20 rounded-lg order-1 border-transparent focus:ring-0 outline-hidden",
             optionTemplate: `
-            <div class="flex items-center text-[#0F0F0F]">
+            <div class="flex items-center text-web-black">
                 <div>
                     <div data-title></div>
                 </div>
@@ -519,8 +519,8 @@ function FormatResults(results) {
 
     const htmlContent = results.map((system, count) => `
         <div id="results-heading-${system.systemID}" class="grid">
-            <button type="button" class="${FormatTopBoarder(count)} flex w-full cursor-pointer items-center justify-between gap-3 border border-[#0F0F0F] bg-white p-5 text-[#0F0F0F] shadow-sm hover:bg-[#ff9305] rtl:text-right" data-accordion-target="#results-body-${system.systemID}" aria-expanded="false" aria-controls="results-body-${system.systemID}">
-                <span class="flex items-center text-[#0F0F0F]">${system.systemName}</span>
+            <button type="button" class="${FormatTopBoarder(count)} flex w-full cursor-pointer items-center justify-between gap-3 border border-web-black bg-white p-5 text-web-black shadow-sm hover:bg-accent-hover rtl:text-right" data-accordion-target="#results-body-${system.systemID}" aria-expanded="false" aria-controls="results-body-${system.systemID}">
+                <span class="flex items-center text-web-black">${system.systemName}</span>
                 <svg data-accordion-icon class="h-3 w-3 shrink-0 rotate-180 transition-transform duration-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
                 </svg>
@@ -528,7 +528,7 @@ function FormatResults(results) {
         </div>
             
         <div id="results-body-${system.systemID}" class="hidden" aria-labelledby="results-heading-${system.systemID}">
-            <div class="grid-rows-auto grid grid-cols-1 gap-y-5 border border-t-0 border-[#0F0F0F] bg-white p-5 shadow-sm lg:grid-cols-2 lg:gap-x-5 xl:grid-cols-3 xl:gap-y-0">
+            <div class="grid-rows-auto grid grid-cols-1 gap-y-5 border border-t-0 border-web-black bg-white p-5 shadow-sm lg:grid-cols-2 lg:gap-x-5 xl:grid-cols-3 xl:gap-y-0">
                 <h2 class="row-start-1 border-b border-gray-300 pb-3 text-center text-lg drop-shadow-xs lg:col-start-1 lg:text-left">Details</h2>
                 <div class="row-start-2 mt-3 lg:col-start-1">
                     <div class="grid grid-cols-2 items-end gap-x-2">
@@ -567,7 +567,7 @@ function FormatResults(results) {
                         <div class="mt-3 flex gap-3">
                             ${FormatInfluenceIcons(`${system.systemID}_${config.id}_tooltip`, ...config.colours)}
                             <h3 class="font-bold">${config.label}:</h3>
-                            <div id="${system.systemID}_${config.id}_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+                            <div id="${system.systemID}_${config.id}_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-web-black px-3 py-2 text-sm text-web-white opacity-0 shadow-xs transition-opacity duration-200">
                                 ${config.tooltip}
                             </div>
                         </div>
@@ -586,7 +586,7 @@ function FormatResults(results) {
                     </div>
                 </div>
             </div>
-            <div id="${system.systemID}_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+            <div id="${system.systemID}_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-web-black px-3 py-2 text-sm text-web-white opacity-0 shadow-xs transition-opacity duration-200">
                 Click to copy.
             </div>
             ${FormatColonisedSystemTooltips(system.systemID, system.colonisedSystems)}
@@ -750,7 +750,7 @@ function FormatColonisedSystemTooltips(systemID, inputColonisedSystems) {
 
     inputColonisedSystems.forEach(system => {
         tooltipList += `
-        <div id="${systemID}_${system.colonisedSystemID}_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 shadow-xs transition-opacity duration-200">
+        <div id="${systemID}_${system.colonisedSystemID}_tooltip" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-web-black px-3 py-2 text-sm text-web-white opacity-0 shadow-xs transition-opacity duration-200">
             Click to copy.
         </div>
         `;
@@ -828,20 +828,20 @@ function ReinitializeAccordion() {
         const svg = button.find("svg");
 
         if (button.attr("aria-expanded") === "true") {
-            button.addClass("bg-[#F07B05] text-[#F0F0F0]")
-                .removeClass("bg-white text-[#0F0F0F]");
-            span.addClass("text-[#F0F0F0] font-bold")
-                .removeClass("text-[#0F0F0F]");
-            svg.addClass("text-[#F0F0F0]")
-                .removeClass("text-[#0F0F0F]");
+            button.addClass("bg-accent text-web-white")
+                .removeClass("bg-white text-web-black");
+            span.addClass("text-web-white font-bold")
+                .removeClass("text-web-black");
+            svg.addClass("text-web-white")
+                .removeClass("text-web-black");
         }
         else {
-            button.addClass("bg-white text-[#0F0F0F]")
-                .removeClass("bg-[#F07B05] text-[#F0F0F0]");
-            span.addClass("text-[#0F0F0F]")
-                .removeClass("text-[#F0F0F0] font-bold");
-            svg.addClass("text-[#0F0F0F]")
-                .removeClass("text-[#F0F0F0]");
+            button.addClass("bg-white text-web-black")
+                .removeClass("bg-accent text-web-white");
+            span.addClass("text-web-black")
+                .removeClass("text-web-white font-bold");
+            svg.addClass("text-web-black")
+                .removeClass("text-web-white");
         }
     });
 }
@@ -907,8 +907,8 @@ function SetPaginationNumberButtons(pages) {
 }
 
 function SetPaginationNumberButtonAsSelected(buttonID, selected) {
-    $("#" + buttonID).toggleClass("bg-[#F07B05] text-[#F0F0F0]", selected);
-    $("#" + buttonID).toggleClass("cursor-pointer text-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-[#F0F0F0] focus:bg-[#0F0F0F] focus:text-[#F0F0F0]", !selected);
+    $("#" + buttonID).toggleClass("bg-accent text-web-white", selected);
+    $("#" + buttonID).toggleClass("cursor-pointer text-web-black hover:bg-web-black hover:text-web-white focus:bg-web-black focus:text-web-white", !selected);
 }
 
 function SetSelectedPaginationNumberButton(pages) {

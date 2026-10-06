@@ -9,3 +9,30 @@
     font-family: "EUROCAPS";
     src: url("../fonts/EUROCAPS.TTF");
 }
+
+@theme {
+    --color-web-white: #F0F0F0;
+    --color-web-black: #0F0F0F;
+
+    /* Elite Orange */
+    --color-accent: #F07B05;
+    --color-accent-hover: #FF9305;
+}
+
+[data-theme="Colonia"] {
+    /* Elite Blue */
+    --color-accent: #00B3F7;
+    --color-accent-hover: #00A7FF;
+}
+
+[data-theme="Sagittarius A*"] {
+    /* Elite Purple */
+    --color-accent: #7F00FF;
+    --color-accent-hover: #9000FF;
+}
+
+[data-theme="Sagittarius A*"] {
+    /* Elite Purple */
+    --color-accent: #7F00FF;
+    --color-accent-hover: #9000FF;
+}

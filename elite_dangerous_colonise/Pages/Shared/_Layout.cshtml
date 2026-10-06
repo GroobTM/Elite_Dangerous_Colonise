@@ -35,9 +35,9 @@
         }
     </script>
 </head>
-<body class="flex min-h-screen flex-col bg-[#0F0F0F]">
-    <header class="border-b-2 border-[#F0F0F0] bg-[#F07B05] 2xl:pr-10 2xl:pl-10">
-        <nav class="pt-2.5 text-5xl font-[EUROCAPS] text-[#F0F0F0] md:text-6xl 2xl:px-6 2xl:py-2.5">
+<body data-theme="@ViewData["Theme"]" class="bg-web-black flex min-h-screen flex-col">
+    <header class="border-web-white bg-accent border-b-2 2xl:pr-10 2xl:pl-10">
+        <nav class="text-web-white pt-2.5 text-5xl font-[EUROCAPS] md:text-6xl 2xl:px-6 2xl:py-2.5">
             <div class="flex flex-col flex-wrap items-center justify-between 2xl:flex-row">
                 <a href="~/" class="mb-3 flex flex-col items-center md:flex-row 2xl:pb-0">
                     <img src="~/images/Expanding.svg" class="mr-5 h-15 md:h-25" />
@@ -48,22 +48,22 @@
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
                     </svg>
                 </button>
-                <div class="hidden w-full border-t-2 border-[#F0F0F0] md:block md:pt-3 md:pb-3 2xl:w-auto 2xl:border-t-0 2xl:pt-0 2xl:pb-0" id="navbar">
+                <div class="border-web-white hidden w-full border-t-2 md:block md:pt-3 md:pb-3 2xl:w-auto 2xl:border-t-0 2xl:pt-0 2xl:pb-0" id="navbar">
                     <div class="mt-0 grid grid-cols-1 text-4xl md:grid-cols-5">
                         <span class="w-full text-center 2xl:w-42">
-                            <a href="~/" class="mr-3 ml-3 block border-b-1 border-[#F0F0F0] py-2 md:mr-0 md:ml-0 md:border-r-1 md:border-b-0 2xl:border-l-1 2xl:leading-20">Sol</a>
+                            <a href="~/" class="border-web-white mr-3 ml-3 block border-b-1 py-2 md:mr-0 md:ml-0 md:border-r-1 md:border-b-0 2xl:border-l-1 2xl:leading-20">Sol</a>
                         </span>
                         <span class="w-full text-center 2xl:w-42">
-                            <a href="~/Colonia" class="mr-3 ml-3 block border-b-1 border-[#F0F0F0] py-2 md:mr-0 md:ml-0 md:border-r-1 md:border-b-0 2xl:leading-20">Colonia</a>
+                            <a href="~/Colonia" class="border-web-white mr-3 ml-3 block border-b-1 py-2 md:mr-0 md:ml-0 md:border-r-1 md:border-b-0 2xl:leading-20">Colonia</a>
                         </span>
                         <span class="w-full text-center 2xl:w-42">
-                            <a href="~/Sagittarius A*" class="mr-3 ml-3 block border-b-1 border-[#F0F0F0] py-2 whitespace-nowrap md:mr-0 md:ml-0 md:border-r-1 md:border-b-0 2xl:leading-20">Sgr A*</a>
+                            <a href="~/Sagittarius A*" class="border-web-white mr-3 ml-3 block border-b-1 py-2 whitespace-nowrap md:mr-0 md:ml-0 md:border-r-1 md:border-b-0 2xl:leading-20">Sgr A*</a>
                         </span>
                         <span class="w-full text-center 2xl:w-42">
-                            <a href="~/Regions" class="mr-3 ml-3 block border-b-1 border-[#F0F0F0] py-2 md:mr-0 md:ml-0 md:border-r-1 md:border-b-0 2xl:leading-20">Regions</a>
+                            <a href="~/Regions" class="border-web-white mr-3 ml-3 block border-b-1 py-2 md:mr-0 md:ml-0 md:border-r-1 md:border-b-0 2xl:leading-20">Regions</a>
                         </span>
                         <span class="w-full text-center 2xl:w-42">
-                            <a asp-page="/About" class="mr-3 ml-3 block border-[#F0F0F0] py-2 md:mr-0 md:ml-0 md:border-r-1 2xl:leading-20">About</a>
+                            <a asp-page="/About" class="border-web-white mr-3 ml-3 block py-2 md:mr-0 md:ml-0 md:border-r-1 2xl:leading-20">About</a>
                         </span>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
     <main class="min-h-100 pr-3 pl-3 sm:pr-10 sm:pl-10">
         @RenderBody()
     </main>
-    <footer class="text-md mt-auto flex flex-col gap-6 border-t-2 border-[#F0F0F0] bg-[#F07B05] p-5 pt-8 text-center font-bold text-[#F0F0F0] sm:gap-3 lg:pr-10 lg:pl-10">
+    <footer class="text-md border-web-white bg-accent text-web-white mt-auto flex flex-col gap-6 border-t-2 p-5 pt-8 text-center font-bold sm:gap-3 lg:pr-10 lg:pl-10">
         <p>
             Thanks to Gareth Harper for creating the amazing <a href="https://spansh.co.uk" target="_blank" class="text-blue-800 underline">Spansh</a> which provides the
             data dumps used by this tool.

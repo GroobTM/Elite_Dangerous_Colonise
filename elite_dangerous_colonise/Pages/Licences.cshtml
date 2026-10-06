@@ -4,15 +4,16 @@
     ViewData["Title"] = "Licences Page";
 	ViewData["Description"] = "This page contains information about the licences used by ED Colonise.";
 	ViewData["url"] = "https://edcolonise.net/Licences";
+	ViewData["Theme"] = "None";
 }
 @section Scripts {
 	<script src="~/js/licences.js" asp-append-version="true"></script>
 }
 
-<section class="mt-3 mb-3 rounded-md bg-[#F0F0F0] p-5">
+<section class="bg-web-white mt-3 mb-3 rounded-md p-5">
 	<div class="h-screen overflow-auto">
 		<h1 class="pt-3 pb-3 text-xl">Third Party Package Licences</h1>
-		<table id="packageLicences" class="w-full border-collapse border-1 border-[#0F0F0F]">
+		<table id="packageLicences" class="border-web-black w-full border-collapse border-1">
 			<thead>
 				<tr class="border-b-2 text-left">
 					<th class="border-r-1 p-2">Package ID</th>
@@ -28,7 +29,7 @@
 	</div>
 	<div class="mt-5 overflow-auto">
 		<h1 class="pt-3 pb-3 text-xl">Third Party CSS and JS Licences</h1>
-		<table id="packageLicences" class="w-full border-collapse border-1 border-[#0F0F0F]">
+		<table id="packageLicences" class="border-web-black w-full border-collapse border-1">
 			<thead>
 				<tr class="border-b-2 text-left">
 					<th class="border-r-1 p-2">Library</th>

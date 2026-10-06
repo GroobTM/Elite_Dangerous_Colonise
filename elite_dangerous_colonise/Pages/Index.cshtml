@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = Model.RegionName;
     ViewData["Description"] = "ED Colonise is a colonisation helper for the game Elite Dangerous.";
+    ViewData["Theme"] = Model.RegionName;
 
     switch (Model.RegionName)
     {
@@ -16,6 +17,7 @@
             ViewData["url"] = "https://edcolonise.net/Sagittarius A*";
             break;
         default:
+            ViewData["Theme"] = "Regions";
             ViewData["url"] = $"https://edcolonise.net/Regions/{Model.RegionName}";
             break;
     }
@@ -48,29 +50,29 @@
     </symbol>
 </svg>
 
-<aside class="mt-3 w-full rounded-md bg-[#F0F0F0]">
-    <p id="update_countdown" class="text-center text-xl leading-15 text-[#0F0F0F]">Time Until Next Update: 0h 0m 0s</p>
+<aside class="bg-web-white mt-3 w-full rounded-md">
+    <p id="update_countdown" class="text-web-black text-center text-xl leading-15">Time Until Next Update: 0h 0m 0s</p>
 </aside>
-<section class="mt-3 w-full rounded-md bg-[#F0F0F0] p-3">
+<section class="bg-web-white mt-3 w-full rounded-md p-3">
     <form id="systems_search" method="GET">
         <div class="flex flex-col justify-between gap-3 lg:flex-row lg:gap-5">
             <div id="colonised_system_search" class="relative flex-1">
                 <div class="relative">
-                    <input name="ColonisedSystem" type="text" role="combobox" id="colonised_system" class="peer block w-full appearance-none rounded-lg border-1 border-[#0F0F0F] bg-white px-2.5 pt-4 pb-2.5 pl-4 text-[#0F0F0F] shadow-sm focus:border-[#F07B05] focus:ring-0 focus:outline-none" placeholder=" " maxlength="75" data-hs-combo-box-input="" />
-                    <label for="colonised_system" class="absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 text-[#0F0F0F] duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4">Colonised Reference System (Optional)</label>
-                    <label for="colonised_system" id="clear_button" class="absolute top-1 right-2 z-10 cursor-pointer text-3xl hover:text-[#F07B05]">&times;</label>
+                    <input name="ColonisedSystem" type="text" role="combobox" id="colonised_system" class="peer border-web-black text-web-black block w-full appearance-none rounded-lg border-1 bg-white px-2.5 pt-4 pb-2.5 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none" placeholder=" " maxlength="75" data-hs-combo-box-input="" />
+                    <label for="colonised_system" class="text-web-black absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4">Colonised Reference System (Optional)</label>
+                    <label for="colonised_system" id="clear_button" class="absolute top-1 right-2 z-10 cursor-pointer text-3xl hover:text-accent">&times;</label>
                 </div>
                 <div class="absolute z-50 !mt-0 max-h-55 w-full overflow-y-auto rounded-lg border-1 border-[#BCBCBC] bg-white shadow-lg" style="display: none;" role="listbox" data-hs-combo-box-output=""></div>
             </div>
             <div class="relative flex-1">
-                <select name="SortOrder" id="sort_order" class="block w-full cursor-pointer appearance-none rounded-lg border-1 border-[#0F0F0F] bg-white px-2.5 pt-4 pb-2.5 pl-4 text-[#0F0F0F] shadow-sm focus:border-[#F07B05] focus:ring-0 focus:outline-none">
+                <select name="SortOrder" id="sort_order" class="border-web-black text-web-black block w-full cursor-pointer appearance-none rounded-lg border-1 bg-white px-2.5 pt-4 pb-2.5 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none">
                     <option value="SystemValue">System Value</option>
                     <option value="MostWalkables">Most Walkable Bodies</option>
                     <option value="MostHotspots">Most Hotspots</option>
                     <option value="DistanceToRegionCentre">Distance to @Model.RegionName</option>
                     <option value="DistanceToReferenceSystem">Distance to Reference System</option>
                 </select>
-                <label for="sort_order" class="pointer-events-none absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 rounded-3xl bg-white px-2 text-[#0F0F0F]">Sort Order</label>
+                <label for="sort_order" class="text-web-black pointer-events-none absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 rounded-3xl bg-white px-2">Sort Order</label>
                 <svg class="pointer-events-none absolute top-4 right-3 z-10 h-5 w-4 shrink-0 rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"></path>
                 </svg>
@@ -78,8 +80,8 @@
         </div>
         <div class="relative mt-3 flex w-full flex-col-reverse justify-between gap-2 sm:flex-row">
             <div class="grid w-full lg:w-45">
-                <input type="button" id="more_options_button" class="col-3 col-start-1 row-start-1 row-end-2 block w-full cursor-pointer rounded-lg border-1 border-[#0F0F0F] bg-[#0F0F0F] px-2.5 pt-3 pb-3 text-left shadow-sm hover:border-[#F07B05] hover:bg-[#F07B05]" value="" />
-                <label for="more_options_button" class="pointer-events-none relative z-10 col-3 col-start-1 row-start-1 row-end-2 flex w-full items-center justify-center gap-5 text-[#F0F0F0]">
+                <input type="button" id="more_options_button" class="border-web-black bg-web-black col-3 col-start-1 row-start-1 row-end-2 block w-full cursor-pointer rounded-lg border-1 px-2.5 pt-3 pb-3 text-left shadow-sm hover:border-accent hover:bg-accent" value="" />
+                <label for="more_options_button" class="text-web-white pointer-events-none relative z-10 col-3 col-start-1 row-start-1 row-end-2 flex w-full items-center justify-center gap-5">
                     <span>More Options</span>
                     <svg id="more_options_icon" class="relative top-0.5 h-3 w-3 shrink-0 rotate-180 transition-transform duration-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
@@ -87,9 +89,9 @@
                 </label>
             </div>
             <div class="grid w-full lg:w-45">
-                <input type="submit" id="search" class="col-3 col-start-1 row-start-1 row-end-2 block w-full cursor-pointer rounded-lg border-1 border-[#0F0F0F] bg-[#0F0F0F] px-2.5 pt-3 pb-3 text-left shadow-sm" value="" />
+                <input type="submit" id="search" class="border-web-black bg-web-black col-3 col-start-1 row-start-1 row-end-2 block w-full cursor-pointer rounded-lg border-1 px-2.5 pt-3 pb-3 text-left shadow-sm" value="" />
                 <label for="search" class="pointer-events-none z-10 col-3 col-start-1 row-start-1 row-end-2 flex w-full items-center justify-center gap-5">
-                    <span class="text-[#F0F0F0]">Search</span>
+                    <span class="text-web-white">Search</span>
                     <img src="~/images/courier.svg" class="z-10 h-8 sm:h-10" />
                 </label>
             </div>
@@ -97,19 +99,19 @@
         <div id="more_options" class="mt-3 hidden grid-cols-1 gap-y-5 lg:grid-cols-2 lg:gap-x-5">
             <div id="faction_search" class="relative flex-1">
                 <div class="relative">
-                    <input name="Faction" type="text" role="combobox" id="faction" class="peer block w-full appearance-none rounded-lg border-1 border-[#0F0F0F] bg-white px-2.5 pt-4 pb-2.5 pl-4 text-[#0F0F0F] shadow-sm focus:border-[#F07B05] focus:ring-0 focus:outline-none" placeholder=" " maxlength="75" data-hs-combo-box-input="" />
-                    <label for="faction" class="absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 text-[#0F0F0F] duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4">Faction (Optional)</label>
-                    <label for="faction" id="clear_button" class="absolute top-1 right-2 z-10 cursor-pointer text-3xl hover:text-[#F07B05]">&times;</label>
+                    <input name="Faction" type="text" role="combobox" id="faction" class="peer border-web-black text-web-black block w-full appearance-none rounded-lg border-1 bg-white px-2.5 pt-4 pb-2.5 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none" placeholder=" " maxlength="75" data-hs-combo-box-input="" />
+                    <label for="faction" class="text-web-black absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4">Faction (Optional)</label>
+                    <label for="faction" id="clear_button" class="absolute top-1 right-2 z-10 cursor-pointer text-3xl hover:text-accent">&times;</label>
                 </div>
                 <div class="absolute z-50 !mt-0 max-h-55 w-full overflow-y-auto rounded-lg border-1 border-[#BCBCBC] bg-white shadow-lg" style="display: none;" role="listbox" data-hs-combo-box-output=""></div>
             </div>
 
             <div class="relative flex-1">
-                <select name="FactionSearchMode" id="faction_search_mode" class="block w-full cursor-pointer appearance-none rounded-lg border-1 border-[#0F0F0F] bg-white px-2.5 pt-4 pb-2.5 pl-4 text-[#0F0F0F] shadow-sm focus:border-[#F07B05] focus:ring-0 focus:outline-none">
+                <select name="FactionSearchMode" id="faction_search_mode" class="border-web-black text-web-black block w-full cursor-pointer appearance-none rounded-lg border-1 bg-white px-2.5 pt-4 pb-2.5 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none">
                     <option value="false">Search for station controller</option>
                     <option value="true">Search for system controller</option>
                 </select>
-                <label for="faction_search_mode" class="pointer-events-none absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 rounded-3xl bg-white px-2 text-[#0F0F0F]">Toggle Faction Search Mode</label>
+                <label for="faction_search_mode" class="text-web-black pointer-events-none absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 rounded-3xl bg-white px-2">Toggle Faction Search Mode</label>
                 <svg class="pointer-events-none absolute top-4 right-3 z-10 h-5 w-4 shrink-0 rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"></path>
                 </svg>
@@ -129,12 +131,12 @@
                     "step": 1,
                     "connect": "lower",
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
@@ -154,12 +156,12 @@
                     "step": 1,
                     "connect": "lower",
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
@@ -179,12 +181,12 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
@@ -203,12 +205,12 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
@@ -234,16 +236,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="black_holes_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="black_holes_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Colony Influence: High Tech and Tourism
                 </div>
             </div>
@@ -267,16 +269,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="neutron_stars_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="neutron_stars_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Colony Influence: High Tech and Tourism
                 </div>
             </div>
@@ -300,16 +302,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="white_dwarves_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="white_dwarves_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Colony Influence: High Tech and Tourism
                 </div>
             </div>
@@ -333,16 +335,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="other_stars_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="other_stars_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Colony Influence: Military
                 </div>
             </div>
@@ -366,16 +368,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="earth_likes_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="earth_likes_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Colony Influence: Argriculture, High Tech, Tourism, and Military
                 </div>
             </div>
@@ -399,16 +401,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="water_worlds_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="water_worlds_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Colony Influence: Argriculture and Tourism
                 </div>
             </div>
@@ -432,16 +434,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="ammonia_worlds_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="ammonia_worlds_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Colony Influence: High Tech and Tourism
                 </div>
             </div>
@@ -465,16 +467,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="gas_giants_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="gas_giants_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Colony Influence: High Tech and Industrial
                 </div>
             </div>
@@ -498,16 +500,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="high_metal_content_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="high_metal_content_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Colony Influence: Extraction
                 </div>
             </div>
@@ -531,16 +533,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="metal_rich_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="metal_rich_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Colony Influence: Extraction
                 </div>
             </div>
@@ -564,16 +566,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="rocky_ice_world_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="rocky_ice_world_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Colony Influence: Refinery and Industrial
                 </div>
             </div>
@@ -597,16 +599,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="rocky_bodies_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="rocky_bodies_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Colony Influence: Refinery
                 </div>
             </div>
@@ -630,16 +632,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="icy_bodies_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="icy_bodies_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Colony Influence: Industrial
                 </div>
             </div>
@@ -663,16 +665,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="rings_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="rings_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Colony Influence: Extraction
                 </div>
             </div>
@@ -696,16 +698,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="geologicals_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="geologicals_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Colony Influence: Extraction and Industrial
                 </div>
             </div>
@@ -729,16 +731,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="organics_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="organics_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Colony Influence: Agriculture and Terraforming
                 </div>
             </div>
@@ -762,16 +764,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="terraformables_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="terraformables_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Influence Booster: Agriculture
                 </div>
             </div>
@@ -795,16 +797,16 @@
                     "step": 1,
                     "connect": true,
                     "cssClasses": {
-                        "target": "relative h-2.5 rounded-full bg-white border-1 border-[#0F0F0F]",
+                        "target": "relative h-2.5 rounded-full bg-white border-1 border-web-black",
                         "base": "size-full relative z-1",
                         "origin": "absolute top-0 end-0 size-full origin-[0_0] rounded-full",
-                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-[#0F0F0F] rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
+                        "handle": "absolute top-1/2 end-0 size-5 bg-white border-3 border-web-black rounded-full cursor-pointer translate-x-2/4 -translate-y-2/4",
                         "connects": "relative z-0 size-full rounded-full overflow-hidden",
-                        "connect": "absolute top-0 end-0 z-1 size-full bg-[#F07B05] origin-[0_0]",
+                        "connect": "absolute top-0 end-0 z-1 size-full bg-accent origin-[0_0]",
                         "touchArea": "absolute -inset-1"
                     }
                 }'></div>
-                <div id="volcanics_slider_tooltip" role="tooltip" class="tooltip shadow-xs invisible absolute z-10 inline-block rounded-lg bg-[#0F0F0F] px-3 py-2 text-sm text-[#F0F0F0] opacity-0 transition-opacity duration-200">
+                <div id="volcanics_slider_tooltip" role="tooltip" class="tooltip shadow-xs text-web-white bg-web-black invisible absolute z-10 inline-block rounded-lg px-3 py-2 text-sm opacity-0 transition-opacity duration-200">
                     Influence Booster: Extraction
                 </div>
             </div>
@@ -823,13 +825,13 @@
         </div>
     </form>
 </section>
-<section class="relative mt-3 mb-3 w-full rounded-md bg-[#F0F0F0] p-3">
+<section class="bg-web-white relative mt-3 mb-3 w-full rounded-md p-3">
     <div class="flex flex-col gap-3 lg:flex-row lg:justify-between lg:gap-0">
-        <h1 class="text-center text-xl text-[#0F0F0F] lg:text-left">Colonisation Candidates</h1>
+        <h1 class="text-web-black text-center text-xl lg:text-left">Colonisation Candidates</h1>
         <div class="flex flex-col items-center gap-4 lg:flex-row">
             <div class="flex items-center justify-center gap-2">
-                <label id="results_per_page_lbl" class="text-sm text-[#0F0F0F]">Results per page</label>
-                <select id="results_per_page" class="min-h-full w-14 cursor-pointer rounded-md border border-[#0F0F0F] bg-white p-2.5 text-sm text-[#0F0F0F] shadow-sm transition-all hover:border-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-[#F0F0F0] hover:shadow-lg focus:border-[#0F0F0F] focus:bg-[#0F0F0F] focus:text-[#F0F0F0] active:border-[#0F0F0F] active:bg-[#0F0F0F] active:text-[#F0F0F0] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
+                <label id="results_per_page_lbl" class="text-web-black text-sm">Results per page</label>
+                <select id="results_per_page" class="border-web-black text-web-black min-h-full w-14 cursor-pointer rounded-md border bg-white p-2.5 text-sm shadow-sm transition-all hover:text-web-white hover:border-web-black hover:bg-web-black hover:shadow-lg focus:text-web-white focus:border-web-black focus:bg-web-black active:text-web-white active:border-web-black active:bg-web-black disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
                     <option value="5">5</option>
                     <option value="10" selected>10</option>
                     <option value="15">15</option>
@@ -837,8 +839,8 @@
                     <option value="50">50</option>
                 </select>
             </div>
-            <nav id="pagination" class="hidden w-full items-center justify-center gap-x-1 rounded-md border-1 border-[#0F0F0F] bg-white shadow-sm sm:w-fit">
-                <button id="pagination_previous_jump" title="Back Jump" type="button" class="inline-flex h-10 w-10 cursor-pointer items-center justify-center gap-x-2 rounded-md px-2.5 py-2 text-sm text-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-[#F0F0F0] focus:bg-[#0F0F0F] focus:text-[#F0F0F0] focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">
+            <nav id="pagination" class="border-web-black hidden w-full items-center justify-center gap-x-1 rounded-md border-1 bg-white shadow-sm sm:w-fit">
+                <button id="pagination_previous_jump" title="Back Jump" type="button" class="text-web-black inline-flex h-10 w-10 cursor-pointer items-center justify-center gap-x-2 rounded-md px-2.5 py-2 text-sm hover:text-web-white hover:bg-web-black focus:text-web-white focus:bg-web-black focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">
                     <svg class="size-6 shrink-0" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" version="1.1" id="svg2" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
                         <defs id="defs2" />
                         <g id="g2" transform="translate(-2)">
@@ -847,24 +849,24 @@
                         </g>
                     </svg>
                 </button>
-                <button id="pagination_previous" title="Back" type="button" class="inline-flex h-10 w-10 cursor-pointer items-center justify-center gap-x-2 rounded-md px-2.5 py-2 text-sm text-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-[#F0F0F0] focus:bg-[#0F0F0F] focus:text-[#F0F0F0] focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">
+                <button id="pagination_previous" title="Back" type="button" class="text-web-black inline-flex h-10 w-10 cursor-pointer items-center justify-center gap-x-2 rounded-md px-2.5 py-2 text-sm hover:text-web-white hover:bg-web-black focus:text-web-white focus:bg-web-black focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">
                     <svg class="size-6 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="m15 18-6-6 6-6"></path>
                     </svg>
                 </button>
                 <div class="flex items-center gap-x-1">
-                    <button id="pagination_1" type="button" class="pagination_numbers flex h-10 w-10 items-center justify-center rounded-md bg-[#F07B05] px-3 py-2 text-sm text-[#F0F0F0] focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">1</button>
-                    <button id="pagination_2" type="button" class="pagination_numbers flex h-10 w-10 cursor-pointer items-center justify-center rounded-md px-3 py-2 text-sm text-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-[#F0F0F0] focus:bg-[#0F0F0F] focus:text-[#F0F0F0] focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">2</button>
-                    <button id="pagination_3" type="button" class="pagination_numbers flex h-10 w-10 cursor-pointer items-center justify-center rounded-md px-3 py-2 text-sm text-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-[#F0F0F0] focus:bg-[#0F0F0F] focus:text-[#F0F0F0] focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">3</button>
-                    <button id="pagination_4" type="button" class="pagination_numbers flex h-10 w-10 cursor-pointer items-center justify-center rounded-md px-3 py-2 text-sm text-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-[#F0F0F0] focus:bg-[#0F0F0F] focus:text-[#F0F0F0] focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">4</button>
-                    <button id="pagination_5" type="button" class="pagination_numbers flex h-10 w-10 cursor-pointer items-center justify-center rounded-md px-3 py-2 text-sm text-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-[#F0F0F0] focus:bg-[#0F0F0F] focus:text-[#F0F0F0] focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">5</button>
+                    <button id="pagination_1" type="button" class="pagination_numbers text-web-white bg-accent flex h-10 w-10 items-center justify-center rounded-md px-3 py-2 text-sm focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">1</button>
+                    <button id="pagination_2" type="button" class="pagination_numbers text-web-black flex h-10 w-10 cursor-pointer items-center justify-center rounded-md px-3 py-2 text-sm hover:text-web-white hover:bg-web-black focus:text-web-white focus:bg-web-black focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">2</button>
+                    <button id="pagination_3" type="button" class="pagination_numbers text-web-black flex h-10 w-10 cursor-pointer items-center justify-center rounded-md px-3 py-2 text-sm hover:text-web-white hover:bg-web-black focus:text-web-white focus:bg-web-black focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">3</button>
+                    <button id="pagination_4" type="button" class="pagination_numbers text-web-black flex h-10 w-10 cursor-pointer items-center justify-center rounded-md px-3 py-2 text-sm hover:text-web-white hover:bg-web-black focus:text-web-white focus:bg-web-black focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">4</button>
+                    <button id="pagination_5" type="button" class="pagination_numbers text-web-black flex h-10 w-10 cursor-pointer items-center justify-center rounded-md px-3 py-2 text-sm hover:text-web-white hover:bg-web-black focus:text-web-white focus:bg-web-black focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">5</button>
                 </div>
-                <button id="pagination_next" title="Next" type="button" class="inline-flex h-10 w-10 cursor-pointer items-center justify-center gap-x-2 rounded-md px-2.5 py-2 text-sm text-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-[#F0F0F0] focus:bg-[#0F0F0F] focus:text-[#F0F0F0] focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">
+                <button id="pagination_next" title="Next" type="button" class="text-web-black inline-flex h-10 w-10 cursor-pointer items-center justify-center gap-x-2 rounded-md px-2.5 py-2 text-sm hover:text-web-white hover:bg-web-black focus:text-web-white focus:bg-web-black focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">
                     <svg class="size-6 shrink-0 rotate-180" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="m15 18-6-6 6-6"></path>
                     </svg>
                 </button>
-                <button id="pagination_next_jump" title="Next Jump" type="button" class="inline-flex h-10 w-10 cursor-pointer items-center justify-center gap-x-2 rounded-md px-2.5 py-2 text-sm text-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-[#F0F0F0] focus:bg-[#0F0F0F] focus:text-[#F0F0F0] focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">
+                <button id="pagination_next_jump" title="Next Jump" type="button" class="text-web-black inline-flex h-10 w-10 cursor-pointer items-center justify-center gap-x-2 rounded-md px-2.5 py-2 text-sm hover:text-web-white hover:bg-web-black focus:text-web-white focus:bg-web-black focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">
                     <svg class="size-6 shrink-0 rotate-180" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" version="1.1" id="svg2" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
                         <defs id="defs2" />
                         <g id="g2" transform="translate(-2)">
@@ -877,16 +879,16 @@
         </div>
     </div>
     <div id="results" data-accordion="open" class="mt-3">
-        <div role="status" class="w-full animate-pulse space-y-3 rounded-t-lg border border-[#0F0F0F] bg-white shadow-sm">
-            <div class="flex items-center justify-between border-b-1 border-[#0F0F0F] p-4 pt-6">
+        <div role="status" class="border-web-black w-full animate-pulse space-y-3 rounded-t-lg border bg-white shadow-sm">
+            <div class="border-web-black flex items-center justify-between border-b-1 p-4 pt-6">
                 <div class="mb-2.5 h-2.5 w-24 rounded-full bg-gray-300"></div>
                 <div class="h-2.5 w-12 rounded-full bg-gray-300"></div>
             </div>
-            <div class="flex items-center justify-between border-b-1 border-[#0F0F0F] p-4">
+            <div class="border-web-black flex items-center justify-between border-b-1 p-4">
                 <div class="mb-2.5 h-2.5 w-24 rounded-full bg-gray-300"></div>
                 <div class="h-2.5 w-12 rounded-full bg-gray-300"></div>
             </div>
-            <div class="flex items-center justify-between border-b-1 border-[#0F0F0F] p-4">
+            <div class="border-web-black flex items-center justify-between border-b-1 p-4">
                 <div class="mb-2.5 h-2.5 w-24 rounded-full bg-gray-300"></div>
                 <div class="h-2.5 w-12 rounded-full bg-gray-300"></div>
             </div>
@@ -902,7 +904,7 @@
     </div>
     <div id="loading" class="absolute top-0 left-0 z-20 hidden h-full w-full items-center justify-center rounded-md border bg-[#F0F0F0BF]">
         <div role="status">
-            <svg aria-hidden="true" class="h-12 w-12 animate-spin fill-[#F07B05] text-gray-400" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" /><path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" /></svg>
+            <svg aria-hidden="true" class="fill-accent h-12 w-12 animate-spin text-gray-400" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" /><path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" /></svg>
             <span class="sr-only">Loading...</span>
         </div>
     </div>
@@ -910,19 +912,19 @@
         <div class="hs-overlay-animation-target m-3 flex min-h-[calc(100%-56px)] scale-95 items-center opacity-0 transition-all duration-200 ease-in-out sm:mx-auto sm:w-full sm:max-w-lg hs-overlay-open:scale-100 hs-overlay-open:opacity-100">
             <div class="shadow-2xs pointer-events-auto flex w-full flex-col rounded-xl border border-gray-200 bg-white">
                 <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3">
-                    <h3 class="font-bold text-[#0F0F0F]">
+                    <h3 class="text-web-black font-bold">
                         Something went wrong.
                     </h3>
                 </div>
                 <div class="overflow-y-auto p-4">
-                    <p class="mt-1 text-[#0F0F0F]">
+                    <p class="text-web-black mt-1">
                         Don't worry it's likely that your session just timed out. 
                         <br />
                         Refresh the page to pick up where you left off and continue reporting.
                     </p>
                 </div>
                 <div id="error_modal_close" class="flex items-center justify-end gap-x-2 border-t border-gray-200 px-4 py-3">
-                    <button type="button" class="inline-flex cursor-pointer items-center gap-x-2 rounded-lg border border-transparent bg-[#0F0F0F] px-3 py-2 text-sm font-medium text-[#F0F0F0] hover:bg-[#F07B05] focus:bg-[#F07B05] focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">
+                    <button type="button" class="text-web-white bg-web-black inline-flex cursor-pointer items-center gap-x-2 rounded-lg border border-transparent px-3 py-2 text-sm font-medium hover:bg-accent focus:bg-accent focus:outline-hidden disabled:pointer-events-none disabled:opacity-50">
                         Close
                     </button>
                 </div>
