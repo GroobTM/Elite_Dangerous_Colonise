@@ -38,7 +38,8 @@ namespace elite_dangerous_colonise.Services
                                     reader.GetFloat(2),
                                     reader.GetFloat(3),
                                     reader.GetFloat(4)
-                                    )
+                                    ),
+                                reader.GetString(5)
                             ));
                         }
                     }

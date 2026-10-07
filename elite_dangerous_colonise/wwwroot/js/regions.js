@@ -27,7 +27,7 @@ setTimeout(function () {
         regions.forEach(region => {
             console.log(region.name);
 
-            var regionMesh = createRegionMesh(region.range, region.centre, "#00FF00");
+            var regionMesh = createRegionMesh(region.range, region.centre, region.colour);
 
             mapScene.add(regionMesh);
         });
@@ -40,7 +40,7 @@ function createRegionMesh(size, centre, colour) {
     var material = new THREE.MeshBasicMaterial({
         color: colour,
         transparent: true,
-        opacity: 0.3,
+        opacity: 0.6,
         side: THREE.OneSided
     })
 

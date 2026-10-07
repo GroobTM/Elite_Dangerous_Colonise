@@ -12,16 +12,19 @@ namespace elite_dangerous_colonise.Models.Internal
         public int Range { get; private set; }
         /// <summary> The centre coordinates of the region. </summary>
         public Vector3 Centre { get; private set; }
+        /// <summary> The colour of the region. </summary>
+        public string Colour { get; private set; }
 
         /// <summary> Instantiates a Region. </summary>
         /// <param name="name"> The name of the region. </param>
         /// <param name="range"> The range of the region. </param>
         /// <param name="centre"> The centre coordinates of the region. </param>
-        public Region (string name, int range, Vector3 centre)
+        public Region (string name, int range, Vector3 centre, string colour)
         {
             Name = name;
             Range = range;
             Centre = centre;
+            Colour = colour;
         }
 
         /// <summary> Checks if a point is within the region. </summary>

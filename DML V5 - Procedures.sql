@@ -21,18 +21,21 @@ CREATE OR REPLACE FUNCTION "InsertRegion"(
 	"inputRegionRange" SMALLINT,
 	"inputCoordinateX" NUMERIC(11, 5),
     "inputCoordinateY" NUMERIC(11, 5),
-    "inputCoordinateZ" NUMERIC(11, 5)
+    "inputCoordinateZ" NUMERIC(11, 5),
+	"inputRegionColour" CHAR(7)
 )
 RETURNS VOID AS $$
 	INSERT INTO "Regions" (
 		"regionName",
 		"regionRange",
-		"regionCentreCoords"
+		"regionCentreCoords",
+		"regionColour"
 	)
 	VALUES (
 		"inputRegionName",
 		"inputRegionRange",
-		ST_MakePoint("inputCoordinateX", "inputCoordinateY", "inputCoordinateZ")
+		ST_MakePoint("inputCoordinateX", "inputCoordinateY", "inputCoordinateZ"),
+		"inputRegionColour"
 	)
 	ON CONFLICT ("regionName") DO NOTHING;
 $$ LANGUAGE sql;
@@ -43,14 +46,16 @@ RETURNS TABLE (
 	"regionRange" SMALLINT,
 	"centreCoordinateX" NUMERIC(11, 5),
     "centreCoordinateY" NUMERIC(11, 5),
-    "centreCoordinateZ" NUMERIC(11, 5)
+    "centreCoordinateZ" NUMERIC(11, 5),
+	"regionColour" CHAR(7)
 ) AS $$
 	SELECT 
 		"regionName",
 		"regionRange",
 		ST_X("regionCentreCoords"),
 		ST_Y("regionCentreCoords"),
-		ST_Z("regionCentreCoords")
+		ST_Z("regionCentreCoords"),
+		"regionColour"
 	FROM "Regions";
 $$ LANGUAGE sql;
 

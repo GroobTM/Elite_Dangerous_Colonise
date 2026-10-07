@@ -68,7 +68,8 @@ CREATE TABLE "Regions" (
 	"regionID" SERIAL PRIMARY KEY,
 	"regionName" VARCHAR(75) UNIQUE NOT NULL,
 	"regionRange" SMALLINT NOT NULL,
-	"regionCentreCoords" GEOMETRY(PointZ, 0) NOT NULL
+	"regionCentreCoords" GEOMETRY(PointZ, 0) NOT NULL,
+	"regionColour" CHAR(7) NOT NULL
 );
 
 CREATE TABLE "Factions" (
