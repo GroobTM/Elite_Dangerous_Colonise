@@ -18,21 +18,20 @@ $(function () {
         json: [ { "name": "Sol", "coords": { "x": 0, "y": 0, "z": 0 } } ],
         basePath: "/lib/ed3d/",
         startAnim: false,
-        cameraPos: [0, 50000, 0]
+        cameraPos: [0, 50000, 0],
+        effectScaleSystem: [0, 0]
     });
 });
 
 setTimeout(function () {
     if (mapScene) {
         regions.forEach(region => {
-            console.log(region.name);
-
             var regionMesh = createRegionMesh(region.range, region.centre, region.colour);
 
             mapScene.add(regionMesh);
         });
     }
-}, 200);
+}, 500);
 
 function createRegionMesh(size, centre, colour) {
     var geometry = new THREE.BoxGeometry(size * 2, size * 2, size * 2);
@@ -41,7 +40,7 @@ function createRegionMesh(size, centre, colour) {
         color: colour,
         transparent: true,
         opacity: 0.6,
-        side: THREE.OneSided
+        side: THREE.FrontSide
     })
 
     var regionMesh = new THREE.Mesh(geometry, material);
