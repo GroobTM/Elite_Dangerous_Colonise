@@ -1,51 +1,57 @@
-﻿var regions = window.serverRegions;
-var mapScene = null;
-
-var originalScene = THREE.Scene;
-THREE.Scene = function () {
-    originalScene.apply(this, arguments);
-
-    if (!mapScene) {
-        mapScene = this;
-    }
-};
-THREE.Scene.prototype = Object.create(originalScene.prototype);
-THREE.Scene.prototype.constructor = THREE.Scene;
-
-$(function () {
-    Ed3d.init({
-        container: "edmap",
-        json: [ { "name": "Sol", "coords": { "x": 0, "y": 0, "z": 0 } } ],
-        basePath: "/lib/ed3d/",
-        startAnim: false,
-        cameraPos: [0, 50000, 0],
-        effectScaleSystem: [0, 0]
-    });
+﻿const regions = window.serverRegions;
+const map = new L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: -10,
+    maxZoom: 2,
+    zoomSnap: 0.25
 });
 
-setTimeout(function () {
-    if (mapScene) {
-        regions.forEach(region => {
-            var regionMesh = createRegionMesh(region.range, region.centre, region.colour);
+const regionGroup = L.featureGroup();
 
-            mapScene.add(regionMesh);
+regions.forEach(region => {
+    const rectBounds = [
+        [region.centre.z - region.range, region.centre.x - region.range],
+        [region.centre.z + region.range, region.centre.x + region.range]
+    ];
+    const rect = L.rectangle(rectBounds, {
+        color: region.colour,
+        weight: 2,
+        fillColor: region.colour,
+        fillOpacity: 0.4
+    });
+
+    rect.on("click", () => {
+        window.location.href = `/Regions/${encodeURIComponent(region.name)}`;
+    });
+
+    rect.on("mouseover", function() {
+        this.setStyle({
+            fillOpacity: 0.6,
+            weight: 3
         });
-    }
-}, 500);
+    });
 
-function createRegionMesh(size, centre, colour) {
-    var geometry = new THREE.BoxGeometry(size * 2, size * 2, size * 2);
+    rect.on("mouseout", function () {
+        this.setStyle({
+            fillOpacity: 0.4,
+            weight: 2
+        });
+    });
 
-    var material = new THREE.MeshBasicMaterial({
-        color: colour,
-        transparent: true,
-        opacity: 0.6,
-        side: THREE.FrontSide
-    })
+    rect.bindTooltip(region.name, {
+        direction: "center",
+        permanent: false,
+        className: "rounded-lg !bg-web-black px-3 py-2 text-base !text-web-white opacity-0 shadow-xs !border-0 transition-opacity duration-200"
+    });
 
-    var regionMesh = new THREE.Mesh(geometry, material);
+    rect.addTo(regionGroup);
+});
 
-    regionMesh.position.set(centre.x, centre.y, -centre.z);
+regionGroup.addTo(map);
 
-    return regionMesh;
+if (regions.length > 0) {
+    map.fitBounds(regionGroup.getBounds(), { padding: [50, 50] });
+}
+else {
+    map.setView([0, 0], -3);
 }

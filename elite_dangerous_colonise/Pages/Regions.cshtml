@@ -8,24 +8,14 @@
 }
 
 @section Scripts {
-    <script src="~/lib/three.js/three.min.js"></script>
-    <script src="~/lib/ed3d/js/ed3dmap.min.js"></script>
+    <script src="~/lib/leaflet/leaflet.min.js"></script>
     <script>
-        window.serverRegions = @Json.Serialize(Model.Regions)
+        window.serverRegions = @Json.Serialize(Model.Regions);
     </script>
     <script src="~/js/regions.js"></script>
 }
 
-<div id="json_data"> [ { "name": "Sol", "coords": { "x": 0, "y": 0, "z": 0 } } ] </div>
+<link rel="stylesheet" href="~/lib/leaflet/leaflet.min.css" />
 
-<link rel="stylesheet" href="~/lib/ed3d/css/ed3d.css" />
-
-<style>
-    #edmap {
-        width: 100vw;
-        height: 100vh;
-    }
-</style>
-
-<div id="edmap"></div>
+<div id="map" class="my-3 h-[70vh] w-full !bg-black sm:my-10"></div>
 
