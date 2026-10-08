@@ -30,7 +30,7 @@
             const span = button.find("span");
             const svg = button.find("svg");
 
-            button.addClass("bg-accent text-web-white")
+            button.addClass("!bg-accent text-web-white")
                 .removeClass("bg-white text-web-black");
             span.addClass("text-web-white")
                 .removeClass("text-web-black");
@@ -43,7 +43,7 @@
             const svg = button.find("svg");
 
             button.addClass("bg-white text-web-black")
-                .removeClass("bg-accent text-web-white");
+                .removeClass("!bg-accent text-web-white");
             span.addClass("text-web-black")
                 .removeClass("text-web-white");
             svg.addClass("text-web-black")
@@ -56,7 +56,7 @@
     <div data-accordion="collapse" class="mt-3">
         <div id="about-heading-1" class="grid">
             <button type="button" class="border-web-black text-web-black flex w-full cursor-pointer items-center justify-between gap-3 rounded-t-lg border border-t-1 border-b-1 bg-white p-5 shadow-sm hover:bg-accent-hover rtl:text-right" data-accordion-target="#about-body-1" aria-expanded="false" aria-controls="about-body-1">
-                <span class="text-web-black flex items-center font-bold">What is this?</span>
+                <span class="text-web-black flex items-center font-bold">What is ED Colonise?</span>
                 <svg data-accordion-icon class="h-3 w-3 shrink-0 rotate-180 transition-transform duration-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
                 </svg>
@@ -66,14 +66,14 @@
         <div id="about-body-1" class="hidden" aria-labelledby="about-heading-1">
             <div class="border-web-black border border-t-0 bg-white p-5 shadow-sm">
                 <p>
-                    ED Colonise is a tool designed to make finding interesting or specific colonisation candidates easier.
+                    ED Colonise is a tool designed to make finding colonisation candidates easier.
                 </p>
             </div>
         </div>
 
         <div id="about-heading-2" class="grid">
             <button type="button" class="border-web-black text-web-black flex w-full cursor-pointer items-center justify-between gap-3 border border-t-1 border-b-1 bg-white p-5 shadow-sm hover:bg-accent-hover rtl:text-right" data-accordion-target="#about-body-2" aria-expanded="false" aria-controls="about-body-2">
-                <span class="text-web-black flex items-center font-bold">How do I use this tool...</span>
+                <span class="text-web-black flex items-center font-bold">How do I use ED Colonise?</span>
                 <svg data-accordion-icon class="h-3 w-3 shrink-0 rotate-180 transition-transform duration-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
                 </svg>
@@ -82,31 +82,58 @@
 
         <div id="about-body-2" class="hidden" aria-labelledby="about-heading-2">
             <div class="border-web-black border border-t-0 bg-white p-5 shadow-sm">
-                <h2 class="text-lg font-bold">...to find any system to colonise:</h2>
                 <p class="ml-5">
-                    Simply clicking "Search" will display all colonisable systems within 2000-3000 ly sorted by value. However, these results may be too far away, already claimed (but not reported as such), or they may not be what you wanted.
+                    Simply clicking "Search" will display all colonisable systems within a specific region, sorted by value. However, these results may be too far away for your liking, lack the required bodies for your desired economy, or already be claimed or locked (but not reported as such).
                     <br /><br />
-                    To refine your search, click the "More Options" button. This will open a selection of sliders that you can use to tailor your search to your preferences.
+                    To find results that are more suited to your colonisation goals, you will need to refine your search. To do this, click "More Options" and a range of parameters will appear.
                     <br /><br />
                     Once you've executed a search, a list of system names will be displayed under the search bar. Clicking on one of these names will display a summary of the system's details as well as the names and locations of nearby stations that you can use for colonisation.
                 </p>
-                <h2 class="mt-5 text-lg font-bold">...to expand from your existing colonies:</h2>
+                <h2 class="mt-5 text-lg font-bold">Reference System:</h2>
                 <p class="ml-5">
-                    To find colonisable systems within 15 ly of an existing system, enter the existing system's name into the "Colonised System" search box. If that system exists in our database, it will appear under the search bar. Select the system and click "Search".
+                    To expand a colony in a specific location, a colonised reference system can be specified. This will refine a search to only show colonisable systems within a specific distance of the reference system. By default, this is set to 15ly but can be increased to 100ly using the "Max Distance From Reference System" slider.
                 </p>
-                <h2 class="mt-5 text-lg font-bold">...to expand my faction:</h2>
+                <h2 class="mt-5 text-lg font-bold">Faction:</h2>
                 <p class="ml-5">
-                    To find systems that a specific faction can colonise, click the "More Options" button and enter the faction's name into the "Faction" search box. If that faction exists in our database, it will appear under the search bar. Select the system and click "Search".
+                    To expand a faction, you can enter its name into the "Faction" box. By default, this will refine a search to only include systems that can be colonised from a <b>station</b> that is controlled by the specific faction. The faction search mode can be toggled to only show systems that can be colonised from a <b>system</b> that is controlled by the faction.
+                </p>
+                <h2 class="mt-5 text-lg font-bold">Distance From Region Centre:</h2>
+                <p class="ml-5">
+                    If you don't want to colonise too far from a region's centre, a max distance can be set. This will refine the search to only include results within the specified distance.
+                </p>
+                <h2 class="mt-5 text-lg font-bold">Landable and Walkable Bodies:</h2>
+                <p class="ml-5">
+                    To specify how many bodies built on you can specify landable and walkable body counts. This will refine the search to only include systems that have a number of landable and walkable bodies that is within the specified range.
                     <br /><br />
-                    When viewing the details of a colonisation candidate, the locations, names, and controlling factions of stations that you can use for colonisation are shown under the "Nearby Stations" heading. Remember to pick a station controlled by the faction you want to expand.
+                    <b>Landable Bodies vs Walkable Bodies</b>
+                    <br />
+                    Landable bodies are bodies that your ship can land on and deploy an SRV on.
+                    <br />
+                    Walkable bodies are bodies that you can exit your ship on. All walkable bodies are landable bodies, but conditions like extreme gravity can prevent you from exiting your ship. Bodies that are not walkable may not support construction.
+                </p>
+                <h2 class="mt-5 text-lg font-bold">Body Counts:</h2>
+                <p class="ml-5">
+                    If you want to get specific about the types of bodies you want in your colony, you can specify how many of each body and colony influencer you would like. Each slider has an icon that displays how it will affect the economy of stations built around that influencer.
+                    <br /><br />
+                    <b>Economy Influencers vs Economy Boosters</b>
+                    <br />
+                    Economy influencers increase their specified economy type for a given station built around the influencers. Stations with the "Colony" economy type will be completely replaced by the economy specified by the economy influencers.
+                    <br />
+                    Economy boosters increase the strength of economy influencers but do not affect the economy by themselves. "Terraformable Bodies" and "Volcanic Bodies" are economy boosters.
+                    <br /><br />
+                    For a better explanation, read the <a href="https://docs.google.com/document/d/1toXyDQglwVACFKx8umXhP8QcMSAUYPcP6k3STIV2-hE" class="text-blue-800 underline">Colonisation Mega Guide</a>.
+                </p>
+                <h2 class="mt-5 text-lg font-bold">Hotspots:</h2>
+                <p class="ml-5">
+                    If you want a specific hotspot type to be present in one of the rings within your colony, you can select a range of hotspot types to refine your search. A long list of hotspots may result in few or no results.
                 </p>
                 <h2 class="mt-5 text-lg font-bold">Sorting:</h2>
                 <p class="ml-5">
-                    There are a few different sorting options you can select when executing a search: "System Value", "Most Walkable Bodies", "Most Hotspots", "Distance to Sol", and "Distance to Trailblazer Megaship".
+                    There are a few different sorting options you can select when executing a search: "System Value", "Most Walkable Bodies", "Most Hotspots", "Distance to Region Centre", and "Distance to Reference System".
                 </p>
                 <h2 class="mt-5 text-lg font-bold">General Notes:</h2>
                 <p class="ml-5">
-                    This tool is not perfect, and not all colonisable systems in the database are up to date with their current claim status. As such, <b>you should always check colonisation candidates using the in-game colonisation map mode.</b>
+                    This tool is not perfect, and not all colonisable systems in the database are up to date with their current claim status, and some are arbitrarily locked by FDev. As such, <b>you should always check colonisation candidates using the in-game colonisation map mode.</b>
                     <br /><br />
                     Additionally, if you want to contribute to the database's current understanding of the galaxy, you can report uncolonisable systems as "Claimed" (if another player has claimed/colonised the system) or "Locked" (if Frontier has prevented the system's colonisation for whatever reason).
                 </p>
@@ -125,9 +152,9 @@
         <div id="about-body-4" class="hidden" aria-labelledby="about-heading-4">
             <div class="border-web-black border border-t-0 bg-white p-5 shadow-sm">
                 <p>
-                    The value of a system gets calculated based on the types and quantities of bodies in the system, the number of walkable bodies, and the number of hotspots.
+                    The value of a system is calculated based on the types and quantities of bodies in the system, the number of walkable bodies, and the number of hotspots.
                     <br /><br />
-                    Bodies/body features are categorised into three groups and then weighted according to their group.
+                    Bodies/body features are categorised into three highly scientific, well thought out, and super cool groups and then weighted according to their group.
                 </p>
                 <div class="mt-5 rounded-lg border">
                     <table class="w-full table-fixed text-center">
@@ -142,7 +169,7 @@
                             <td>Other Star Types</td>
                         </tr>
                         <tr class="bg-gray-200">
-                            <td class ="border-r">Neutron Stars</td>
+                            <td class="border-r">Neutron Stars</td>
                             <td class="border-r">Rocky Bodies</td>
                             <td>Gas Giants</td>
                         </tr>
@@ -153,7 +180,7 @@
                         </tr>
                         <tr class="bg-gray-200">
                             <td class="border-r">Earth-like Worlds</td>
-                            <td class="border-r"></td>
+                            <td class="border-r">Volcanic Bodies</td>
                             <td>Metal Rich Bodies</td>
                         </tr>
                         <tr>
@@ -162,12 +189,22 @@
                             <td>Icy Bodies</td>
                         </tr>
                         <tr class="bg-gray-200">
-                            <td class="border-r">Bodies with Geologicals</td>
+                            <td class="border-r">Ammonia Worlds</td>
                             <td class="border-r"></td>
                             <td></td>
                         </tr>
                         <tr>
+                            <td class="border-r">Bodies with Geologicals</td>
+                            <td class="border-r"></td>
+                            <td></td>
+                        </tr>
+                        <tr class="bg-gray-200">
                             <td class="border-r">Bodies with Organics</td>
+                            <td class="border-r"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="border-r">Terraformable Bodies</td>
                             <td class="border-r"></td>
                             <td></td>
                         </tr>
@@ -176,7 +213,7 @@
                 <p class="mt-5">
                     The number of walkable bodies gets multiplied by a weight of 0.6, and the number of hotspots gets multiplied by a weight of 0.8.
                     <br /><br />
-                    The sum of quantities * weights produces the system's value.
+                    The sum of (quantities * weights) produces the system's value.
                     <br /><br />
                     Why these weights? ¯\_(ツ)_/¯
                 </p>
@@ -185,7 +222,7 @@
 
         <div id="about-heading-6" class="grid">
             <button type="button" class="border-web-black text-web-black flex w-full cursor-pointer items-center justify-between gap-3 border border-t-1 border-b-1 bg-white p-5 shadow-sm hover:bg-accent-hover rtl:text-right" data-accordion-target="#about-body-6" aria-expanded="false" aria-controls="about-body-6">
-                <span class="text-web-black flex items-center font-bold">Someone already claimed the system I wanted; what gives?</span>
+                <span class="text-web-black flex items-center font-bold">Why do claimed systems still appear in searches?</span>
                 <svg data-accordion-icon class="h-3 w-3 shrink-0 rotate-180 transition-transform duration-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
                 </svg>
@@ -195,9 +232,9 @@
         <div id="about-body-6" class="hidden" aria-labelledby="about-heading-6">
             <div class="border-web-black border border-t-0 bg-white p-5 shadow-sm">
                 <p>
-                    There is no 100% accurate way to track which systems have been claimed or colonised because players need to opt into sharing this data using 3rd party apps. Therefore, we need to make the most of the information we have, which can sometimes be outdated.
+                    There is no 100% accurate way to track which systems have been claimed or colonised because players need to opt into sharing this data using 3rd party apps. As such, results can be outdated.
                     <br /><br />
-                    If you want to help improve the dataset, you can do one of two things:
+                    If you want to help improve the dataset, you can do two things:
                 </p>
                 <ol class="ml-5 list-decimal">
                     <li>Start using a third-party app that allows you to opt into sharing your (anonymised) data with <a href="https://github.com/EDCD/EDDN" class="text-blue-800 underline">EDDN</a>. This will help improve all third-party apps that utilise this data. (<a href="https://edcd.github.io/cmdrs-guide.html" class="text-blue-800 underline">More Details</a>)</li>
@@ -209,7 +246,7 @@
 
         <div id="about-heading-7" class="grid">
             <button type="button" class="border-web-black text-web-black flex w-full cursor-pointer items-center justify-between gap-3 border border-t-1 border-b-1 bg-white p-5 shadow-sm hover:bg-accent-hover rtl:text-right" data-accordion-target="#about-body-7" aria-expanded="false" aria-controls="about-body-7">
-                <span class="text-web-black flex items-center font-bold">Why is a colonised system or faction missing from its search box?</span>
+                <span class="text-web-black flex items-center font-bold">Why is a colonised system missing from the reference search box?</span>
                 <svg data-accordion-icon class="h-3 w-3 shrink-0 rotate-180 transition-transform duration-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
                 </svg>
@@ -222,12 +259,8 @@
                 <ul class="ml-5 list-disc">
                     <li>The system was colonised today, and thus the database has not been updated with the new information yet.</li>
                     <li>The system was never sent to EDDN and thus is unknown to the database.</li>
-                    <li>The system is outside of this tool's range (more than 2000-3000 ly from Sol).</li>
+                    <li>The system is outside of the tool's coverage.</li>
                 </ul>
-                <br />
-                <p>
-                    It is rarer for a faction to be missing from the database and would likely only occur if the faction is not present within the tool's range (more than 2000-3000 ly from Sol). If this is not the case, let me know via the <a href="https://forums.frontier.co.uk/threads/introducing-edcolonise-net-a-colonisation-candidate-finder.635882/">Frontier Forum</a> post.
-                </p>
                 <br />
                 <p>
                     The tool's database is updated with new data daily at 5:00 UTC.
@@ -248,23 +281,6 @@
             <div class="border-web-black border border-t-0 bg-white p-5 shadow-sm">
                 <p>
                     Stations are marked as "Unknown" when the database has incomplete data about a colonised system. The tool has correctly identified that the system has been colonised, but detailed information about stations in the system has not been uploaded yet.
-                </p>
-            </div>
-        </div>
-
-        <div id="about-heading-9" class="grid">
-            <button type="button" class="border-web-black text-web-black flex w-full cursor-pointer items-center justify-between gap-3 border border-t-1 border-b-1 bg-white p-5 shadow-sm hover:bg-accent-hover rtl:text-right" data-accordion-target="#about-body-9" aria-expanded="false" aria-controls="about-body-9">
-                <span class="text-web-black flex items-center font-bold">What are colony influences?</span>
-                <svg data-accordion-icon class="h-3 w-3 shrink-0 rotate-180 transition-transform duration-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
-                </svg>
-            </button>
-        </div>
-
-        <div id="about-body-9" class="hidden" aria-labelledby="about-heading-9">
-            <div class="border-web-black border border-t-0 bg-white p-5 shadow-sm">
-                <p>
-                    Some stations have an economy listed as "Colony" in the construction screen. When the station is built, the "Colony" economy is replaced, depending on the station's location. For example, a Coriolis station built around a rocky body will have a "Refinery" economy, rather than the "Colony" economy.
                 </p>
             </div>
         </div>
