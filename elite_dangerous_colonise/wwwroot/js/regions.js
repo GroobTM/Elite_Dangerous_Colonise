@@ -1,51 +1,144 @@
-﻿var regions = window.serverRegions;
-var mapScene = null;
+﻿const regions = window.serverRegions;
+const backgroundBounds = [
+    [-20000, -45000],
+    [70000, 45000]
+];
+const scaleX = 1 / 640;
+const scaleY = -1 / 640;
+const shiftX = 70.3125;
+const shiftY = 109.375;
 
-var originalScene = THREE.Scene;
-THREE.Scene = function () {
-    originalScene.apply(this, arguments);
-
-    if (!mapScene) {
-        mapScene = this;
-    }
-};
-THREE.Scene.prototype = Object.create(originalScene.prototype);
-THREE.Scene.prototype.constructor = THREE.Scene;
-
-$(function () {
-    Ed3d.init({
-        container: "edmap",
-        json: [ { "name": "Sol", "coords": { "x": 0, "y": 0, "z": 0 } } ],
-        basePath: "/lib/ed3d/",
-        startAnim: false,
-        cameraPos: [0, 50000, 0],
-        effectScaleSystem: [0, 0]
-    });
+L.CRS.Galaxy = L.extend({}, L.CRS.Simple, {
+    transformation: new L.Transformation(scaleX, shiftX, scaleY, shiftY)
 });
 
-setTimeout(function () {
-    if (mapScene) {
-        regions.forEach(region => {
-            var regionMesh = createRegionMesh(region.range, region.centre, region.colour);
+const map = new L.map("map", {
+    crs: L.CRS.Galaxy,
+    minZoom: 2,
+    maxZoom: 6,
+    zoomSnap: 0.25,
+    maxBounds: backgroundBounds,
+    maxBoundsViscosity: 1.0
+});
 
-            mapScene.add(regionMesh);
-        });
+map.attributionControl.addAttribution("Map by ~");
+
+map.createPane("overlays");
+map.getPane("overlays").style.zIndex = 400;
+map.getPane("overlays").style.pointerEvents = "none";
+
+const backgroundLayer = L.tileLayer("/images/game-galaxy/{z}/{x}/{y}.webp", {
+    minZoom: 2,
+    maxNativeZoom: 6,
+    noWrap: true,
+    bounds: backgroundBounds,
+    errorTileUrl: "/images/empty-tile.webp"
+});
+
+const galRegionsOverlay = L.tileLayer("/images/region-lines/{z}/{x}/{y}.webp", {
+    minZoom: 2,
+    maxNativeZoom: 6,
+    noWrap: true,
+    bounds: backgroundBounds,
+    errorTileUrl: "/images/empty-tile.webp",
+    pane: "overlays"
+});
+
+backgroundLayer.addTo(map);
+
+const overlaysControl = {
+    "Galactic Regions": galRegionsOverlay
+};
+
+L.control.layers(null, overlaysControl, {
+    collapsed: false
+}).addTo(map);
+
+const regionGroup = L.featureGroup();
+
+regions.forEach(region => {
+    const rectBounds = [
+        [region.centre.z - region.range, region.centre.x - region.range],
+        [region.centre.z + region.range, region.centre.x + region.range]
+    ];
+    const rect = L.rectangle(rectBounds, {
+        color: region.colour,
+        weight: 2,
+        fillColor: region.colour,
+        fillOpacity: 0.4
+    });
+
+    const card = AddRegionToCards(region);
+
+    const activateCard = () => {
+        card.classList.add("bg-top", "scale-102", "!text-web-white");
     }
-}, 500);
+    const deactivateCard = () => {
+        card.classList.remove("bg-top", "scale-102", "!text-web-white");
+    }
 
-function createRegionMesh(size, centre, colour) {
-    var geometry = new THREE.BoxGeometry(size * 2, size * 2, size * 2);
+    rect.on("mouseover", function() {
+        this.setStyle({
+            fillOpacity: 0.6,
+            weight: 3
+        });
 
-    var material = new THREE.MeshBasicMaterial({
-        color: colour,
-        transparent: true,
-        opacity: 0.6,
-        side: THREE.FrontSide
-    })
+        activateCard();
+    });
 
-    var regionMesh = new THREE.Mesh(geometry, material);
+    rect.on("mouseout", function () {
+        this.setStyle({
+            fillOpacity: 0.4,
+            weight: 2
+        });
 
-    regionMesh.position.set(centre.x, centre.y, -centre.z);
+        deactivateCard();
+    });
 
-    return regionMesh;
+    $(card).on("mouseenter", () => {
+        rect.fire("mouseover");
+    }).on("mouseleave", () => {
+        rect.fire("mouseout");
+    });
+
+    rect.on("click", () => {
+        window.location.href = `/Regions/${encodeURIComponent(region.name)}`;
+    });
+
+    rect.bindTooltip(region.name, {
+        direction: "center",
+        permanent: false,
+        className: "rounded-lg !bg-web-black px-3 py-2 text-base !text-web-white opacity-0 shadow-xs !border-0 transition-opacity duration-200 font-[EUROCAPS]"
+    });
+
+    rect.addTo(regionGroup);
+});
+
+regionGroup.addTo(map);
+
+if (regions.length > 0) {
+    map.fitBounds(regionGroup.getBounds(), { padding: [50, 50] });
+}
+else {
+    map.fitBounds(backgroundBounds);
+}
+
+function AddRegionToCards (region) {
+    const card = document.createElement("a");
+    card.className = "text-web-black rounded-lg border-t-10 bg-bottom pt-1 pb-2 shadow-sm transition-all duration-300 ease-in-out hover:text-web-white hover:scale-102 hover:bg-top bg-[length:100%_200%]";
+    card.href = `/Regions/${region.name}`;
+
+    const hexColor = `${region.colour}`;
+    card.style.borderColor = hexColor;
+    card.style.backgroundImage = `linear-gradient(to bottom, ${hexColor} 50%, white 50%)`;
+
+    card.innerHTML = `
+        <h2 class="text-center text-2xl font-[EUROCAPS]">${region.name}</h2>
+        <p class="text-center">(${Math.round(region.centre.x * 100) / 100}, ${Math.round(region.centre.y * 100) / 100}, ${Math.round(region.centre.z * 100) / 100})</p>
+        <p class="text-center">±${(region.range).toLocaleString()}ly</p>
+    `;
+
+    document.getElementById("card_grid").appendChild(card);
+
+    return card;
 }

@@ -8,24 +8,21 @@
 }
 
 @section Scripts {
-    <script src="~/lib/three.js/three.min.js"></script>
-    <script src="~/lib/ed3d/js/ed3dmap.min.js"></script>
+    <script src="~/lib/leaflet/leaflet.min.js"></script>
     <script>
-        window.serverRegions = @Json.Serialize(Model.Regions)
+        window.serverRegions = @Json.Serialize(Model.Regions);
     </script>
     <script src="~/js/regions.js"></script>
 }
-
-<div id="json_data"> [ { "name": "Sol", "coords": { "x": 0, "y": 0, "z": 0 } } ] </div>
-
-<link rel="stylesheet" href="~/lib/ed3d/css/ed3d.css" />
-
+<link rel="stylesheet" href="~/lib/leaflet/leaflet.min.css" />
 <style>
-    #edmap {
-        width: 100vw;
-        height: 100vh;
+    .leaflet-control-layers input {
+        transform: translateY(-4px);
+        border-radius: 2px;
+        cursor: pointer;
     }
 </style>
 
-<div id="edmap"></div>
-
+<h1 class="text-web-white pt-3 pb-3 text-center text-6xl font-[EUROCAPS]">Regions</h1>
+<div id="map" class="h-[70vh] w-full !bg-black"></div>
+<section id="card_grid" class="bg-web-white mt-3 mb-3 grid grid-cols-1 gap-2 rounded-md p-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"></section>

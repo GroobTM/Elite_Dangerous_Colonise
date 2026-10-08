@@ -7,10 +7,6 @@
       "destination": "wwwroot/lib/noUiSlider/"
     },
     {
-      "library": "three.js@r75",
-      "destination": "wwwroot/lib/three.js/"
-    },
-    {
       "library": "flowbite@3.1.2",
       "destination": "wwwroot/lib/flowbite/",
       "files": [
@@ -311,6 +307,10 @@
         "variants.css",
         "variants.min.css"
       ]
+    },
+    {
+      "library": "leaflet@1.9.4",
+      "destination": "wwwroot/lib/leaflet/"
     }
   ]
 }

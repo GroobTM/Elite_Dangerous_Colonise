@@ -828,7 +828,7 @@ function ReinitializeAccordion() {
         const svg = button.find("svg");
 
         if (button.attr("aria-expanded") === "true") {
-            button.addClass("bg-accent text-web-white")
+            button.addClass("!bg-accent text-web-white")
                 .removeClass("bg-white text-web-black");
             span.addClass("text-web-white font-bold")
                 .removeClass("text-web-black");
@@ -837,7 +837,7 @@ function ReinitializeAccordion() {
         }
         else {
             button.addClass("bg-white text-web-black")
-                .removeClass("bg-accent text-web-white");
+                .removeClass("!bg-accent text-web-white");
             span.addClass("text-web-black")
                 .removeClass("text-web-white font-bold");
             svg.addClass("text-web-black")
