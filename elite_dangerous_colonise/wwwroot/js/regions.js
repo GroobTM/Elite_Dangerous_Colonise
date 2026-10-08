@@ -68,15 +68,22 @@ regions.forEach(region => {
         fillOpacity: 0.4
     });
 
-    rect.on("click", () => {
-        window.location.href = `/Regions/${encodeURIComponent(region.name)}`;
-    });
+    const card = AddRegionToCards(region);
+
+    const activateCard = () => {
+        card.classList.add("bg-top", "scale-102", "!text-web-white");
+    }
+    const deactivateCard = () => {
+        card.classList.remove("bg-top", "scale-102", "!text-web-white");
+    }
 
     rect.on("mouseover", function() {
         this.setStyle({
             fillOpacity: 0.6,
             weight: 3
         });
+
+        activateCard();
     });
 
     rect.on("mouseout", function () {
@@ -84,12 +91,24 @@ regions.forEach(region => {
             fillOpacity: 0.4,
             weight: 2
         });
+
+        deactivateCard();
+    });
+
+    $(card).on("mouseenter", () => {
+        rect.fire("mouseover");
+    }).on("mouseleave", () => {
+        rect.fire("mouseout");
+    });
+
+    rect.on("click", () => {
+        window.location.href = `/Regions/${encodeURIComponent(region.name)}`;
     });
 
     rect.bindTooltip(region.name, {
         direction: "center",
         permanent: false,
-        className: "rounded-lg !bg-web-black px-3 py-2 text-base !text-web-white opacity-0 shadow-xs !border-0 transition-opacity duration-200"
+        className: "rounded-lg !bg-web-black px-3 py-2 text-base !text-web-white opacity-0 shadow-xs !border-0 transition-opacity duration-200 font-[EUROCAPS]"
     });
 
     rect.addTo(regionGroup);
@@ -102,4 +121,24 @@ if (regions.length > 0) {
 }
 else {
     map.fitBounds(backgroundBounds);
+}
+
+function AddRegionToCards (region) {
+    const card = document.createElement("a");
+    card.className = "text-web-black rounded-lg border-t-10 bg-bottom pt-1 pb-2 shadow-sm transition-all duration-300 ease-in-out hover:text-web-white hover:scale-102 hover:bg-top bg-[length:100%_200%]";
+    card.href = `/Regions/${region.name}`;
+
+    const hexColor = `${region.colour}`;
+    card.style.borderColor = hexColor;
+    card.style.backgroundImage = `linear-gradient(to bottom, ${hexColor} 50%, white 50%)`;
+
+    card.innerHTML = `
+        <h2 class="text-center text-2xl font-[EUROCAPS]">${region.name}</h2>
+        <p class="text-center">(${Math.round(region.centre.x * 100) / 100}, ${Math.round(region.centre.y * 100) / 100}, ${Math.round(region.centre.z * 100) / 100})</p>
+        <p class="text-center">±${(region.range).toLocaleString()}ly</p>
+    `;
+
+    document.getElementById("card_grid").appendChild(card);
+
+    return card;
 }
