@@ -14,8 +14,14 @@
     </script>
     <script src="~/js/regions.js"></script>
 }
-
 <link rel="stylesheet" href="~/lib/leaflet/leaflet.min.css" />
+<style>
+    .leaflet-control-layers input {
+        transform: translateY(-4px);
+        border-radius: 2px;
+        cursor: pointer;
+    }
+</style>
 
 <div id="map" class="my-3 h-[70vh] w-full !bg-black sm:my-10"></div>
 

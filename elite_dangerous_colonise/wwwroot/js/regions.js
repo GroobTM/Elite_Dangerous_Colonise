@@ -1,10 +1,8 @@
 ﻿const regions = window.serverRegions;
-const background = "/images/origin-lines/{z}/{x}/{y}.webp"
 const backgroundBounds = [
     [-20000, -45000],
     [70000, 45000]
 ];
-
 const scaleX = 1 / 640;
 const scaleY = -1 / 640;
 const shiftX = 70.3125;
@@ -16,19 +14,44 @@ L.CRS.Galaxy = L.extend({}, L.CRS.Simple, {
 
 const map = new L.map("map", {
     crs: L.CRS.Galaxy,
-    minZoom: 0,
-    maxZoom: 7,
+    minZoom: 2,
+    maxZoom: 6,
     zoomSnap: 0.25,
     maxBounds: backgroundBounds,
     maxBoundsViscosity: 1.0
 });
 
-L.tileLayer(background, {
-    minZoom: 0,
+map.attributionControl.addAttribution("Map by ~");
+
+map.createPane("overlays");
+map.getPane("overlays").style.zIndex = 400;
+map.getPane("overlays").style.pointerEvents = "none";
+
+const backgroundLayer = L.tileLayer("/images/game-galaxy/{z}/{x}/{y}.webp", {
+    minZoom: 2,
     maxNativeZoom: 6,
     noWrap: true,
     bounds: backgroundBounds,
     errorTileUrl: "/images/empty-tile.webp"
+});
+
+const galRegionsOverlay = L.tileLayer("/images/region-lines/{z}/{x}/{y}.webp", {
+    minZoom: 2,
+    maxNativeZoom: 6,
+    noWrap: true,
+    bounds: backgroundBounds,
+    errorTileUrl: "/images/empty-tile.webp",
+    pane: "overlays"
+});
+
+backgroundLayer.addTo(map);
+
+const overlaysControl = {
+    "Galactic Regions": galRegionsOverlay
+};
+
+L.control.layers(null, overlaysControl, {
+    collapsed: false
 }).addTo(map);
 
 const regionGroup = L.featureGroup();
