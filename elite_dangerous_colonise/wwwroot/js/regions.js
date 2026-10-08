@@ -1,28 +1,35 @@
 ﻿const regions = window.serverRegions;
-const background = "/images/origin-lines/origin-lines.png"
+const background = "/images/origin-lines/{z}/{x}/{y}.webp"
 const backgroundBounds = [
     [-20000, -45000],
     [70000, 45000]
 ];
 
-const map = new L.map('map', {
-    crs: L.CRS.Simple,
-    minZoom: -8,
-    maxZoom: 0,
+const scaleX = 1 / 640;
+const scaleY = -1 / 640;
+const shiftX = 70.3125;
+const shiftY = 109.375;
+
+L.CRS.Galaxy = L.extend({}, L.CRS.Simple, {
+    transformation: new L.Transformation(scaleX, shiftX, scaleY, shiftY)
+});
+
+const map = new L.map("map", {
+    crs: L.CRS.Galaxy,
+    minZoom: 0,
+    maxZoom: 7,
     zoomSnap: 0.25,
     maxBounds: backgroundBounds,
     maxBoundsViscosity: 1.0
 });
 
-L.imageOverlay(background, backgroundBounds).addTo(map);
-
-//L.tileLayer(background, {
-//    minZoom: -8,
-//    maxZoom: 0,
-//    zoomOffset: 8,
-//    noWrap: true,
-//    bounds: backgroundBounds
-//}).addTo(map);
+L.tileLayer(background, {
+    minZoom: 0,
+    maxNativeZoom: 6,
+    noWrap: true,
+    bounds: backgroundBounds,
+    errorTileUrl: "/images/empty-tile.webp"
+}).addTo(map);
 
 const regionGroup = L.featureGroup();
 
