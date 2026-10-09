@@ -1,5 +1,8 @@
-﻿using System.IO.Compression;
-using System.Net.Sockets;
+﻿using elite_dangerous_colonise.Models.Internal;
+using Npgsql;
+using System.Globalization;
+using System.IO.Compression;
+using System.Numerics;
 
 namespace elite_dangerous_colonise.Services
 {
@@ -28,7 +31,8 @@ namespace elite_dangerous_colonise.Services
             Console.WriteLine("Launch Options:");
             Console.WriteLine("1. Insert galaxy Json file into database.");
             Console.WriteLine("2. Insert galaxy GZip file into database.");
-            Console.WriteLine("2. Exit");
+            Console.WriteLine("3. Insert region into database.");
+            Console.WriteLine("4. Exit");
             Console.WriteLine("----------------------------------------------------------------------");
         }
 
@@ -44,16 +48,21 @@ namespace elite_dangerous_colonise.Services
                 switch (input)
                 {
                     case "1":
-                        await InsertIntoDatabase(true);
+                        await InsertSystemsIntoDatabase(true);
                         selectionValid = true;
                         break;
 
                     case "2":
                         selectionValid = true;
-                        await InsertIntoDatabase(false);
+                        await InsertSystemsIntoDatabase(false);
                         break;
 
                     case "3":
+                        selectionValid = true;
+                        await InsertRegionIntoDatabase(CreateRegion());
+                        break;
+
+                    case "4":
                         selectionValid = true;
                         break;
 
@@ -62,9 +71,12 @@ namespace elite_dangerous_colonise.Services
                         break;
                 }
             }
+
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadKey();
         }
 
-        private async Task InsertIntoDatabase(bool readAsJson)
+        private async Task InsertSystemsIntoDatabase(bool readAsJson)
         {
             string? filePath = null;
 
@@ -89,6 +101,123 @@ namespace elite_dangerous_colonise.Services
                     await dbWriter.InsertJsonIntoDatabase(decompressionStream);
                 }
             }
+        }
+
+        private Region CreateRegion()
+        {
+            Region? region = null;
+
+            while (region == null)
+            {
+                string? regionName = null;
+
+                while(regionName == null || regionName.Length == 0)
+                {
+                    Console.Write("Enter region name: ");
+
+                    regionName = Console.ReadLine()?.Trim();
+                }
+
+                int? regionRange = null;
+
+                while (regionRange == null || regionRange < 50)
+                {
+                    Console.Write("Enter region range: ");
+
+                    if (int.TryParse(Console.ReadLine()?.Trim(), out int range))
+                    {
+                        regionRange = range;
+                    }
+                }
+
+                Vector3? regionCentre = null;
+
+                while (regionCentre == null)
+                {
+                    float? centreX = null;
+                    float? centreY = null;
+                    float? centreZ = null;
+
+                    Console.WriteLine("Enter region centre: ");
+
+                    Console.Write("X: ");
+
+                    if (float.TryParse(Console.ReadLine()?.Trim(), out float x))
+                    {
+                        centreX = x;
+                    }
+
+                    Console.Write("Y: ");
+
+                    if (float.TryParse(Console.ReadLine()?.Trim(), out float y))
+                    {
+                        centreY = y;
+                    }
+
+                    Console.Write("Z: ");
+
+                    if (float.TryParse(Console.ReadLine()?.Trim(), out float z))
+                    {
+                        centreZ = z;
+                    }
+
+                    if (centreX != null && centreY != null && centreZ != null)
+                    {
+                        regionCentre = new Vector3((float)centreX, (float)centreY, (float)centreZ);
+                    }
+
+                    
+                }
+
+                string? regionColour = null;
+
+                while (regionColour == null || regionColour.Length != 7)
+                {
+                    Console.Write("Enter region colour: #");
+
+                    if (int.TryParse(Console.ReadLine()?.Trim(), NumberStyles.HexNumber, null, out int colour))
+                    {
+                        regionColour = $"#{colour.ToString("X6")}";
+                    }
+                }
+
+                Console.WriteLine("New Region:");
+                Console.WriteLine($"- Name: {regionName}");
+                Console.WriteLine($"- Range: {regionRange}");
+                Console.WriteLine($"- Centre: {regionCentre}");
+                Console.WriteLine($"- Colour: {regionColour}");
+                Console.Write("Proceed? (y/n) ");
+
+                string? answer = Console.ReadLine()?.Trim();
+
+                if (answer != null && (answer.ToLower() == "y" || answer.ToLower() == "yes")) {
+                    region = new Region(regionName, (int)regionRange, (Vector3)regionCentre, regionColour);
+                }
+            }
+
+            return region;
+        }
+
+        private async Task InsertRegionIntoDatabase(Region region)
+        {
+            await using AsyncServiceScope scope = serviceProvider.CreateAsyncScope();
+            await using NpgsqlDataSource dataSource = scope.ServiceProvider.GetRequiredService<NpgsqlDataSource>();
+            await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
+            {
+                await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"InsertRegion\"(@inputRegionName, @inputRegionRange, @inputCoordinateX, @inputCoordinateY, @inputCoordinateZ, @inputRegionColour)", conn))
+                {
+                    command.Parameters.AddWithValue("inputRegionName", region.Name);
+                    command.Parameters.AddWithValue("inputRegionRange", (short)region.Range);
+                    command.Parameters.AddWithValue("inputCoordinateX", (decimal)region.Centre.X);
+                    command.Parameters.AddWithValue("inputCoordinateY", (decimal)region.Centre.Y);
+                    command.Parameters.AddWithValue("inputCoordinateZ", (decimal)region.Centre.Z);
+                    command.Parameters.AddWithValue("inputRegionColour", NpgsqlTypes.NpgsqlDbType.Char, region.Colour);
+
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+
+            Console.WriteLine($"Region \"{region.Name}\" added to database.");
         }
     }
 }
