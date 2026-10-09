@@ -21,8 +21,16 @@ namespace elite_dangerous_colonise.Services
         /// <summary> Runs the launcher. </summary>
         public async Task Run()
         {
-            LauncherHeader();
-            await LauncherOptions();
+            bool close = false;
+
+            while (!close)
+            {
+                LauncherHeader();
+                close = await LauncherOptions();
+            }
+
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadKey();
         }
 
         private static void LauncherHeader()
@@ -32,11 +40,12 @@ namespace elite_dangerous_colonise.Services
             Console.WriteLine("1. Insert galaxy Json file into database.");
             Console.WriteLine("2. Insert galaxy GZip file into database.");
             Console.WriteLine("3. Insert region into database.");
-            Console.WriteLine("4. Exit");
+            Console.WriteLine("4. Toggle region in database.");
+            Console.WriteLine("5. Exit");
             Console.WriteLine("----------------------------------------------------------------------");
         }
 
-        private async Task LauncherOptions()
+        private async Task<bool> LauncherOptions()
         {
             bool selectionValid = false;
 
@@ -64,16 +73,15 @@ namespace elite_dangerous_colonise.Services
 
                     case "4":
                         selectionValid = true;
+                        await ToggleRegionInDatabase();
                         break;
 
-                    default:
-                        Console.WriteLine($"{input ?? ""} is not an option.");
-                        break;
+                    case "5":
+                        return true;
                 }
             }
 
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadKey();
+            return false;
         }
 
         private async Task InsertSystemsIntoDatabase(bool readAsJson)
@@ -201,7 +209,7 @@ namespace elite_dangerous_colonise.Services
         private async Task InsertRegionIntoDatabase(Region region)
         {
             await using AsyncServiceScope scope = serviceProvider.CreateAsyncScope();
-            await using NpgsqlDataSource dataSource = scope.ServiceProvider.GetRequiredService<NpgsqlDataSource>();
+            NpgsqlDataSource dataSource = scope.ServiceProvider.GetRequiredService<NpgsqlDataSource>();
             await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
             {
                 await using (NpgsqlCommand command = new NpgsqlCommand("SELECT \"InsertRegion\"(@inputRegionName, @inputRegionRange, @inputCoordinateX, @inputCoordinateY, @inputCoordinateZ, @inputRegionColour)", conn))
@@ -218,6 +226,39 @@ namespace elite_dangerous_colonise.Services
             }
 
             Console.WriteLine($"Region \"{region.Name}\" added to database.");
+        }
+
+        private async Task ToggleRegionInDatabase()
+        {
+            string? regionName = null;
+
+            while (!(regionName != null))
+            {
+                Console.Write("Enter region name: ");
+                regionName = Console.ReadLine()?.Trim();
+            }
+
+            await using AsyncServiceScope scope = serviceProvider.CreateAsyncScope();
+            NpgsqlDataSource dataSource = scope.ServiceProvider.GetRequiredService<NpgsqlDataSource>();
+            await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
+            {
+                await using (NpgsqlCommand command = new NpgsqlCommand("UPDATE \"Regions\" SET \"regionActive\" = NOT \"regionActive\" WHERE \"regionName\" = @regionName RETURNING \"regionActive\"", conn))
+                {
+                    command.Parameters.AddWithValue("regionName", regionName);
+
+                    await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        if (reader.Read())
+                        {
+                            Console.WriteLine($"Region \"{regionName}\" was set to {(reader.GetBoolean(0) ? "" : "not ")}active.");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Region \"{regionName}\" not found.");
+                        }
+                    }
+                }
+            }
         }
     }
 }

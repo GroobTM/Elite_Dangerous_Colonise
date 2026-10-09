@@ -69,7 +69,8 @@ CREATE TABLE "Regions" (
 	"regionName" VARCHAR(75) UNIQUE NOT NULL,
 	"regionRange" SMALLINT NOT NULL,
 	"regionCentreCoords" GEOMETRY(PointZ, 0) NOT NULL,
-	"regionColour" CHAR(7) NOT NULL
+	"regionColour" CHAR(7) NOT NULL,
+	"regionActive" BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE "Factions" (
@@ -178,6 +179,17 @@ CREATE TABLE "StagedStarSystems" (
 	"systemID" NUMERIC(20, 0) PRIMARY KEY,
 	FOREIGN KEY ("systemID") REFERENCES "StarSystems"("systemID") ON DELETE CASCADE
 );
+
+CREATE OR REPLACE VIEW "SelectRegionsView" AS
+SELECT 
+	"regionName",
+	"regionRange",
+	ST_X("regionCentreCoords") AS "centreCoordinateX",
+	ST_Y("regionCentreCoords") AS "centreCoordinateY",
+	ST_Z("regionCentreCoords") AS "centreCoordinateZ",
+	"regionColour",
+	"regionActive"
+FROM "Regions";
 
 CREATE MATERIALIZED VIEW "DistinctColonisedStarSystems" AS
 SELECT DISTINCT ON (css."colonisedSystemID")

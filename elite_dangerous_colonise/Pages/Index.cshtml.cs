@@ -15,15 +15,17 @@ namespace elite_dangerous_colonise.Pages
 
         private readonly NpgsqlDataSource dataSource;
         private readonly AppLogger logger;
+        private readonly RegionStore regionStore;
 
         public string RegionName { get; private set; }
         public SelectMaxSearchValuesResult? MaxValues { get; private set; }
         public List<string> HotspotTypes { get; private set; }
 
-        public IndexModel(NpgsqlDataSource dataSource, AppLogger logger)
+        public IndexModel(NpgsqlDataSource dataSource, AppLogger logger, RegionStore regionStore)
         {
             this.dataSource = dataSource;
             this.logger = logger;
+            this.regionStore = regionStore;
         }
 
         public async Task<IActionResult> OnGet(string? regionName = null)
@@ -46,20 +48,12 @@ namespace elite_dangerous_colonise.Pages
 
             try
             {
-                MaxValues = await SelectMaxSearchValues();
-
-                if (MaxValues == null)
+                if (!regionStore.GetActiveRegions().Any(region => region.Name == RegionName))
                 {
-                    if (RegionName == "Sol")
-                    {
-                        throw new Exception("MaxValues is null in Sol Region");
-                    }
-                    else
-                    {
-                        return NotFound();
-                    }
+                    return NotFound();
                 }
 
+                MaxValues = await SelectMaxSearchValues() ?? throw new Exception($"HotspotTypes is null in {RegionName} Region");
                 HotspotTypes = await SelectHotspotTypes() ?? throw new Exception("HotspotTypes is null");
 
 

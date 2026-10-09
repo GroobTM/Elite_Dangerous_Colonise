@@ -8,6 +8,7 @@ namespace elite_dangerous_colonise.Services
     {
         private readonly NpgsqlDataSource dataSource;
         private IReadOnlyList<Region> regions = new List<Region>();
+        private IReadOnlyList<Region> activeRegions = new List<Region>();
 
         public RegionStore(NpgsqlDataSource dataSource)
         {
@@ -19,13 +20,18 @@ namespace elite_dangerous_colonise.Services
             return regions;
         }
 
+        public IReadOnlyList<Region> GetActiveRegions()
+        {
+            return activeRegions;
+        }
+
         public async Task Initialise()
         {
             List<Region> regions = new List<Region>();
 
             await using (NpgsqlConnection conn = await dataSource.OpenConnectionAsync())
             {
-                await using (NpgsqlCommand command = new NpgsqlCommand("Select * FROM \"SelectRegions\"()", conn))
+                await using (NpgsqlCommand command = new NpgsqlCommand("Select * FROM \"SelectRegionsView\"", conn))
                 {
                     await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                     {
@@ -39,7 +45,8 @@ namespace elite_dangerous_colonise.Services
                                     reader.GetFloat(3),
                                     reader.GetFloat(4)
                                     ),
-                                reader.GetString(5)
+                                reader.GetString(5),
+                                reader.GetBoolean(6)
                             ));
                         }
                     }
@@ -47,6 +54,7 @@ namespace elite_dangerous_colonise.Services
             }
 
             this.regions = regions.AsReadOnly();
+            this.activeRegions = regions.Where(region => region.Active).ToList().AsReadOnly();
         }
     }
 }

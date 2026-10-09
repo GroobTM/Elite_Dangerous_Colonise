@@ -7,14 +7,12 @@ namespace elite_dangerous_colonise.Pages
 {
     public class RegionsModel : PageModel
     {
-        private readonly AppLogger logger;
         private readonly RegionStore regionStore;
 
-        public List<Region> Regions { get; private set; }
+        public IReadOnlyList<Region> Regions { get; private set; }
 
-        public RegionsModel (AppLogger logger, RegionStore regionStore)
+        public RegionsModel (RegionStore regionStore)
         {
-            this.logger = logger;
             this.regionStore = regionStore;
         }
 
@@ -27,8 +25,7 @@ namespace elite_dangerous_colonise.Pages
                 return RedirectToPage("/Captcha", new { ReturnUrl = returnUrl });
             }
 
-            Regions = new List<Region>(regionStore.GetRegions());
-            //Regions.RemoveAll(region => region.Name == "Colonia" || region.Name == "Sagittarius A*");
+            Regions = regionStore.GetActiveRegions();
 
             return Page();
         }
