@@ -1,0 +1,49 @@
+﻿@page
+@model elite_dangerous_colonise.Pages.RegionFormModel
+@{
+	ViewData["Title"] = "New Region Form";
+	ViewData["Description"] = "Use this form to request a new region.";
+	ViewData["url"] = "https://edcolonise.net/RegionForm";
+	ViewData["Theme"] = "None";
+}
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}
+
+@{
+	if(Model.Post)
+	{
+		<p>Region Submitted</p>
+	}
+	else
+	{
+		<form method="post">
+			<div asp-validation-summary="ModelOnly"></div>
+			<div>
+				<label asp-for="FormInput.Name"></label>
+				<input asp-for="FormInput.Name" />
+				<span asp-validation-for="FormInput.Name"></span>
+			</div>
+
+			<div>
+				<label asp-for="FormInput.Radius"></label>
+				<input asp-for="FormInput.Radius" />
+				<span asp-validation-for="FormInput.Radius"></span>
+			</div>
+
+			<div>
+				<label asp-for="FormInput.CentreSystem"></label>
+				<input asp-for="FormInput.CentreSystem" />
+				<span asp-validation-for="FormInput.CentreSystem"></span>
+			</div>
+
+			<div>
+				<label asp-for="FormInput.Community"></label>
+				<input asp-for="FormInput.Community" />
+				<span asp-validation-for="FormInput.Community"></span>
+			</div>
+
+			<button type="submit">Submit</button>
+		</form>
+	}
+}
