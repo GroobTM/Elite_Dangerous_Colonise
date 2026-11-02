@@ -8,49 +8,86 @@
 }
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+
+@{
+		if(Model.Post)
+		{
+			<script>
+				var redirectCounter = 5;
+				var countdown = setInterval(function() {
+					$("#redirect_timer").text(--redirectCounter);
+
+					if (redirectCounter <= 0) {
+						 clearInterval(countdown);
+						 window.location.replace("/");
+					}
+				}, 1000);
+			</script>
+		}
+	}
 }
 
 <h1 class="text-web-white pt-3 pb-3 text-center text-6xl font-[EUROCAPS]">New Region Form</h1>
+<section class="bg-web-white mx-auto my-3 flex w-full max-w-250 flex-col rounded-md p-5">
 @{
 	if(Model.Post)
 	{
-		<p>Region Submitted</p>
+		<p class="text-web-black text-center text-lg">Form Submitted</p>
+		<p class="text-web-black text-center">You will be redirected automatically in <span id="redirect_timer">5</span> seconds, or <a href="~" class="text-blue-800 underline">click here.</a></p>
 	}
 	else
 	{
-		<form method="post" class="bg-web-white mx-auto my-3 flex w-1/2 flex-col rounded-md p-5">
-			<div asp-validation-summary="ModelOnly"></div>
-			<div class="relative">
-				<label asp-for="FormInput.Name" for="region_name" class="text-web-black absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"></label>
-				<input asp-for="FormInput.Name" id="region_name" class="peer border-web-black text-web-black block w-full appearance-none rounded-lg border-1 bg-white px-2.5 pt-4 pb-2.5 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none" />
-				<span asp-validation-for="FormInput.Name"></span>
+		<p class="text-web-black">Please use this form to request a new region. Check that a region does not already exist before continuing. Existing regions can be found <a href="~/Regions" target="_blank" class="text-blue-800 underline">here</a>.</p>
+		<form method="post">
+			<div class="absolute top-[-9999px] left-[-9999px]" aria-hidden="true">
+				<label asp-for="FormInput.EmailAddress"></label>
+				<input asp-for="FormInput.EmailAddress" tabindex="-1" autocomplete="off" />
 			</div>
 
-			<div class="relative mt-4">
-				<label asp-for="FormInput.Radius" for="region_radius" class="text-web-black absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"></label>
-				<input asp-for="FormInput.Radius" id="region_radius" class="peer border-web-black text-web-black block w-full appearance-none rounded-lg border-1 bg-white px-2.5 pt-4 pb-2.5 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none" />
-				<span asp-validation-for="FormInput.Radius"></span>
+			<div asp-validation-summary="ModelOnly" class="mb-1 text-center text-red-800"></div>
+			<div class="mt-4 grid grid-cols-1">
+				<label asp-for="FormInput.Name" for="region_name" class="text-web-black pb-1 text-lg"></label>
+				<p class="text-web-black pb-1 text-justify text-sm">The name of the region. This might be the name of the central system, a nebula, or another name accepted by the broader Elite Dangerous community.</p>
+				<input asp-for="FormInput.Name" id="region_name" class="border-web-black text-web-black w-full appearance-none rounded-lg border-1 bg-white px-2.5 py-3 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none" />
+				<span asp-validation-for="FormInput.Name" class="mt-1 text-right text-sm text-red-800"></span>
 			</div>
 
-			<div class="relative mt-4">
-				<label asp-for="FormInput.CentreSystem" for="region_centre" class="text-web-black absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"></label>
-				<input asp-for="FormInput.CentreSystem" id="region_centre" class="peer border-web-black text-web-black block w-full appearance-none rounded-lg border-1 bg-white px-2.5 pt-4 pb-2.5 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none" />
-				<span asp-validation-for="FormInput.CentreSystem"></span>
+			<div class="mt-4 grid grid-cols-1">
+				<label asp-for="FormInput.Radius" for="region_radius" class="text-web-black pb-1 text-lg"></label>
+				<p class="text-web-black pb-1 text-justify text-sm">The radius of the region (50 ly - 500 ly). This determines the region's size. Please specify a realistic radius for the region, as unnecessarily large regions might be rejected. Regions with a higher star density should have a lower radius to compensate. (Regions are cubes, so technically radius is the wrong term.)</p>
+				<div class="relative">
+					<input asp-for="FormInput.Radius" id="region_radius" class="border-web-black text-web-black w-full appearance-none rounded-lg border-1 bg-white px-2.5 py-3 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none" />
+					<label for="region_radius" class="pointer-events-none absolute -translate-x-12 translate-y-2.5 text-gray-500">ly</label>
+				</div>
+				<span asp-validation-for="FormInput.Radius" class="mt-1 text-right text-sm text-red-800"></span>
 			</div>
 
-			<div class="relative mt-4">
-				<label asp-for="FormInput.Community" for="region_community" class="text-web-black absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"></label>
-				<input asp-for="FormInput.Community" id="region_community" class="peer border-web-black text-web-black block w-full appearance-none rounded-lg border-1 bg-white px-2.5 pt-4 pb-2.5 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none" />
-				<span asp-validation-for="FormInput.Community"></span>
+			<div class="mt-4 grid grid-cols-1">
+				<label asp-for="FormInput.CentreSystem" for="region_centre" class="text-web-black pb-1 text-lg"></label>
+					<p class="text-web-black pb-1 text-justify text-sm">The name of a system that the region will surround. This system should be colonised and should be able to support the creation of new colonies.</p>
+				<input asp-for="FormInput.CentreSystem" id="region_centre" class="border-web-black text-web-black w-full appearance-none rounded-lg border-1 bg-white px-2.5 py-3 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none" />
+				<span asp-validation-for="FormInput.CentreSystem" class="mt-1 text-right text-sm text-red-800"></span>
 			</div>
 
-			<div class="relative mt-4">
-				<label asp-for="FormInput.Notes" for="region_notes" class="text-web-black absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"></label>
-				<textarea asp-for="FormInput.Notes" id="region_notes" class="peer border-web-black text-web-black block w-full appearance-none rounded-lg border-1 bg-white px-2.5 pt-4 pb-2.5 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none"></textarea>
-				<span asp-validation-for="FormInput.Notes"></span>
+			<div class="mt-4 grid grid-cols-1">
+				<label asp-for="FormInput.Community" for="region_community" class="text-web-black pb-1 text-lg"></label>
+				<p class="text-web-black pb-1 text-justify text-sm">If the region is associated with a specific community, please share a link to where the community organises (website, forum, Discord server, etc.). If a region is backed by a public community, it is more likely to be added.</p>
+				<input asp-for="FormInput.Community" id="region_community" class="border-web-black text-web-black w-full appearance-none rounded-lg border-1 bg-white px-2.5 py-3 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none" />
+				<span asp-validation-for="FormInput.Community" class="mt-1 text-right text-sm text-red-800"></span>
 			</div>
 
-			<button type="submit">Submit</button>
+			<div class="mt-4 grid grid-cols-1">
+				<label asp-for="FormInput.Notes" for="region_notes" class="text-web-black pb-1 text-lg"></label>
+				<p class="text-web-black pb-1 text-justify text-sm">If there is any additional information that might be useful when considering the new region, please include it here.</p>
+				<textarea asp-for="FormInput.Notes" id="region_notes" class="border-web-black text-web-black w-full appearance-none rounded-lg border-1 bg-white px-2.5 py-3 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none"></textarea>
+				<span asp-validation-for="FormInput.Notes" class="mt-1 text-right text-sm text-red-800"></span>
+			</div>
+
+			<div class="mt-4 grid grid-cols-1">
+				<p class="text-web-black pb-1 text-justify text-sm">Please read each field’s instructions before submitting. Note that regions will be added occasionally, so please be patient and don’t spam requests.</p>
+				<button type="submit" class="border-web-black bg-web-black text-web-white w-full cursor-pointer rounded-lg border-1 px-2.5 pt-3 pb-3 shadow-sm">Submit</button>
+			</div>
 		</form>
 	}
 }
+</section>

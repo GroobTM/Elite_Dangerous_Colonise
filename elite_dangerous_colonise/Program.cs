@@ -7,6 +7,8 @@ using System.Text;
 using Ixnas.AltchaNet;
 using elite_dangerous_colonise.Services;
 using elite_dangerous_colonise.Models.Internal;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +47,18 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromHours(1);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+});
+
+// Adds the Rate Limiting Services
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("RegionFormLimit", opt =>
+    {
+        opt.Window = TimeSpan.FromMinutes(5);
+        opt.PermitLimit = 10;
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
+    });
 });
 
 // Configures the data protection service.
@@ -149,6 +163,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseSession();
+
+app.UseRateLimiter();
 
 app.UseAuthorization();
 

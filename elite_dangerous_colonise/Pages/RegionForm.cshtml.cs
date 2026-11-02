@@ -1,15 +1,20 @@
 using elite_dangerous_colonise.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.RateLimiting;
 using System.ComponentModel.DataAnnotations;
 
 namespace elite_dangerous_colonise.Pages
 {
+    [EnableRateLimiting("RegionFormLimit")]
     public class RegionFormModel : PageModel
     {
         private readonly AppLogger logger;
 
-        public bool Post { get; private set; } = false;
+        [TempData]
+        public bool Post { get; set; } = false;
+        [TempData]
+        public DateTime LoadTime { get; set; }
 
         public RegionFormModel(AppLogger logger)
         {
@@ -28,19 +33,28 @@ namespace elite_dangerous_colonise.Pages
                 return RedirectToPage("/Captcha", new { ReturnUrl = returnUrl });
             }
 
+            LoadTime = DateTime.UtcNow;
+
             return Page();
         }
 
         public IActionResult OnPost()
         {
+            if(!string.IsNullOrEmpty(FormInput.EmailAddress) || ((DateTime.UtcNow - LoadTime).TotalSeconds < 5))
+            {
+                Post = true;
+                return RedirectToPage();
+            }
+
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            Post = true;
+            // TODO process form
 
-            return Page();
+            Post = true;
+            return RedirectToPage();
         }
 
 
@@ -52,10 +66,12 @@ namespace elite_dangerous_colonise.Pages
             public int Radius { get; set; } = 50;
             [Required, Display(Name = "Region Centre System"), StringLength(75, MinimumLength = 2, ErrorMessage = "Region Centre System must be between 2 and 75 characters.")]
             public string CentreSystem { get; set; } = "";
-            [Display(Name = "Region Community Hub"), StringLength(512, ErrorMessage = "Region Community Hub must be less than or equal to 512 characters.")]
+            [Display(Name = "Region Community Hub (Optional)"), StringLength(512, ErrorMessage = "Region Community Hub must be less than or equal to 512 characters.")]
             public string? Community { get; set; }
-            [Display(Name = "Additional Notes"), StringLength(1024, ErrorMessage = "Additional Notes must be less than or equal to 1024 characters.")]
+            [Display(Name = "Additional Notes (Optional)"), StringLength(2048, ErrorMessage = "Additional Notes must be less than or equal to 2048 characters.")]
             public string? Notes { get; set; }
+            // Honeypot field
+            public string? EmailAddress { get; set; }
         }
     }
 }
