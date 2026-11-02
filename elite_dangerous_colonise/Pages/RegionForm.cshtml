@@ -10,6 +10,7 @@
 	<partial name="_ValidationScriptsPartial" />
 }
 
+<h1 class="text-web-white pt-3 pb-3 text-center text-6xl font-[EUROCAPS]">New Region Form</h1>
 @{
 	if(Model.Post)
 	{
@@ -17,30 +18,36 @@
 	}
 	else
 	{
-		<form method="post">
+		<form method="post" class="bg-web-white mx-auto my-3 flex w-1/2 flex-col rounded-md p-5">
 			<div asp-validation-summary="ModelOnly"></div>
-			<div>
-				<label asp-for="FormInput.Name"></label>
-				<input asp-for="FormInput.Name" />
+			<div class="relative">
+				<label asp-for="FormInput.Name" for="region_name" class="text-web-black absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"></label>
+				<input asp-for="FormInput.Name" id="region_name" class="peer border-web-black text-web-black block w-full appearance-none rounded-lg border-1 bg-white px-2.5 pt-4 pb-2.5 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none" />
 				<span asp-validation-for="FormInput.Name"></span>
 			</div>
 
-			<div>
-				<label asp-for="FormInput.Radius"></label>
-				<input asp-for="FormInput.Radius" />
+			<div class="relative mt-4">
+				<label asp-for="FormInput.Radius" for="region_radius" class="text-web-black absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"></label>
+				<input asp-for="FormInput.Radius" id="region_radius" class="peer border-web-black text-web-black block w-full appearance-none rounded-lg border-1 bg-white px-2.5 pt-4 pb-2.5 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none" />
 				<span asp-validation-for="FormInput.Radius"></span>
 			</div>
 
-			<div>
-				<label asp-for="FormInput.CentreSystem"></label>
-				<input asp-for="FormInput.CentreSystem" />
+			<div class="relative mt-4">
+				<label asp-for="FormInput.CentreSystem" for="region_centre" class="text-web-black absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"></label>
+				<input asp-for="FormInput.CentreSystem" id="region_centre" class="peer border-web-black text-web-black block w-full appearance-none rounded-lg border-1 bg-white px-2.5 pt-4 pb-2.5 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none" />
 				<span asp-validation-for="FormInput.CentreSystem"></span>
 			</div>
 
-			<div>
-				<label asp-for="FormInput.Community"></label>
-				<input asp-for="FormInput.Community" />
+			<div class="relative mt-4">
+				<label asp-for="FormInput.Community" for="region_community" class="text-web-black absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"></label>
+				<input asp-for="FormInput.Community" id="region_community" class="peer border-web-black text-web-black block w-full appearance-none rounded-lg border-1 bg-white px-2.5 pt-4 pb-2.5 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none" />
 				<span asp-validation-for="FormInput.Community"></span>
+			</div>
+
+			<div class="relative mt-4">
+				<label asp-for="FormInput.Notes" for="region_notes" class="text-web-black absolute start-2 top-2 z-10 origin-[0] -translate-y-4 scale-85 transform cursor-text rounded-3xl bg-white px-2 duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-0 peer-focus:-translate-y-4 peer-focus:scale-85 peer-focus:p-1 peer-focus:px-2 peer-focus:shadow-sm rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"></label>
+				<textarea asp-for="FormInput.Notes" id="region_notes" class="peer border-web-black text-web-black block w-full appearance-none rounded-lg border-1 bg-white px-2.5 pt-4 pb-2.5 pl-4 shadow-sm focus:border-accent focus:ring-0 focus:outline-none"></textarea>
+				<span asp-validation-for="FormInput.Notes"></span>
 			</div>
 
 			<button type="submit">Submit</button>

@@ -54,6 +54,8 @@ namespace elite_dangerous_colonise.Pages
             public string CentreSystem { get; set; } = "";
             [Display(Name = "Region Community Hub"), StringLength(512, ErrorMessage = "Region Community Hub must be less than or equal to 512 characters.")]
             public string? Community { get; set; }
+            [Display(Name = "Additional Notes"), StringLength(1024, ErrorMessage = "Additional Notes must be less than or equal to 1024 characters.")]
+            public string? Notes { get; set; }
         }
     }
 }
